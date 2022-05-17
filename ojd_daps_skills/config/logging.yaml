@@ -1,0 +1,40 @@
+version: 1
+disable_existing_loggers: False
+formatters:
+  simple:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+
+  info_file_handler:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: simple
+    filename: ext://ojd_daps_skills.info_out
+    maxBytes: 10485760 # 10MB
+    backupCount: 20
+    encoding: utf8
+
+  error_file_handler:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: simple
+    filename: ext://ojd_daps_skills.error_out
+    maxBytes: 10485760 # 10MB
+    backupCount: 20
+    encoding: utf8
+
+loggers:
+  "ojd_daps_skills":
+    level: INFO
+    handlers: [console, info_file_handler, error_file_handler]
+    propagate: no
+
+root:
+  level: INFO
+  handlers: [console]

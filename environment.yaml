@@ -1,0 +1,8 @@
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - pip
+  - python=3.8
+  # Only put dependencies that are NOT available with pip here (e.g. graph-tool)
+  # or that enable extra functionality such as GPU/MKL support

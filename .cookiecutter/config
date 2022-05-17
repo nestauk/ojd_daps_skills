@@ -1,0 +1,5 @@
+# Change these at your peril:
+export PROJECT_NAME=ojd_daps_skills
+export REPO_NAME=ojd_daps_skills
+export DESCRIPTION=Improved skills extraction algorithm for OJO
+export PROJECT_OPENNESS=public

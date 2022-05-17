@@ -1,0 +1,9 @@
+numpy
+scipy
+pandas
+matplotlib
+altair
+tqdm
+filelock
+typer
+sh
