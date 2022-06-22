@@ -13,6 +13,7 @@ To run the script:
 You will need to have the Nesta SQL database credentials stored on your computer, and for this location to be saved in an environmental variable:
 
 Create a mysqldb_team_ojo_may22.config file of SQL credentials, this looks like:
+
 ```
 [client]
 user=XXX
@@ -22,7 +23,8 @@ port=XXX
 ```
 
 Then, connected to the Nesta VPN and in your activated conda environment, run:
+
 ```
-export SQL_DB_CREDS="$HOME/path/to/mysqldb_team_ojo_may22.config" 
+export SQL_DB_CREDS="$HOME/path/to/mysqldb_team_ojo_may22.config"
 python aggregate_ojo_esco_evaluation.py
-```  
+```

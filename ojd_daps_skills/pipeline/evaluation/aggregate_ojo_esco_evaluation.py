@@ -67,15 +67,15 @@ def get_job_adverts(conn, esco_job_titles: list, ojo_job_count: int) -> pd.DataF
 
 
 def get_esco_data(esco_data: list) -> list:
-    """Loads, cleans and merges local ESCO csv files. Converts dataframe to tuple
-    where key is esco_job_title and values include all skills, including alternative
-    skills and alternative job titles.
+    """Loads, cleans and merges local ESCO csv files. Converts dataframe to list of tuples
+    where each tuple contains esco_job_titles preferred skills and alternative
+    skills.
 
     Inputs:
         esco_data (list): list of paths to local ESCO data files.
 
     Outputs:
-        esco_skills_dict (dict): Dictionary of esco jobs with associated alternative
+        esco_skills_dict (list): list of tuples of esco jobs with associated alternative
         job titles and skills.
     """
     esco_dfs = [load_local_data(esco_path) for esco_path in esco_data_path]
