@@ -7,3 +7,5 @@ tqdm
 filelock
 typer
 sh
+sqlalchemy
+pymysql
