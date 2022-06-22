@@ -1,3 +1,3 @@
 ojo_job_count: 100
-evaluation_results_path: "/outputs/evaluation/"
+evaluation_results_path: "/outputs/evaluation/aggregate_ojo_esco/"
 esco_path: "inputs/data/esco/"
