@@ -4,6 +4,9 @@
 
 - Meet the data science cookiecutter [requirements](http://nestauk.github.io/ds-cookiecutter/quickstart), in brief:
   - Install: `direnv` and `conda`
+- Create a blank cookiecutter conda log file:
+  - `mkdir .cookiecutter/state`
+  - `touch .cookiecutter/state/conda-create.log`
 - Run `make install` to configure the development environment:
   - Setup the conda environment
   - Configure `pre-commit`
