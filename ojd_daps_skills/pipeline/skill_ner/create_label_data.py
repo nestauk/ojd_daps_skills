@@ -3,8 +3,8 @@ This script processes a sample of job adverts into a format needed for labelling
 using label-studio.
 
 Label-studio inputs a txt file where each row is a labelling task. Thus we output two files:
-1. A txt file where each line is a sentence from a job advert.
-2. A json of line ID: job advert ID, so we keep track of what job advert each sentence was from.
+1. A txt file where each line is a job advert.
+2. A json of line ID: job advert ID, so we keep track of what job advert each line of text was from.
 
 """
 
@@ -20,8 +20,6 @@ from tqdm import tqdm
 from datetime import datetime as date
 import json
 import os
-
-nlp = spacy.load("en_core_web_sm")
 
 BUCKET_NAME = "open-jobs-lake"
 S3_FOLDER = "escoe_extension/inputs/data/skill_ner/"
@@ -39,15 +37,12 @@ if __name__ == "__main__":
     index_metadata = {}
     sample_data = load_s3_data(s3, BUCKET_NAME, file_name)
     for job_id, job_info in sample_data.items():
-        full_text = job_info["description"]
         # If there are any description texts with '\n' in this will
         # mess the sentence separation up in the output step,
         # so just make sure they are all removed.
-        full_text = full_text.replace("\n", " ")
-        for sentence in nlp(full_text).sents:
-            texts.append(sentence.text)
-            index_metadata[line_index] = job_id
-            line_index += 1
+        texts.append(job_info["description"].replace("\n", " "))
+        index_metadata[line_index] = job_id
+        line_index += 1
 
     # Output to S3
     date_stamp = str(date.today().date()).replace("-", "")
