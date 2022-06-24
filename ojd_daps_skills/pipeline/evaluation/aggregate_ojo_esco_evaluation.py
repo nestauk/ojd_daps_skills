@@ -1,17 +1,26 @@
-"""Script to evaluate the aggregated overlap between extracted skills
-from OJO and ESCO skills per occupation.
+"""Script to evaluate the first iteration of the skills algorithm
+
+
 """
-###########################################
+##############################################################
 from ojd_daps_skills.utils.sql_conn import est_conn
-from ojd_daps_skills import PROJECT_DIR, config
-from ojd_daps_skills.getters.data_getters import load_local_data, save_json_dict
+from ojd_daps_skills import PROJECT_DIR, config, bucket_name
+from ojd_daps_skills.getters.data_getters import (
+    get_s3_resource,
+    get_s3_data_paths,
+    load_s3_data,
+    save_to_s3,
+)
 import glob
 import os
 import string
 import pandas as pd
 import itertools
+from datetime import datetime as date
 
-###########################################
+##############################################################
+
+s3 = get_s3_resource()
 
 
 def clean_job_title(job_title):
@@ -66,101 +75,121 @@ def get_job_adverts(conn, esco_job_titles: list, ojo_job_count: int) -> pd.DataF
     return pd.merge(job_skills, job_titles, left_on="job_id", right_on="id")
 
 
-def get_esco_data(esco_data: list) -> list:
-    """Loads, cleans and merges local ESCO csv files. Converts dataframe to list of tuples
-    where each tuple contains esco_job_titles preferred skills and alternative
-    skills.
-
+def get_esco_data(esco_data_dir) -> pd.DataFrame:
+    """Loads and merges ESCO csv files from s3. Returns merged DataFarme and
+    ESCO's list of transversal skills.
+    
     Inputs:
         esco_data (list): list of paths to local ESCO data files.
 
     Outputs:
-        esco_skills_dict (list): list of tuples of esco jobs with associated alternative
+        esco_skills_dict (pd.DataFrame): Merged DataFrame of ESCO jobs with associated alternative
         job titles and skills.
     """
-    esco_dfs = [load_local_data(esco_path) for esco_path in esco_data_path]
-    esco_dfs[1].rename(columns={"conceptUri": "skillUri"}, inplace=True), esco_dfs[
-        2
-    ].rename(columns={"conceptUri": "occupationUri"}, inplace=True)
+    esco_paths = get_s3_data_paths(s3, bucket_name, esco_data_dir, "*.csv")
+    esco_dfs = [load_s3_data(s3, bucket_name, esco_path) for esco_path in esco_paths]
+
     esco_occ_skills = pd.merge(
-        pd.merge(esco_dfs[0], esco_dfs[1], on="skillUri"),
+        pd.merge(
+            esco_dfs[0], esco_dfs[1], left_on="occupationUri", right_on="conceptUri"
+        ),
         esco_dfs[2],
-        on="occupationUri",
+        left_on="skillUri",
+        right_on="conceptUri",
     )
     esco_occ_skills = esco_occ_skills[
         ["preferredLabel_x", "altLabels_x", "preferredLabel_y", "altLabels_y"]
     ].rename(
         columns={
-            "preferredLabel_x": "esco_skill",
-            "altLabels_x": "alt_esco_skills",
-            "preferredLabel_y": "esco_job_title",
-            "altLabels_y": "alt_esco_job_titles",
+            "preferredLabel_x": "esco_job_title",
+            "altLabels_x": "alt_esco_job_titles",
+            "preferredLabel_y": "esco_skill",
+            "altLabels_y": "alt_esco_skills",
         }
     )
 
     for alt_col in "alt_esco_skills", "alt_esco_job_titles":
         esco_occ_skills[alt_col] = esco_occ_skills[alt_col].str.split("\n")
 
-    esco_occ_skills["esco_skill"] = esco_occ_skills["esco_skill"].apply(lambda x: [x])
-    esco_occ_skills = [
-        tuple(j) for j in esco_occ_skills.groupby("esco_job_title").sum().to_numpy()
-    ]
-
     return esco_occ_skills
 
 
 if __name__ == "__main__":
     ojo_job_count = config["ojo_job_count"]
-    esco_data_path = glob.glob(
-        os.path.join(str(PROJECT_DIR / config["esco_path"]), "*.csv")
-    )
-
-    output_path = str(PROJECT_DIR) + config["evaluation_results_path"]
-
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
+    esco_data_path = config["esco_path"]
+    output_path = config["evaluation_results_path"]
+    esco_data_dir = config["esco_data_dir"]
 
     # load data
-    ##ESCO data
+    ##ESCO data + transversal skills
     esco_jobs = get_esco_data(esco_data_path)
-    all_esco_job_titles = list(itertools.chain(*[esco[2] for esco in esco_jobs]))
+    esco_jobs["all_esco_job_titles"] = esco_jobs.apply(
+        lambda j: j["alt_esco_job_titles"] + [j["esco_job_title"]], axis=1
+    )
+    all_esco_job_titles = [
+        clean_job_title(job)
+        for job in list(
+            set(list(itertools.chain(*esco_jobs.all_esco_job_titles.to_list())))
+        )
+    ]
 
     ##OJO jobs in ESCO
     conn = est_conn()
     ojo_job_adverts = get_job_adverts(conn, all_esco_job_titles, ojo_job_count)
 
-    # Compare OJO and ESCO skills per occupation
+    ## Compare ESCO and top OJO skills
+    # get skill percents per occupation
+    skill_percent_occ = (
+        ojo_job_adverts.groupby(["clean_ojo_job_title", "preferred_label"])[
+            "job_id"
+        ].nunique()
+        / ojo_job_adverts.groupby("clean_ojo_job_title")["job_id"].nunique()
+        * 100
+    )
+    skill_percent_occ = skill_percent_occ.reset_index().rename(
+        columns={"job_id": "skill_percent"}
+    )
+
+    # generate skill threshold based on distribution of skill percentages
+    skill_thresholds = (
+        skill_percent_occ.groupby("clean_ojo_job_title")["skill_percent"].describe()[
+            "min"
+        ]
+        + 0.5
+        * skill_percent_occ.groupby("clean_ojo_job_title")["skill_percent"].describe()[
+            "std"
+        ]
+    )
+    skill_percent_occ["skill_percent_threshold"] = skill_percent_occ[
+        "clean_ojo_job_title"
+    ].map(skill_thresholds)
+
+    # compare OJO and ESCO skills
     ojo_esco_dict = dict()
-    for ojo_job_title, ojo_data in ojo_job_adverts.groupby("clean_ojo_job_title"):
-
-        essential_esco_skills = [
-            esco_job[0] for esco_job in esco_jobs if ojo_job_title in esco_job[2]
+    for occupation, occ_data in skill_percent_occ.groupby("clean_ojo_job_title"):
+        esco_skills = set(
+            esco_jobs[
+                esco_jobs["all_esco_job_titles"].apply(lambda x: occupation in x)
+            ]["esco_skill"]
+        )
+        skills_above_threshold = [
+            i
+            for i, skill in enumerate(occ_data["skill_percent"])
+            if skill > occ_data["skill_percent_threshold"].iloc[0]
         ]
-        alt_esco_skills = [
-            esco_job[1] for esco_job in esco_jobs if ojo_job_title in esco_job[2]
-        ]
-
-        if essential_esco_skills != []:
-            ojo_esco_essen_skills = list(
-                set(ojo_data["preferred_label"]) & set(essential_esco_skills[0])
-            )
-
-        if alt_esco_skills != []:
-            ojo_esco_alt_skills = list(
-                set(ojo_data["preferred_label"]) & set(alt_esco_skills[0])
-            )
-
-            ojo_esco_dict[ojo_job_title] = {
-                "no_of_adverts": len(ojo_data["job_id"]),
-                "ojo_esco_essen_skills": ojo_esco_essen_skills,
-                "ojo_esco_alt_skills": ojo_esco_alt_skills,
-                "essen_accuracy": len(ojo_esco_essen_skills)
-                / len(essential_esco_skills[0]),
-                "alt_accuracy": len(ojo_esco_alt_skills) / len(alt_esco_skills[0]),
+        ojo_skill = set(
+            list(occ_data["preferred_label"])[i] for i in skills_above_threshold
+        )
+        in_both_ojo_esco = set.intersection(esco_skills, ojo_skill)
+        in_ojo_not_esco = list(ojo_skill - esco_skills)
+        in_esco_not_ojo = list(esco_skills - ojo_skill)
+        if ojo_skill:
+            ojo_esco_dict[occupation] = {
+                "in_both_ojo_esco": list(in_both_ojo_esco),
+                "in_ojo_not_esco": in_ojo_not_esco,
+                "in_esco_not_ojo": in_esco_not_ojo,
+                "skills_in_ojo_esco_percent": len(in_both_ojo_esco) / len(ojo_skill),
             }
 
-    # Save occupation-level accuracy results to file
-    save_json_dict(
-        ojo_esco_dict,
-        os.path.join(output_path, f"ojo_esco_occupation_skills_results.json"),
-    )
+    # Save occupation-level accuracy results to s3
+    save_to_s3(s3, bucket_name, ojo_esco_dict, output_path)
