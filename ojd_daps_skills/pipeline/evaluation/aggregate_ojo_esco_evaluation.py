@@ -153,7 +153,7 @@ if __name__ == "__main__":
     # generate skill threshold based on distribution of skill percentages
     skill_thresholds = (
         skill_percent_occ.groupby("clean_ojo_job_title")["skill_percent"].describe()[
-            "min"
+            "50%"
         ]
         + 0.5
         * skill_percent_occ.groupby("clean_ojo_job_title")["skill_percent"].describe()[
@@ -180,7 +180,11 @@ if __name__ == "__main__":
         ojo_skill = set(
             list(occ_data["preferred_label"])[i] for i in skills_above_threshold
         )
-        in_both_ojo_esco, in_ojo_not_esco, in_esco_not_ojo = set.intersection(esco_skills, ojo_skill), list(ojo_skill - esco_skills), list(esco_skills - ojo_skill)
+        in_both_ojo_esco, in_ojo_not_esco, in_esco_not_ojo = (
+            set.intersection(esco_skills, ojo_skill),
+            list(ojo_skill - esco_skills),
+            list(esco_skills - ojo_skill),
+        )
         if ojo_skill:
             ojo_esco_dict[occupation] = {
                 "in_both_ojo_esco": list(in_both_ojo_esco),
