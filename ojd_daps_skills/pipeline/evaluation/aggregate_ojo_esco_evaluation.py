@@ -22,6 +22,7 @@ from datetime import datetime as date
 
 s3 = get_s3_resource()
 
+
 def clean_job_title(job_title):
     """Cleans job title to lowercase, remove punctuation, numbers and "bad" words."""
 
@@ -120,7 +121,7 @@ if __name__ == "__main__":
     esco_data_dir = config["esco_data_dir"]
 
     # load data
-    ##ESCO data 
+    ##ESCO data
     esco_jobs = get_esco_data(esco_data_path)
     esco_jobs["all_esco_job_titles"] = esco_jobs.apply(
         lambda j: j["alt_esco_job_titles"] + [j["esco_job_title"]], axis=1
@@ -179,9 +180,7 @@ if __name__ == "__main__":
         ojo_skill = set(
             list(occ_data["preferred_label"])[i] for i in skills_above_threshold
         )
-        in_both_ojo_esco = set.intersection(esco_skills, ojo_skill)
-        in_ojo_not_esco = list(ojo_skill - esco_skills)
-        in_esco_not_ojo = list(esco_skills - ojo_skill)
+        in_both_ojo_esco, in_ojo_not_esco, in_esco_not_ojo = set.intersection(esco_skills, ojo_skill), list(ojo_skill - esco_skills), list(esco_skills - ojo_skill)
         if ojo_skill:
             ojo_esco_dict[occupation] = {
                 "in_both_ojo_esco": list(in_both_ojo_esco),
