@@ -22,7 +22,6 @@ from datetime import datetime as date
 
 s3 = get_s3_resource()
 
-
 def clean_job_title(job_title):
     """Cleans job title to lowercase, remove punctuation, numbers and "bad" words."""
 
@@ -121,7 +120,7 @@ if __name__ == "__main__":
     esco_data_dir = config["esco_data_dir"]
 
     # load data
-    ##ESCO data + transversal skills
+    ##ESCO data 
     esco_jobs = get_esco_data(esco_data_path)
     esco_jobs["all_esco_job_titles"] = esco_jobs.apply(
         lambda j: j["alt_esco_job_titles"] + [j["esco_job_title"]], axis=1
@@ -137,7 +136,7 @@ if __name__ == "__main__":
     conn = est_conn()
     ojo_job_adverts = get_job_adverts(conn, all_esco_job_titles, ojo_job_count)
 
-    ## Compare ESCO and top OJO skills
+    ## Compare ESCO and OJO skills
     # get skill percents per occupation
     skill_percent_occ = (
         ojo_job_adverts.groupby(["clean_ojo_job_title", "preferred_label"])[
