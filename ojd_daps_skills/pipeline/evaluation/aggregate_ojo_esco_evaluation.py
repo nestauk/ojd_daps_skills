@@ -190,7 +190,9 @@ if __name__ == "__main__":
                 "in_both_ojo_esco": list(in_both_ojo_esco),
                 "in_ojo_not_esco": in_ojo_not_esco,
                 "in_esco_not_ojo": in_esco_not_ojo,
-                "skills_in_ojo_esco_percent": len(in_both_ojo_esco) / len(ojo_skill)*100,
+                "skills_in_ojo_esco_percent": len(in_both_ojo_esco)
+                / len(ojo_skill)
+                * 100,
             }
 
     # Save occupation-level accuracy results to s3

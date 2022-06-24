@@ -8,6 +8,7 @@ import pandas as pd
 from pandas import DataFrame
 import boto3
 
+
 def load_data(file_name: str, local=True) -> DataFrame:
     """Loads data from path.
     Args:

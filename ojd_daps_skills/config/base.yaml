@@ -1,4 +1,4 @@
 ojo_job_count: 100
-evaluation_results_path: "outputs/evaluation/aggregate_ojo_esco/ojo_esco_occupation_skills_results.json"
-esco_path: "inputs/data/esco/"
-esco_data_dir: 'escoe_extension/inputs/data/esco/'
+evaluation_results_v1_path: "escoe_extension/outputs/evaluation/aggregate_ojo_esco/ojo_esco_occupation_skills_results_v1.json"
+esco_path: "escoe_extension/inputs/data/esco/"
+esco_data_dir: "escoe_extension/inputs/data/esco/"
