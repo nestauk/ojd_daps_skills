@@ -38,24 +38,37 @@ There are 3 labels:
 
 1. SKILL
 2. MULTISKILL
-3. KNOWLEDGE
+3. EXPERIENCE
 
 - Label all the skills by dragging from the start of where the skill is mentioned to the end, then press `SUBMIT`.
   ![](./ner_label_examples/label_eg1.jpg)
 - If there are no skills in the sentence press `SUBMIT`.
   ![](./ner_label_examples/label_eg5.jpg)
-- If you aren't sure then `SKIP`.
-- Try to label each skill separately with a SKILL label, but if this isn't possible use the MULTISKILL tag.
+- Try to label each skill separately with a `SKILL` label, but if this isn't possible use the `MULTISKILL` tag.
   ![](./ner_label_examples/label_eg4.jpg)
-- Anything which is too hard to label where you think you'll make bad mistakes or if the text is very badly formatted, thrn `SKIP`
-- `KNOWLEDGE` labels will often be followed by "knowledge" e.g. "insurance knowledge".
+- `EXPERIENCE` labels will often be followed by "experience" e.g. "insurance experience".
+- `EXPERIENCE` labels also include qualifications, e.g. "Electrical qualifications".
 - If its just "have a degree" then this shouldn't be labelled, but if it is "have a maths degree" then "maths" can be labelled as a `SKILL`
 - `MULTISKILL` labels will often be when you need an earlier part of the sentence to define the later part
 - When labelling spans try to start at the verb
 
+When to `SKIP`:
+
+- Anything which is too hard to label where you think you'll make bad mistakes then `SKIP`
+- If you aren't sure then `SKIP`.
+- If the text is badly formatted to the extent its hard to label then `SKIP`
+  ![](./ner_label_examples/label_eg6.jpg)
+
+We don't want bad labels in our training data
+
+Be careful:
+
+- To include the whole span of the skill(s). Try not to make sure you havent cut any characters off or added any.
+- Try to to include trailing whitespace in the spans
+
 #### label-studio options
 
 - Random sampling
-- SKILL, MULTISKILL, KNOWLEDGE label
+- SKILL, MULTISKILL, EXPERIENCE label
 - "Select text by words" selected
 - "Add filter for long list of labels" NOT selected

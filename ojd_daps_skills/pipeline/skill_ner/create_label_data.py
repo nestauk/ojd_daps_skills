@@ -24,6 +24,7 @@ import os
 BUCKET_NAME = "open-jobs-lake"
 S3_FOLDER = "escoe_extension/inputs/data/skill_ner/"
 JOBS_SAMPLE = "data_sample/20220622_sampled_job_ads.json"
+S3_OUTPUT_FOLDER = "escoe_extension/outputs/data/skill_ner/label_chunks/"
 
 if __name__ == "__main__":
 
@@ -32,10 +33,13 @@ if __name__ == "__main__":
     file_name = os.path.join(S3_FOLDER, JOBS_SAMPLE)
     print(f"Processing job advert sample from {file_name}")
 
+    sample_data = load_s3_data(s3, BUCKET_NAME, file_name)
+    date_stamp = str(date.today().date()).replace("-", "")
+
+    output_id = 0
     line_index = 0
     texts = []
     index_metadata = {}
-    sample_data = load_s3_data(s3, BUCKET_NAME, file_name)
     for job_id, job_info in sample_data.items():
         # If there are any description texts with '\n' in this will
         # mess the sentence separation up in the output step,
@@ -43,18 +47,44 @@ if __name__ == "__main__":
         texts.append(job_info["description"].replace("\n", " "))
         index_metadata[line_index] = job_id
         line_index += 1
-
-    # Output to S3
-    date_stamp = str(date.today().date()).replace("-", "")
+        if line_index == 400:
+            # Output to S3
+            save_to_s3(
+                s3,
+                BUCKET_NAME,
+                "\n".join(texts),
+                os.path.join(
+                    S3_OUTPUT_FOLDER,
+                    f"{date_stamp}_{output_id}_sample_labelling_text_data.txt",
+                ),
+            )
+            save_to_s3(
+                s3,
+                BUCKET_NAME,
+                index_metadata,
+                os.path.join(
+                    S3_OUTPUT_FOLDER,
+                    f"{date_stamp}_{output_id}_sample_labelling_metadata.json",
+                ),
+            )
+            output_id += 1
+            line_index = 0
+            texts = []
+            index_metadata = {}
+    # Output last bit to S3
     save_to_s3(
         s3,
         BUCKET_NAME,
         "\n".join(texts),
-        os.path.join(S3_FOLDER, f"{date_stamp}_sample_labelling_text_data.txt"),
+        os.path.join(
+            S3_OUTPUT_FOLDER, f"{date_stamp}_{output_id}_sample_labelling_text_data.txt"
+        ),
     )
     save_to_s3(
         s3,
         BUCKET_NAME,
         index_metadata,
-        os.path.join(S3_FOLDER, f"{date_stamp}_sample_labelling_metadata.json"),
+        os.path.join(
+            S3_OUTPUT_FOLDER, f"{date_stamp}_{output_id}_sample_labelling_metadata.json"
+        ),
     )
