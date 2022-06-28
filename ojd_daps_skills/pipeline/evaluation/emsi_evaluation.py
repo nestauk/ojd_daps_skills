@@ -24,14 +24,14 @@ from ojd_daps_skills.getters.data_getters import (
 )
 
 ##################################################################
-def get_job_advert_skills(conn, job_ids: list) -> pd.DataFrame:
+def get_job_advert_skills(conn, job_ids: list) -> dict:
     """Queries SQL db to return dataframe of job ids and skills.
     Args:
         conn: Engine to Nesta's SQL database.
         job_ids (list): list of job_ids to get skills for.
 
     Returns:
-        pd.DataFrame: A dataframe of skills associated to each job id.
+        dict: A dictionary of OJO skills associated to each job id.
     """
     query_job_skills = f"SELECT job_id, preferred_label FROM job_ad_skill_links WHERE job_id IN {tuple(set(job_ids))}"
     job_skills = pd.read_sql(query_job_skills, conn)
