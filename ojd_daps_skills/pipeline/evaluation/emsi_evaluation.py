@@ -93,6 +93,7 @@ def extract_esmi_skills(
         "POST", url, data=json.dumps(payload), headers=headers, params=querystring
     )
 
+    time.sleep(12)  # make 1 API call every 12 seconds
     if response.ok:
         return response.json()["data"]
     else:
@@ -145,18 +146,23 @@ if __name__ == "__main__":
     access_code = get_emsi_access_token(client_id, client_secret)
 
     # get extracted EMSI skills
+    ojo_esmi_skills = dict()
     for job_id, ojo_job_ad_data in ojo_job_ads_50.items():
         esmi_skills = extract_esmi_skills(
             access_code,
             ojo_job_ad_data["job_ad_text"],
             config["esmi_confidence_threshold"],
         )
-        time.sleep(60)  # make 1 API call a minute
         if not isinstance(esmi_skills, requests.models.Response):  # if its not an error
-            ojo_job_ad_data[job_id] = {
-                "esmi_skills": [skill["skill"]["name"] for skill in esmi_skills]
+            ojo_esmi_skills[job_id] = {
+                "job_ad_text": ojo_job_ad_data["job_ad_text"],
+                "ojo_skills": ojo_job_ad_data["ojo_skills"],
+                "esmi_skills": [skill["skill"]["name"] for skill in esmi_skills],
             }
 
     save_to_s3(
-        get_s3_resource(), bucket_name, ojo_esmi_skills, config["esmi_ojo_skills_path"]
+        get_s3_resource(),
+        bucket_name,
+        ojo_esmi_skills,
+        config["esmi_ojo_skills_v1_path"],
     )
