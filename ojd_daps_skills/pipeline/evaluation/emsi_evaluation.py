@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# %%
 """
 Script to extract EMSI skills from a random sample of 50 OJO job ads.
 
@@ -152,7 +154,7 @@ if __name__ == "__main__":
         time.sleep(60)  # make 1 API call a minute
         if not isinstance(esmi_skills, requests.models.Response):  # if its not an error
             ojo_job_ad_data[job_id] = {
-                "esmi_skills": [skill["skill"]["name"] for skill in esmi_skills["data"]]
+                "esmi_skills": [skill["skill"]["name"] for skill in esmi_skills]
             }
 
     save_to_s3(
