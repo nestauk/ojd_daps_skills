@@ -144,7 +144,7 @@ if __name__ == "__main__":
     # get extracted EMSI skills
     for job_id, ojo_job_ad_data in ojo_job_ads_50.items():
         esmi_skills = extract_esmi_skills(
-            access_token,
+            access_code,
             ojo_job_ad_data["job_ad_text"],
             config["esmi_confidence_threshold"],
         )
@@ -154,5 +154,8 @@ if __name__ == "__main__":
         }
 
     save_to_s3(
-        get_s3_resource(), bucket_name, ojo_esmi_skills, config["esmi_ojo_skills_path"]
+        get_s3_resource(),
+        bucket_name,
+        ojo_esmi_skills,
+        config["esmi_ojo_skills_v1_path"],
     )
