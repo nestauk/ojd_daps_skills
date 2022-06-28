@@ -1,7 +1,4 @@
-"""Script to evaluate the first iteration of the skills algorithm
-
-
-"""
+"""Script to evaluate the first iteration of the skills algorithm."""
 ##############################################################
 from ojd_daps_skills.utils.sql_conn import est_conn
 from ojd_daps_skills import PROJECT_DIR, config, bucket_name
@@ -78,7 +75,7 @@ def get_job_adverts(conn, esco_job_titles: list, ojo_job_count: int) -> pd.DataF
 def get_esco_data(esco_data_dir) -> pd.DataFrame:
     """Loads and merges ESCO csv files from s3. Returns merged DataFarme and
     ESCO's list of transversal skills.
-    
+
     Inputs:
         esco_data (list): list of paths to local ESCO data files.
 
@@ -117,7 +114,7 @@ def get_esco_data(esco_data_dir) -> pd.DataFrame:
 if __name__ == "__main__":
     ojo_job_count = config["ojo_job_count"]
     esco_data_path = config["esco_path"]
-    output_path = config["evaluation_results_path"]
+    output_path = config["evaluation_results_v1_path"]
     esco_data_dir = config["esco_data_dir"]
 
     # load data
@@ -126,6 +123,7 @@ if __name__ == "__main__":
     esco_jobs["all_esco_job_titles"] = esco_jobs.apply(
         lambda j: j["alt_esco_job_titles"] + [j["esco_job_title"]], axis=1
     )
+
     all_esco_job_titles = [
         clean_job_title(job)
         for job in list(
@@ -155,11 +153,13 @@ if __name__ == "__main__":
         skill_percent_occ.groupby("clean_ojo_job_title")["skill_percent"].describe()[
             "50%"
         ]
-        + 0.5
+    ) + (
+        0.5
         * skill_percent_occ.groupby("clean_ojo_job_title")["skill_percent"].describe()[
             "std"
         ]
     )
+
     skill_percent_occ["skill_percent_threshold"] = skill_percent_occ[
         "clean_ojo_job_title"
     ].map(skill_thresholds)
@@ -172,13 +172,9 @@ if __name__ == "__main__":
                 esco_jobs["all_esco_job_titles"].apply(lambda x: occupation in x)
             ]["esco_skill"]
         )
-        skills_above_threshold = [
-            i
-            for i, skill in enumerate(occ_data["skill_percent"])
-            if skill > occ_data["skill_percent_threshold"].iloc[0]
-        ]
+        per_thresh = occ_data["skill_percent_threshold"].iloc[0]
         ojo_skill = set(
-            list(occ_data["preferred_label"])[i] for i in skills_above_threshold
+            occ_data[occ_data["skill_percent"] > per_thresh]["preferred_label"].tolist()
         )
         in_both_ojo_esco, in_ojo_not_esco, in_esco_not_ojo = (
             set.intersection(esco_skills, ojo_skill),
@@ -187,6 +183,9 @@ if __name__ == "__main__":
         )
         if ojo_skill:
             ojo_esco_dict[occupation] = {
+                "no_of_job_adverts": ojo_job_adverts[
+                    ojo_job_adverts.clean_ojo_job_title == occupation
+                ]["job_id"].nunique(),
                 "in_both_ojo_esco": list(in_both_ojo_esco),
                 "in_ojo_not_esco": in_ojo_not_esco,
                 "in_esco_not_ojo": in_esco_not_ojo,
