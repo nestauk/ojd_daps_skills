@@ -40,3 +40,14 @@ By manually reviewing both the lists of OJO and ESCO skill comparisons per occup
 - **There are many similar top OJO skills across different occupations.** These can be transversal-ish like 'attention to detail', 'English' and 'perform services in a flexible manner'. However, they can also be unrelated to the occupation but extracted from non-skill sentences, a key flaw in the first iteration of the skills algorithm. The top skills 'health and safety in the workplace', 'health and safety regulations', 'communication', 'economics', 'databases' are far reaching. For 'database', occupations that require that skill in OJO range from web developer to team leader, senior buyer, school administrator, marketing assistant and chef de partie.
 
 - **ESCO skills can be particular.** while the skills extracted from OJO may not always be relevant, there is critisim for ESCO skills themselves. For example, for the occupation 'sustainability manager', ESCO skills include: 'integrate headquarter's guidelines into local operations', 'monitor compliance with licensing agreements' and 'assess groundwater environmental impact'. While we could extract this from some 'sustainability manager' job adverts, it does appear quite specific and perhaps not relevant to _all_ sustainability managers.
+
+### 2. EMSI skills
+
+To extract ESMI skills from a random sample of 50 OJO job adverts, you need to [first create an account with ESMI]("https://skills.emsidata.com/extraction"). They will send you API credentials that you will need to run the script.
+
+With your emailed credentials, to run the script:
+`python emsi_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET`
+
+This will output a saved .json with job ids, job description, extracted v1 OJO skills and ESMI skills. BEWARE: you can only call the API 50 times A MONTH! So running the script will make you out for the whole month.
+
+#### Key Observations

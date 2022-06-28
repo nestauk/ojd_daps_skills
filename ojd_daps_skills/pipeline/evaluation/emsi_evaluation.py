@@ -3,6 +3,7 @@ Script to extract EMSI skills from a random sample of 50 OJO job ads.
 
 To run the script, python emsi_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
 """
+##################################################################
 import random
 import requests
 import json
@@ -20,7 +21,7 @@ from ojd_daps_skills.getters.data_getters import (
     save_to_s3,
 )
 
-
+##################################################################
 def get_job_advert_skills(conn, job_ids: list) -> pd.DataFrame:
     """Queries SQL db to return dataframe of job ids and skills.
     Args:
@@ -30,7 +31,6 @@ def get_job_advert_skills(conn, job_ids: list) -> pd.DataFrame:
     Returns:
         pd.DataFrame: A dataframe of skills associated to each job id.
     """
-
     query_job_skills = f"SELECT job_id, preferred_label FROM job_ad_skill_links WHERE job_id IN {tuple(set(job_ids))}"
     job_skills = pd.read_sql(query_job_skills, conn)
 
@@ -45,7 +45,8 @@ def get_emsi_access_token(client_id: str, client_secret: str) -> str:
         client_secret (str): Client secret from generated EMSI skills API credentials.
     
     Outputs:
-        access_token (str): Access token string valid for 1 hour.    
+        access_token (str): Access token string valid for 1 hour.
+            
     """
 
     url = "https://auth.emsicloud.com/connect/token"
@@ -73,6 +74,7 @@ def extract_esmi_skills(
         
     Outputs:
         response (dict): ESMI extracted skills from job advert.
+    
     """
     url = "https://emsiservices.com/skills/versions/latest/extract"
 
@@ -95,7 +97,6 @@ def extract_esmi_skills(
         return response
 
 
-# %%
 if __name__ == "__main__":
 
     parser = ArgumentParser()
@@ -149,13 +150,11 @@ if __name__ == "__main__":
             config["esmi_confidence_threshold"],
         )
         time.sleep(60)  # make 1 API call a minute
-        ojo_job_ad_data[job_id] = {
-            "esmi_skills": [skill["skill"]["name"] for skill in esmi_skills["data"]]
-        }
+        if not isinstance(esmi_skills, requests.models.Response):  # if its not an error
+            ojo_job_ad_data[job_id] = {
+                "esmi_skills": [skill["skill"]["name"] for skill in esmi_skills["data"]]
+            }
 
     save_to_s3(
-        get_s3_resource(),
-        bucket_name,
-        ojo_esmi_skills,
-        config["esmi_ojo_skills_v1_path"],
+        get_s3_resource(), bucket_name, ojo_esmi_skills, config["esmi_ojo_skills_path"]
     )
