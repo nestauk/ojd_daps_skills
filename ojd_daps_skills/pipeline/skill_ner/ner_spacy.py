@@ -233,7 +233,7 @@ class JobNER(object):
     def score(self, results_summary):
         return results_summary["All"]["f1"]
 
-    def save_model(self, output_folder, output_details=True):
+    def save_model(self, output_folder, output_details=True, save_s3=False):
 
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
@@ -260,9 +260,25 @@ class JobNER(object):
             save_json_dict(
                 model_details_dict, os.path.join(output_folder, "train_details.json")
             )
+        if save_s3:
+            # Sync this to S3
+            cmd = f"aws s3 sync {output_folder} s3://{self.BUCKET_NAME}/escoe_extension/{output_folder}"
+            os.system(cmd)
 
-    def load_model(self, model_folder):
-        self.nlp = spacy.load(model_folder)
+    def load_model(self, model_folder, s3_download=True):
+        if s3_download:
+            # Download this model from S3
+            cmd = f"aws s3 sync s3://{self.BUCKET_NAME}/escoe_extension/{model_folder} {model_folder}"
+            os.system(cmd)
+        else:
+            print("Loading the model from a local location")
+
+        try:
+            self.nlp = spacy.load(model_folder)
+        except OSError:
+            print(
+                "Model not found locally - you may need to download it from S3 (set s3_download to True)"
+            )
         return self.nlp
 
 
@@ -293,11 +309,18 @@ def parse_arguments(parser):
         help="The number of iterations in the training process",
         default=50,
     )
+    parser.add_argument(
+        "--save_s3",
+        help="Save the model to S3 (True) or just keep locally (False)",
+        default=False,
+    )
 
     return parser.parse_args()
 
 
 if __name__ == "__main__":
+
+    # Train a model
 
     parser = ArgumentParser()
     args = parse_arguments(parser)
@@ -320,4 +343,4 @@ if __name__ == "__main__":
     date_stamp = str(date.today().date()).replace("-", "")
     output_folder = f"outputs/models/ner_model/{date_stamp}"
     results = job_ner.evaluate(test_data)
-    job_ner.save_model(output_folder)
+    job_ner.save_model(output_folder, args.save_s3)

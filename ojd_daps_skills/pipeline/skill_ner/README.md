@@ -80,17 +80,19 @@ Using the labelled data, we can fine-tune a Spacy model to extract skill entitie
 The model can be trained by running:
 
 ```
-python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_data_s3_folder "escoe_extension/outputs/skill_span_labels/" --convert_multiskill True --train_prop 0.8 --drop_out 0.3 --num_its 50
+python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_data_s3_folder "escoe_extension/outputs/skill_span_labels/" --convert_multiskill True --train_prop 0.8 --drop_out 0.3 --num_its 50 --save_s3 False
 ```
 
 This will save out the model in a time stamped folder, e.g. `outputs/models/ner_model/20220629/`, it also saves out the evaluation results and some general information about the model training in the file `outputs/models/ner_model/20220629/train_details.json`.
+
+By default this won't sync the newly trained model to S3, but by setting `--save_s3 True` it will sync the `outputs/models/ner_model/20220629/` to S3.
 
 This model can be used by running:
 
 ```python
 >>> from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
 >>> job_ner = JobNER()
->>> nlp = job_ner.load_model('outputs/models/ner_model/20220629/')
+>>> nlp = job_ner.load_model('outputs/models/ner_model/20220629/', s3_download=True)
 >>> text = "The job involves communication and maths skills"
 >>> pred_ents = job_ner.predict(text)
 >>> pred_ents
@@ -100,3 +102,5 @@ This model can be used by running:
 communication
 maths skills
 ```
+
+The `s3_download=True` argument will mean this model will be first downloaded from S3, so you don't have to have it locally to begin with.
