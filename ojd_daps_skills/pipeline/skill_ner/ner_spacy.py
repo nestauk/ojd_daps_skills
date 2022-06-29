@@ -18,7 +18,7 @@ from ojd_daps_skills.getters.data_getters import (
     get_s3_data_paths,
     save_json_dict,
 )
-from ojd_daps_skills.pipeline.skill_ner.train_ner_spacy_utils import (
+from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import (
     edit_ents,
     fix_formatting_entities,
 )
