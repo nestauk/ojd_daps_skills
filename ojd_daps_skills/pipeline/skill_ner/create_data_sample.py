@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     parser = ArgumentParser()
     args = parse_arguments(parser)
-    sample_size = args.sample_size
+    sample_size = int(args.sample_size)
 
     s3_output_folder = "escoe_extension/inputs/data/skill_ner/data_sample/"
     conn = est_conn()
