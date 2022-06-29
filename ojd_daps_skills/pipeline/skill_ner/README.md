@@ -15,14 +15,14 @@ export SQL_DB_CREDS="$HOME/path/to/mysqldb_team_ojo_may22.config"
 Then run the script with:
 
 ```
-python ojd_daps_skills/pipeline/skill_ner/create_data_sample.py
+python ojd_daps_skills/pipeline/skill_ner/create_data_sample.py --sample_size 5000
 ```
 
 The random sample of job adverts created from this will be stored in S3 in the `open-jobs-lake` bucket in the `/escoe_extension/inputs/data/skill_ner/data_sample/` folder.
 
 ### Processing the job adverts
 
-After creating this random sample we process it into a form suitable for labelling in label-studio. To make the process less overwhelming, we decided that the labelling task would be performed sentence by sentence rather than labelling an entire document at a time. Thus we had to save out all the sentences of our sample of job adverts.
+After creating this random sample we process it into a form suitable for labelling in label-studio.
 
 Back to this `ojd_daps_skills` repo and conda environment, this processing is done by running:
 

@@ -13,6 +13,7 @@ from ojd_daps_skills.getters.data_getters import (
     load_s3_data,
     save_to_s3,
 )
+from ojd_daps_skills import bucket_name, config
 
 import spacy
 from tqdm import tqdm
@@ -21,20 +22,17 @@ from datetime import datetime as date
 import json
 import os
 
-BUCKET_NAME = "open-jobs-lake"
-S3_FOLDER = "escoe_extension/inputs/data/skill_ner/"
-JOBS_SAMPLE = "data_sample/20220622_sampled_job_ads.json"
-S3_OUTPUT_FOLDER = "escoe_extension/outputs/data/skill_ner/label_chunks/"
-
 if __name__ == "__main__":
 
     s3 = get_s3_resource()
 
-    file_name = os.path.join(S3_FOLDER, JOBS_SAMPLE)
+    file_name = os.path.join(config["s3_ner_folder"], config["sample_file_name"])
     print(f"Processing job advert sample from {file_name}")
 
-    sample_data = load_s3_data(s3, BUCKET_NAME, file_name)
+    sample_data = load_s3_data(s3, bucket_name, config, file_name)
     date_stamp = str(date.today().date()).replace("-", "")
+
+    s3_label_output_folder = config["s3_label_output_folder"]
 
     output_id = 0
     line_index = 0
@@ -51,19 +49,21 @@ if __name__ == "__main__":
             # Output to S3
             save_to_s3(
                 s3,
-                BUCKET_NAME,
+                bucket_name,
+                config,
                 "\n".join(texts),
                 os.path.join(
-                    S3_OUTPUT_FOLDER,
+                    s3_label_output_folder,
                     f"{date_stamp}_{output_id}_sample_labelling_text_data.txt",
                 ),
             )
             save_to_s3(
                 s3,
-                BUCKET_NAME,
+                bucket_name,
+                config,
                 index_metadata,
                 os.path.join(
-                    S3_OUTPUT_FOLDER,
+                    s3_label_output_folder,
                     f"{date_stamp}_{output_id}_sample_labelling_metadata.json",
                 ),
             )
@@ -74,17 +74,21 @@ if __name__ == "__main__":
     # Output last bit to S3
     save_to_s3(
         s3,
-        BUCKET_NAME,
+        bucket_name,
+        config,
         "\n".join(texts),
         os.path.join(
-            S3_OUTPUT_FOLDER, f"{date_stamp}_{output_id}_sample_labelling_text_data.txt"
+            s3_label_output_folder,
+            f"{date_stamp}_{output_id}_sample_labelling_text_data.txt",
         ),
     )
     save_to_s3(
         s3,
-        BUCKET_NAME,
+        bucket_name,
+        config,
         index_metadata,
         os.path.join(
-            S3_OUTPUT_FOLDER, f"{date_stamp}_{output_id}_sample_labelling_metadata.json"
+            s3_label_output_folder,
+            f"{date_stamp}_{output_id}_sample_labelling_metadata.json",
         ),
     )

@@ -5,17 +5,33 @@ This script will output to S3 a random sample of the job adverts.
 import random
 import os
 from datetime import datetime as date
+from argparse import ArgumentParser
 
 import pandas as pd
 
 from ojd_daps_skills.utils.sql_conn import est_conn
 from ojd_daps_skills.getters.data_getters import save_to_s3, get_s3_resource
+from ojd_daps_skills import bucket_name
+
+
+def parse_arguments(parser):
+
+    parser.add_argument(
+        "--sample_size",
+        help="Sample size of random job adverts",
+        default=5000,
+    )
+
+    return parser.parse_args()
+
 
 if __name__ == "__main__":
 
-    BUCKET_NAME = "open-jobs-lake"
-    S3_FOLDER = "escoe_extension/inputs/data/skill_ner/data_sample/"
-    sample_size = 5000
+    parser = ArgumentParser()
+    args = parse_arguments(parser)
+    sample_size = args.sample_size
+
+    s3_output_folder = "escoe_extension/inputs/data/skill_ner/data_sample/"
     conn = est_conn()
 
     # Get all the job ids in the database
@@ -38,7 +54,7 @@ if __name__ == "__main__":
     s3 = get_s3_resource()
     save_to_s3(
         s3,
-        BUCKET_NAME,
+        bucket_name,
         job_ad_sample_dict,
-        os.path.join(S3_FOLDER, f"{date_stamp}_sampled_job_ads.json"),
+        os.path.join(s3_output_folder, f"{date_stamp}_sampled_job_ads.json"),
     )
