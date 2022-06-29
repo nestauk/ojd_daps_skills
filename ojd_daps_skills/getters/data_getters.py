@@ -88,6 +88,17 @@ def save_to_s3(s3, bucket_name, output_var, output_file_dir):
     print(f"Saved to s3://{bucket_name} + {output_file_dir} ...")
 
 
+def load_s3_json(s3, bucket_name, file_name):
+    """
+    Load a file from S3 without relying on the file_name extension
+    as load_s3_data does. Good for files which have no extension.
+    """
+
+    obj = s3.Object(bucket_name, file_name)
+    file = obj.get()["Body"].read().decode()
+    return json.loads(file)
+
+
 def load_s3_data(s3, bucket_name, file_name):
     """
     Load data from S3 location.
