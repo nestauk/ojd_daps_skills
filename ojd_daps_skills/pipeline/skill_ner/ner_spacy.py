@@ -87,11 +87,13 @@ class JobNER(object):
                 }
             )
         label_meta = pd.DataFrame(label_meta)
+        self.seen_job_ids = label_meta[
+            "task_ids"
+        ].tolist()  # Keep a record of the job adverts the model has seen
         self.sorted_df = label_meta.sort_values(by=["updated_at"], ascending=False)
         self.sorted_df = self.sorted_df[~self.sorted_df["was_cancelled"]]
         self.sorted_df.drop_duplicates(subset=["task_ids"], keep="first", inplace=True)
         self.keep_label_ids = self.sorted_df["id"].tolist()
-
         print(f"We will be using data from {len(self.keep_label_ids)} job adverts")
 
         data = []
@@ -233,33 +235,34 @@ class JobNER(object):
     def score(self, results_summary):
         return results_summary["All"]["f1"]
 
-    def save_model(self, output_folder, output_details=True, save_s3=False):
+    def save_model(self, output_folder, save_s3=False):
 
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
         self.nlp.to_disk(output_folder)
 
-        if output_details:
-            try:
-                model_details_dict = self.evaluation_results
-            except AttributeError:
-                model_details_dict = {}
-            model_details_dict.update(
-                {
-                    "BUCKET_NAME": self.BUCKET_NAME,
-                    "S3_FOLDER": self.S3_FOLDER,
-                    "convert_multiskill": self.convert_multiskill,
-                    "train_prop": self.train_prop,
-                    "labels": list(self.all_labels),
-                    "train_data_length": self.train_data_length,
-                    "drop_out": self.drop_out,
-                    "num_its": self.num_its,
-                }
-            )
-            save_json_dict(
-                model_details_dict, os.path.join(output_folder, "train_details.json")
-            )
+        # Output the training details of the model inc evaluation results (if done)
+        try:
+            model_details_dict = self.evaluation_results
+        except AttributeError:
+            model_details_dict = {}
+        model_details_dict.update(
+            {
+                "BUCKET_NAME": self.BUCKET_NAME,
+                "S3_FOLDER": self.S3_FOLDER,
+                "convert_multiskill": self.convert_multiskill,
+                "train_prop": self.train_prop,
+                "labels": list(self.all_labels),
+                "train_data_length": self.train_data_length,
+                "drop_out": self.drop_out,
+                "num_its": self.num_its,
+                "seen_job_ids": self.seen_job_ids,
+            }
+        )
+        save_json_dict(
+            model_details_dict, os.path.join(output_folder, "train_details.json")
+        )
         if save_s3:
             # Sync this to S3
             cmd = f"aws s3 sync {output_folder} s3://{self.BUCKET_NAME}/escoe_extension/{output_folder}"
@@ -291,8 +294,9 @@ def parse_arguments(parser):
     )
     parser.add_argument(
         "--convert_multiskill",
-        help="Whether to convert the MULTISKILL labels to SKILL labels or not (bool)",
-        default=True,
+        help="Convert the MULTISKILL labels to SKILL labels",
+        action="store_true",
+        default=False,
     )
     parser.add_argument(
         "--train_prop",
@@ -311,10 +315,10 @@ def parse_arguments(parser):
     )
     parser.add_argument(
         "--save_s3",
-        help="Save the model to S3 (True) or just keep locally (False)",
+        help="Save the model to S3",
+        action="store_true",
         default=False,
     )
-
     return parser.parse_args()
 
 
@@ -329,13 +333,16 @@ if __name__ == "__main__":
         BUCKET_NAME=bucket_name,
         S3_FOLDER=args.labelled_data_s3_folder,
         convert_multiskill=args.convert_multiskill,
-        train_prop=args.train_prop,
+        train_prop=float(args.train_prop),
     )
     data = job_ner.load_data()
     train_data, test_data = job_ner.get_test_train(data)
     job_ner.prepare_blank_model()
     nlp = job_ner.train(
-        train_data, print_losses=True, drop_out=args.drop_out, num_its=args.num_its
+        train_data,
+        print_losses=True,
+        drop_out=float(args.drop_out),
+        num_its=int(args.num_its),
     )
 
     from datetime import datetime as date
