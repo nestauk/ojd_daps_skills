@@ -9,3 +9,5 @@ typer
 sh
 sqlalchemy
 pymysql
+spacy
+jupyter
