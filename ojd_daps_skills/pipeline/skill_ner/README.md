@@ -72,3 +72,31 @@ Be careful:
 - SKILL, MULTISKILL, EXPERIENCE label
 - "Select text by words" selected
 - "Add filter for long list of labels" NOT selected
+
+## Training a NER model
+
+Using the labelled data, we can fine-tune a Spacy model to extract skill entities from job adverts.
+
+The model can be trained by running:
+
+```
+python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_data_s3_folder "escoe_extension/outputs/skill_span_labels/" --convert_multiskill True --train_prop 0.8 --drop_out 0.3 --num_its 50
+```
+
+This will save out the model in a time stamped folder, e.g. `outputs/models/ner_model/20220629/`, it also saves out the evaluation results and some general information about the model training in the file `outputs/models/ner_model/20220629/train_details.json`.
+
+This model can be used by running:
+
+```python
+>>> from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
+>>> job_ner = JobNER()
+>>> nlp = job_ner.load_model('outputs/models/ner_model/20220629/')
+>>> text = "The job involves communication and maths skills"
+>>> pred_ents = job_ner.predict(text)
+>>> pred_ents
+[{'label': 'SKILL', 'start': 17, 'end': 30}, {'label': 'SKILL', 'start': 35, 'end': 47}]
+>>> for ent in pred_ents:
+>>>     print(text[ent['start']:ent['end']])
+communication
+maths skills
+```

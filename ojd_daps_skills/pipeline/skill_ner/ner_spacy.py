@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import os
 from datetime import datetime as date
+from argparse import ArgumentParser
 
 from spacy.util import minibatch, compounding
 from spacy.training.example import Example
@@ -22,6 +23,7 @@ from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import (
     edit_ents,
     fix_formatting_entities,
 )
+from ojd_daps_skills import bucket_name
 
 
 class JobNER(object):
@@ -264,18 +266,54 @@ class JobNER(object):
         return self.nlp
 
 
+def parse_arguments(parser):
+
+    parser.add_argument(
+        "--labelled_data_s3_folder",
+        help="The S3 location of the labelled job adverts",
+        default="escoe_extension/outputs/skill_span_labels/",
+    )
+    parser.add_argument(
+        "--convert_multiskill",
+        help="Whether to convert the MULTISKILL labels to SKILL labels or not (bool)",
+        default=True,
+    )
+    parser.add_argument(
+        "--train_prop",
+        help="The proportion of labelled data to use in the training set",
+        default=0.8,
+    )
+    parser.add_argument(
+        "--drop_out",
+        help="The drop out rate for the model",
+        default=0.3,
+    )
+    parser.add_argument(
+        "--num_its",
+        help="The number of iterations in the training process",
+        default=50,
+    )
+
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
 
+    parser = ArgumentParser()
+    args = parse_arguments(parser)
+
     job_ner = JobNER(
-        BUCKET_NAME="open-jobs-lake",
-        S3_FOLDER="escoe_extension/outputs/skill_span_labels/",
-        convert_multiskill=True,
-        train_prop=0.8,
+        BUCKET_NAME=bucket_name,
+        S3_FOLDER=args.labelled_data_s3_folder,
+        convert_multiskill=args.convert_multiskill,
+        train_prop=args.train_prop,
     )
     data = job_ner.load_data()
     train_data, test_data = job_ner.get_test_train(data)
     job_ner.prepare_blank_model()
-    nlp = job_ner.train(train_data, print_losses=True, drop_out=0.3, num_its=50)
+    nlp = job_ner.train(
+        train_data, print_losses=True, drop_out=args.drop_out, num_its=args.num_its
+    )
 
     from datetime import datetime as date
 
