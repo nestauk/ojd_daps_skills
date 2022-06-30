@@ -98,7 +98,7 @@ This model can be used by running:
 ```python
 >>> from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
 >>> job_ner = JobNER()
->>> nlp = job_ner.load_model('outputs/models/ner_model/20220629/', s3_download=True)
+>>> nlp = job_ner.load_model('outputs/models/ner_model/20220630/', s3_download=True)
 >>> text = "The job involves communication and maths skills"
 >>> pred_ents = job_ner.predict(text)
 >>> pred_ents

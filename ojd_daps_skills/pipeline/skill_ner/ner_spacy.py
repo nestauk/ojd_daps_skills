@@ -1,3 +1,34 @@
+"""
+This script contains the class needed to train, predict, load, and save and NER model.
+
+A model can be trained by running this script:
+
+python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py
+    --labelled_data_s3_folder "escoe_extension/outputs/skill_span_labels/"
+    --label_metadata_filename "escoe_extension/outputs/data/skill_ner/label_chunks/20220624_0_sample_labelling_metadata.json"
+    --convert_multiskill
+    --train_prop 0.8
+    --drop_out 0.3
+    --num_its 50
+
+This will save out the model in a time stamped folder,
+e.g. `outputs/models/ner_model/20220629/`, it also saves out the evaluation results
+and some general information about the model training in the file
+`outputs/models/ner_model/20220629/train_details.json`.
+
+By default this won't sync the newly trained model to S3, but by adding
+`--save_s3` it will sync the `outputs/models/ner_model/20220629/` to S3.
+
+Additionally you can use the class in this script to load a model and make predictions:
+
+from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
+job_ner = JobNER()
+nlp = job_ner.load_model('outputs/models/ner_model/20220630/', s3_download=True)
+text = "The job involves communication and maths skills"
+pred_ents = job_ner.predict(text)
+
+"""
+
 import random
 import json
 import pandas as pd
@@ -27,7 +58,47 @@ from ojd_daps_skills import bucket_name
 
 
 class JobNER(object):
-    """ """
+    """
+
+    Attributes
+    ----------
+    BUCKET_NAME : str
+        The bucket name where you will store data and the model.
+    S3_FOLDER : str
+        The S3 folder where the labelled data is.
+    label_metadata_filename : str
+        The S3 location where the metadata for the labelled data sample is.
+    convert_multiskill : bool
+        Where you want to convert all MULTISKILL spans to SKILL (True) or not (False)
+    train_prop : float
+        What proportion of the data do you want to use in the train split.
+
+    Methods
+    -------
+    load_data():
+        Load the data, remove duplicates, and process it into a form
+        needed for training.
+    get_test_train(data):
+        Split the data into a test and training set.
+    prepare_blank_model():
+        Prepare to train the NER model.
+    train(train_data, print_losses=True, drop_out=0.3, num_its=30):
+        Train the NER model using the training data.
+    predict(job_text):
+        Given a job advert text use the model to predict skills using
+        the NER model
+    display_prediction(job_text):
+        Use displacy to render a nicely formatted job advert with
+        predicted skill spans highlighted
+    evaluate(data):
+        Evaluate the model using the hold out test data.
+    score(results_summary):
+        Return a single evaluation score (F1).
+    save_model(output_folder, save_s3=False):
+        Save the model locally with the option of also saving it to S3.
+    load_model(model_folder, s3_download=True):
+        Load a model with the option of first downloading it locally from S3.
+    """
 
     def __init__(
         self,
@@ -167,8 +238,10 @@ class JobNER(object):
         move_names = list(ner.move_names)
 
     def train(self, train_data, print_losses=True, drop_out=0.3, num_its=30):
-
-        # For an output file
+        """
+        See https://www.machinelearningplus.com/nlp/training-custom-ner-model-in-spacy/
+        for the inspiration for this function.
+        """
         self.train_data_length = len(train_data)
         self.drop_out = drop_out
         self.num_its = num_its
@@ -191,7 +264,6 @@ class JobNER(object):
                 # Dictionary to store losses
                 losses = {}
                 for batch in batches:
-                    #              texts, annotations = zip(*batch)
                     # Calling update() over the iteration
                     for text, annotation, _ in batch:
                         doc = self.nlp.make_doc(text)
