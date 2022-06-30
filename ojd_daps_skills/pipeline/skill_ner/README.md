@@ -73,6 +73,12 @@ Be careful:
 - "Select text by words" selected
 - "Add filter for long list of labels" NOT selected
 
+### Files used
+
+For the labelling done at the end of June 2022, we labelled the chunk of 400 job adverts stored here `s3://open-jobs-lake/escoe_extension/outputs/data/skill_ner/label_chunks/20220624_0_sample_labelling_text_data.txt`, which the job advert IDs in the `20220624_0_sample_labelling_metadata.json` file.
+
+The outputs of this labelled are stored in `s3://open-jobs-lake/escoe_extension/outputs/skill_span_labels/`.
+
 ## Training a NER model
 
 Using the labelled data, we can fine-tune a Spacy model to extract skill entities from job adverts.
@@ -80,7 +86,7 @@ Using the labelled data, we can fine-tune a Spacy model to extract skill entitie
 The model can be trained by running:
 
 ```
-python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_data_s3_folder "escoe_extension/outputs/skill_span_labels/" --convert_multiskill --train_prop 0.8 --drop_out 0.3 --num_its 50
+python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_data_s3_folder "escoe_extension/outputs/skill_span_labels/" --label_metadata_filename "escoe_extension/outputs/data/skill_ner/label_chunks/20220624_0_sample_labelling_metadata.json" --convert_multiskill --train_prop 0.8 --drop_out 0.3 --num_its 50
 ```
 
 This will save out the model in a time stamped folder, e.g. `outputs/models/ner_model/20220629/`, it also saves out the evaluation results and some general information about the model training in the file `outputs/models/ner_model/20220629/train_details.json`.
@@ -110,7 +116,7 @@ The `s3_download=True` argument will mean this model will be first downloaded fr
 Running
 
 ```
-python ojd_daps_skills/pipeline/skill_ner/get_skills.py --model_path outputs/models/ner_model/20220629/ --output_file_dir escoe_extension/outputs/data/skill_ner/skill_predictions/ --job_adverts_filename escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json
+python ojd_daps_skills/pipeline/skill_ner/get_skills.py --model_path outputs/models/ner_model/20220630/ --output_file_dir escoe_extension/outputs/data/skill_ner/skill_predictions/ --job_adverts_filename escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json
 ```
 
 will make skill predictions on the data in `job_adverts_filename` (an output of `create_data_sample.py`) using the model loaded from `model_path`. By default this will look for the model on S3, but if you want to load a locally stored model just add `--use_local_model`.

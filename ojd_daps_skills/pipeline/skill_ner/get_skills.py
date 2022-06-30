@@ -24,7 +24,7 @@ def parse_arguments(parser):
     parser.add_argument(
         "--model_path",
         help="The path to the model you want to make predictions with",
-        default="outputs/models/ner_model/20220629/",
+        default="outputs/models/ner_model/20220630/",
     )
 
     parser.add_argument(
@@ -38,6 +38,7 @@ def parse_arguments(parser):
         help="The S3 path to the job advert dataset you want to make predictions on",
         default="escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json",
     )
+
     parser.add_argument(
         "--use_local_model",
         help="Use the model locally stored",
@@ -57,19 +58,23 @@ if __name__ == "__main__":
     output_file_dir = args.output_file_dir
     job_adverts_filename = args.job_adverts_filename
 
-    model_train_info_file = os.path.join(model_path, "train_details.json")
-
     job_ner = JobNER()
     nlp = job_ner.load_model(
         model_path, s3_download=False if args.use_local_model else True
     )
     labels = nlp.get_pipe("ner").labels
 
-    model_train_info = load_json_dict(model_train_info_file)
-    train_job_ids = set(model_train_info["seen_job_ids"])
-
     s3 = get_s3_resource()
 
+    model_train_info = load_json_dict(os.path.join(model_path, "train_details.json"))
+    seen_job_ids_dict = model_train_info["seen_job_ids"]
+    train_job_ids = set(
+        [
+            v["job_id"]
+            for k, v in seen_job_ids_dict.items()
+            if v["train/test"] == "train"
+        ]
+    )
     job_adverts = load_s3_data(s3, bucket_name, job_adverts_filename)
 
     predicted_skills = {}

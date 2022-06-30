@@ -14,7 +14,7 @@ from nervaluate import Evaluator
 
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
-    save_to_s3,
+    load_s3_data,
     load_s3_json,
     get_s3_data_paths,
     save_json_dict,
@@ -33,17 +33,19 @@ class JobNER(object):
         self,
         BUCKET_NAME="open-jobs-lake",
         S3_FOLDER="escoe_extension/outputs/skill_span_labels/",
+        label_metadata_filename="escoe_extension/outputs/data/skill_ner/label_chunks/20220624_0_sample_labelling_metadata.json",
         convert_multiskill=True,
         train_prop=0.8,
     ):
         self.BUCKET_NAME = BUCKET_NAME
         self.S3_FOLDER = S3_FOLDER
+        self.label_metadata_filename = label_metadata_filename
         self.convert_multiskill = convert_multiskill
         self.train_prop = train_prop
 
     def process_data(self, job_advert_labels, all_labels):
         """
-        Use the raw labelled data about job adverts t
+        Use the raw labelled data about job adverts
         """
 
         text = job_advert_labels["task"]["data"]["text"]
@@ -87,14 +89,25 @@ class JobNER(object):
                 }
             )
         label_meta = pd.DataFrame(label_meta)
-        self.seen_job_ids = label_meta[
-            "task_ids"
-        ].tolist()  # Keep a record of the job adverts the model has seen
+
         self.sorted_df = label_meta.sort_values(by=["updated_at"], ascending=False)
         self.sorted_df = self.sorted_df[~self.sorted_df["was_cancelled"]]
         self.sorted_df.drop_duplicates(subset=["task_ids"], keep="first", inplace=True)
         self.keep_label_ids = self.sorted_df["id"].tolist()
         print(f"We will be using data from {len(self.keep_label_ids)} job adverts")
+
+        # Link the task ID to the actual job adverts ID using the metadata dictionary
+        label_job_id_dict = load_s3_data(
+            s3, self.BUCKET_NAME, self.label_metadata_filename
+        )
+        label_job_id_dict = {int(k): v for k, v in label_job_id_dict.items()}
+        self.sorted_df["job_id"] = self.sorted_df["task_ids"].map(label_job_id_dict)
+        # Keep a record of the job adverts the model has seen
+        self.seen_job_ids = (
+            self.sorted_df[["job_id", "task_ids"]]
+            .set_index("task_ids")
+            .to_dict(orient="index")
+        )
 
         data = []
         self.all_labels = set()
@@ -109,7 +122,10 @@ class JobNER(object):
                         text,
                         {"entities": ent_list},
                         {
-                            "job_ad_id": job_advert_labels["task"]["id"],
+                            "task_id": job_advert_labels["task"]["id"],
+                            "job_ad_id": self.seen_job_ids[
+                                job_advert_labels["task"]["id"]
+                            ],
                             "label_id": job_advert_labels["id"],
                         },
                     )
@@ -126,6 +142,11 @@ class JobNER(object):
 
         train_data = data[0:train_n]
         test_data = data[train_n:]
+
+        for _, _, d in train_data:
+            self.seen_job_ids[d["task_id"]]["train/test"] = "train"
+        for _, _, d in test_data:
+            self.seen_job_ids[d["task_id"]]["train/test"] = "test"
 
         return train_data, test_data
 
@@ -293,6 +314,11 @@ def parse_arguments(parser):
         default="escoe_extension/outputs/skill_span_labels/",
     )
     parser.add_argument(
+        "--label_metadata_filename",
+        help="The S3 path to labelling metadata for the job adverts that were labelled",
+        default="escoe_extension/outputs/data/skill_ner/label_chunks/20220624_0_sample_labelling_metadata.json",
+    )
+    parser.add_argument(
         "--convert_multiskill",
         help="Convert the MULTISKILL labels to SKILL labels",
         action="store_true",
@@ -332,6 +358,7 @@ if __name__ == "__main__":
     job_ner = JobNER(
         BUCKET_NAME=bucket_name,
         S3_FOLDER=args.labelled_data_s3_folder,
+        label_metadata_filename=args.label_metadata_filename,
         convert_multiskill=args.convert_multiskill,
         train_prop=float(args.train_prop),
     )
