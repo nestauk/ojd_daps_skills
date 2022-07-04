@@ -51,8 +51,7 @@ from ojd_daps_skills.getters.data_getters import (
     save_json_dict,
 )
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import (
-    edit_ents,
-    fix_formatting_entities,
+    clean_entities_text,
 )
 from ojd_daps_skills import bucket_name
 
@@ -116,7 +115,8 @@ class JobNER(object):
 
     def process_data(self, job_advert_labels, all_labels):
         """
-        Use the raw labelled data about job adverts
+        Process the raw labelled data about job adverts, some text cleaning is needed,
+        but we need to be careful to make sure span indices are still correct
         """
 
         text = job_advert_labels["task"]["data"]["text"]
@@ -136,7 +136,7 @@ class JobNER(object):
         # character order
         ent_list.sort(key=lambda y: y[0])
 
-        text, ent_list = fix_formatting_entities(text, ent_list)
+        text, ent_list = clean_entities_text(text, ent_list)
 
         return text, ent_list, all_labels
 

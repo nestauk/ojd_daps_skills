@@ -1,3 +1,37 @@
+"""
+There are two main functions in this script
+1. fix_entity_annotations: to clean badly annotated entities, e.g. when trailing whitespace
+is included, or the entity starts in the middle of a "word" due to bad parsing, e.g. "fixMe"
+2. fix_all_formatting: to clean all the text - removing any occurences of camelcase, but not
+neccessarily to do with the entity spans.
+
+These are combined in clean_entities_text
+
+"""
+import re
+import difflib
+from toolz import pipe
+
+# Pattern for fixing a missing space between enumerations, for split_sentences()
+compiled_missing_space_pattern = re.compile("([a-z])([A-Z])([a-z])")
+# compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9 #(++)+])")
+compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9 ])")
+
+# The list of camel cases which should be kept in
+exception_camelcases = [
+    "JavaScript",
+    "WordPress",
+    "PowerPoint",
+    "CloudFormation",
+    "CommVault",
+    "InDesign",
+    "GitHub",
+    "GitLab",
+    "DevOps",
+    "QuickBooks",
+]
+
+
 def edit_ents(text, orig_ents):
     """
     A function to fix the text and entity spans,
@@ -32,7 +66,7 @@ def edit_ents(text, orig_ents):
     return trimmed_ents, editted
 
 
-def fix_formatting_entities(text, ents):
+def fix_entity_annotations(text, ents):
     """
     Clean the text and entity spans for cases
     where the entity ends but the next character is not a space
@@ -79,3 +113,109 @@ def fix_formatting_entities(text, ents):
         trimmed_ents, editted = edit_ents(new_text, trimmed_ents)
 
     return new_text, trimmed_ents
+
+
+def pad_punctuation(text):
+    """Pad punctuation marks with spaces (to facilitate lemmatisation)"""
+    text = compiled_nonalphabet_nonnumeric_pattern.sub(r" \1 ", text)
+    return text
+
+
+def detect_sentences(text):
+    """
+    Splits a word written in camel-case into separate sentences. This fixes a case
+    when the last word of a sentence in not seperated from the capitalised word of
+    the next sentence. This tends to occur with enumerations.
+
+    For example, the string "skillsBe" will be converted to "skills. Be"
+
+    Some camelcases are allowed though - these are found and replaced. e.g. JavaScript
+
+    Note that the present solution doesn't catch all such cases (e.g. "UKSkills")
+
+    Reference: https://stackoverflow.com/questions/1097901/regular-expression-split-string-by-capital-letter-but-ignore-tla
+    """
+    text = compiled_missing_space_pattern.sub(r"\1. \2\3", text)
+    for exception in exception_camelcases:
+        exception_cleaned = compiled_missing_space_pattern.sub(r"\1. \2\3", exception)
+        if exception_cleaned in text:
+            text = text.replace(exception_cleaned, exception)
+
+    return text
+
+
+def clean_text_pipeline(text):
+    """
+    Pipeline for preprocessing online job vacancy and skills-related text.
+    This should only insert characters (eg spaces, fullstops) - not delete or replace any.
+    This is because when it comes to cross referencing the cleaned text with entity spans
+    our algorithm depends on only insertion.
+
+    Args:
+            text (str): Text to be processed via the pipeline
+    """
+    return pipe(
+        text,
+        detect_sentences,
+        pad_punctuation,
+    )
+
+
+def get_old2new_chars_dict(orig_text, new_text):
+    """
+    This is a function to map the orig_text character indices to the new_text indices
+    e.g.
+    orig_text = "abcd"
+    new_text = "ab cd"
+    old2new_chars_dict = {0:0, 1:1, 2:3, 3:4}
+    """
+    seq_matcher = difflib.SequenceMatcher(None, orig_text, new_text)
+    old2new_chars_dict = {}
+    for tag, i1, i2, j1, j2 in seq_matcher.get_opcodes():
+        if tag == "equal":
+            step_up = j1 - i1
+            for i in range(i1, i2):
+                old2new_chars_dict[i] = i + step_up
+        elif tag == "insert":
+            old2new_chars_dict[i1] = j1
+        elif tag == "replace":
+            # This shouldnt really be happening since our cleaning is only
+            # inserting, but sometimes it does categorise as "replace" in cases where it
+            # thinks adding whitespace to either side is a replacement
+            # e.g. "abcd" -> " abcd "
+            step_up = j1 - i1
+            for i in range(i1, i2):
+                old2new_chars_dict[i] = i + 1 + step_up
+
+    return old2new_chars_dict
+
+
+def fix_all_formatting(text, ents):
+    new_text = clean_text_pipeline(text)
+    old2new_chars_dict = get_old2new_chars_dict(text, new_text)
+
+    new_ents = [
+        (old2new_chars_dict.get(b), old2new_chars_dict.get(e), t) for b, e, t in ents
+    ]
+    new_ents = []
+    num_index_problems = 0
+    for b, e, t in ents:
+        new_b = old2new_chars_dict.get(b)
+        new_e = old2new_chars_dict.get(e)
+        if new_b and new_e:
+            new_ents.append((new_b, new_e, t))
+        else:
+            num_index_problems += 1
+
+    if num_index_problems != 0:
+        print(
+            f"Problems with {num_index_problems} entity spans - these will be left out of any training or testing"
+        )
+
+    return new_text, new_ents
+
+
+def clean_entities_text(text, ents):
+    text, ents = fix_entity_annotations(text, ents)
+    text, ents = fix_all_formatting(text, ents)
+    return text, ents
