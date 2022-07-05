@@ -79,7 +79,7 @@ class JobNER(object):
         needed for training.
     get_test_train(data):
         Split the data into a test and training set.
-    prepare_blank_model():
+    prepare_model():
         Prepare to train the NER model.
     train(train_data, print_losses=True, drop_out=0.3, num_its=30):
         Train the NER model using the training data.
@@ -221,10 +221,12 @@ class JobNER(object):
 
         return train_data, test_data
 
-    def prepare_blank_model(self):
+    def prepare_model(self):
         self.nlp = spacy.blank("en")
         self.nlp.add_pipe("ner")
         self.nlp.begin_training()
+
+        # self.nlp = spacy.load("en_core_web_sm")
 
         # Getting the ner component
         ner = self.nlp.get_pipe("ner")
@@ -436,7 +438,7 @@ if __name__ == "__main__":
     )
     data = job_ner.load_data()
     train_data, test_data = job_ner.get_test_train(data)
-    job_ner.prepare_blank_model()
+    job_ner.prepare_model()
     nlp = job_ner.train(
         train_data,
         print_losses=True,
