@@ -73,8 +73,6 @@ class SkillMapper:
     taxonomy_file_name (str): file name of taxonomy to be mapped to
     skill_name_col (str): skill column name
     skill_desc_col (str): skill description name
-    sim_threshold (int): similarity score threshold between ojo skill
-                         and taxonomy skill
     bert_model_name (str): name of sentence transformer
     multi_process (bool): if vectoriser will multi_process
     batch_size (int): batch size
@@ -106,7 +104,6 @@ class SkillMapper:
         taxonomy_file_name: "escoe_extension/inputs/data/esco/skills_en.csv",
         skill_name_col: "preferredLabel",
         skill_desc_col: "description",
-        sim_threshold: 0.65,
         bert_model_name: "sentence-transformers/paraphrase-MiniLM-L6-v2",
         multi_process: True,
         batch_size: 32,
@@ -116,7 +113,6 @@ class SkillMapper:
         self.taxonomy_file_name = taxonomy_file_name
         self.skill_name_col = skill_name_col
         self.skill_desc_col = skill_desc_col
-        self.sim_threshold = sim_threshold
         self.bert_model_name = bert_model_name
         self.multi_process = multi_process
         self.batch_size = batch_size
@@ -259,7 +255,6 @@ if __name__ == "__main__":
         taxonomy_file_name=taxonomy_file_name,
         skill_name_col="preferredLabel",
         skill_desc_col="description",
-        sim_threshold=0.65,
         bert_model_name="sentence-transformers/paraphrase-MiniLM-L6-v2",
         multi_process=True,
         batch_size=32,
