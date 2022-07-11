@@ -1,9 +1,6 @@
-import sys
-
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
-
 """Script to map extracted skills from NER model to
 taxonomy skills."""
+
 ##############################################################
 from ojd_daps_skills import config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
