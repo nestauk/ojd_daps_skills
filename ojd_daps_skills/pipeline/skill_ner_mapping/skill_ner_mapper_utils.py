@@ -7,6 +7,7 @@ from nltk.corpus import stopwords
 
 lem = nltk.WordNetLemmatizer()
 
+nltk.download("omw-1.4")
 nltk.download("stopwords")
 stopwords = set(stopwords.words("english"))
 

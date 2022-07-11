@@ -1,6 +1,5 @@
 """Script to map extracted skills from NER model to 
 taxonomy skills."""
-
 ##############################################################
 from ojd_daps_skills import config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
@@ -194,26 +193,27 @@ class SkillMapper:
             self.skill_mapper_dict = dict()
             for skill in clean_ojo_skill_ids:
                 top_tax_skills = []
-                top_tax_ids = []
+                top_tax_scores = []
                 clean_ojo_skill_embeddings = self.fit_transform(clean_ojo_skills[skill])
                 ojo_taxonomoy_sims = cosine_similarity(
                     clean_ojo_skill_embeddings, self.taxonomy_skills_embeddings
                 )
-                for sim in ojo_taxonomoy_sims:
-                    top_tax_ids.append(self.taxonomy_ids[np.argsort(sim)[::-1][0]])
-                    if np.sort(sim)[::-1][0] > self.sim_threshold:
-                        top_tax_skills.append(
-                            self.taxonomy_skills[
-                                self.taxonomy_ids[np.argsort(sim)[::-1][0]]
-                            ][self.skill_name_col]
-                        )
-                    else:
-                        top_tax_skills.append("no_taxonomy_skill_found")
 
+                for sim in ojo_taxonomoy_sims:
+                    top_skill_ids = [
+                        self.taxonomy_ids[i] for i in np.argsort(sim)[::-1][:5]
+                    ]
+                    top_tax_skills.append(
+                        [
+                            self.taxonomy_skills[i][self.skill_name_col]
+                            for i in top_skill_ids
+                        ]
+                    )
+                    top_tax_scores.append(list(np.sort(sim)[::-1][:5]))
                 self.skill_mapper_dict[skill] = {
                     "ojo_ner_skills": clean_ojo_skills[skill],
                     self.taxonomy + "_taxonomy_skills": top_tax_skills,
-                    self.taxonomy + "_taxonomy_ids": top_tax_ids,
+                    self.taxonomy + "_taxonomy_scores": top_tax_scores,
                 }
             return self.skill_mapper_dict
         else:
@@ -265,6 +265,7 @@ if __name__ == "__main__":
     skill_mapper_file_name = (
         ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
     )
+
     save_to_s3(
         s3,
         bucket_name,

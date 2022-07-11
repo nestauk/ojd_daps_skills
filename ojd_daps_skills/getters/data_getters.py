@@ -109,7 +109,7 @@ def load_s3_data(s3, bucket_name, file_name):
         return pickle.loads(file)
     else:
         print(
-            'Function not supported for file type other than "*.jsonl.gz", "*.jsonl", or "*.json"'
+            'Function not supported for file type other than "*.csv", "*.jsonl.gz", "*.jsonl", or "*.json"'
         )
 
 
