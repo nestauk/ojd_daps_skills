@@ -1,4 +1,8 @@
-"""Script to map extracted skills from NER model to 
+import sys
+
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
+
+"""Script to map extracted skills from NER model to
 taxonomy skills."""
 ##############################################################
 from ojd_daps_skills import config, bucket_name
@@ -62,27 +66,27 @@ class BertVectorizer:
 
 class SkillMapper:
     """
-    Class to map extracted skills from NER model to a skills taxonomy. 
+    Class to map extracted skills from NER model to a skills taxonomy.
     Attributes
     ----------
     taxonomy (str): name of taxonomy to be mapped to
     taxonomy_file_name (str): file name of taxonomy to be mapped to
     skill_name_col (str): skill column name
     skill_desc_col (str): skill description name
-    sim_threshold (int): similarity score threshold between ojo skill 
+    sim_threshold (int): similarity score threshold between ojo skill
                          and taxonomy skill
     bert_model_name (str): name of sentence transformer
-    multi_process (bool): if vectoriser will multi_process 
+    multi_process (bool): if vectoriser will multi_process
     batch_size (int): batch size
     ojo_skills_file_name (str): file name of extract ojo skills from ner model
     ----------
     Methods
     ----------
-    get_taxonomy_skills(taxonomy_file_name): 
+    get_taxonomy_skills(taxonomy_file_name):
         loads taxonomy from file and converts
         to dict where key is taxonomy skill id and values are skill and skill description.
     get_ojo_skills(ojo_skills_file_name):
-        loads extracted skills from NER model. 
+        loads extracted skills from NER model.
     preprocess_ojo_skills(ojo_skills):
         preprocess skills extracted OJO skills from NER model.
     preprocess_taxonomy_skills(taxonomy_skills):
@@ -90,10 +94,10 @@ class SkillMapper:
     load_bert:
         loads bert vectoriser.
     fit_transform(skills):
-        fits and transforms skills. 
+        fits and transforms skills.
     map_skills(taxonomy, taxonomy_file_name, ojo_skills_file_name):
-        loads taxonomy and OJO skills; preprocesses skills; embeds 
-        and maps OJO onto taxonomy skills based on cosine similarity. 
+        loads taxonomy and OJO skills; preprocesses skills; embeds
+        and maps OJO onto taxonomy skills based on cosine similarity.
     """
 
     def __init__(
@@ -191,7 +195,7 @@ class SkillMapper:
             clean_ojo_skill_ids = list(clean_ojo_skills.keys())
 
             self.skill_mapper_dict = dict()
-            for skill in clean_ojo_skill_ids:
+            for skill in clean_ojo_skill_ids[:2]:
                 top_tax_skills = []
                 top_tax_scores = []
                 clean_ojo_skill_embeddings = self.fit_transform(clean_ojo_skills[skill])
@@ -209,7 +213,9 @@ class SkillMapper:
                             for i in top_skill_ids
                         ]
                     )
-                    top_tax_scores.append(list(np.sort(sim)[::-1][:5]))
+                    top_tax_scores.append(
+                        [float(i) for i in np.sort(sim)[::-1][:5]]
+                    )  # so its JSON serializable
                 self.skill_mapper_dict[skill] = {
                     "ojo_ner_skills": clean_ojo_skills[skill],
                     self.taxonomy + "_taxonomy_skills": top_tax_skills,
@@ -225,7 +231,9 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument(
-        "--taxonomy", help="Name of taxonomy to be mapped to.", default="esco",
+        "--taxonomy",
+        help="Name of taxonomy to be mapped to.",
+        default="esco",
     )
 
     parser.add_argument(
@@ -262,12 +270,14 @@ if __name__ == "__main__":
         taxonomy, taxonomy_file_name, ojo_skill_file_name
     )
 
+    print(skills_to_taxonomy)
+
     skill_mapper_file_name = (
         ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
     )
 
     save_to_s3(
-        s3,
+        get_s3_resource(),
         bucket_name,
         skills_to_taxonomy,
         os.path.join(config["ojo_skills_ner_mapping_dir"], skill_mapper_file_name),
