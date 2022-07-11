@@ -262,8 +262,6 @@ if __name__ == "__main__":
         taxonomy, taxonomy_file_name, ojo_skill_file_name
     )
 
-    print(skills_to_taxonomy)
-
     skill_mapper_file_name = (
         ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
     )
