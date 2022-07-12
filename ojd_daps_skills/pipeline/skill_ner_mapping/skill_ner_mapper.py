@@ -1,6 +1,5 @@
 """Script to map extracted skills from NER model to
 taxonomy skills."""
-
 ##############################################################
 from ojd_daps_skills import config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
@@ -161,25 +160,25 @@ class SkillMapper:
             multi_process=self.multi_process,
             batch_size=self.batch_size,
         )
-        self.bert_vectorizer.fit()
+        return self.bert_vectorizer.fit()
 
-    def fit_transform(self, skills):
+    def transform(self, skills):
         # Load BERT model and transform skill
-        self.load_bert()
         self.skills_vec = self.bert_vectorizer.transform(skills)
         return self.skills_vec
 
     def map_skills(self, taxonomy, taxonomy_file_name, ojo_skills_file_name):
         self.taxonomy_skills = self.get_taxonomy_skills(self.taxonomy_file_name)
         self.ojo_skills = self.get_ojo_skills(self.ojo_skills_file_name)
+        self.bert_vectorizer = self.load_bert()
 
         if self.taxonomy_skills:
             self.clean_taxonomy_skills = self.preprocess_taxonomy_skills(
                 self.taxonomy_skills
             )
-            self.taxonomy_skills_embeddings = self.fit_transform(
+            self.taxonomy_skills_embeddings = self.bert_vectorizer.transform(
                 [
-                    self.taxonomy_skills[skill]["clean_skills"]
+                    self.clean_taxonomy_skills[skill]["clean_skills"]
                     for skill in self.taxonomy_ids
                 ]
             )
@@ -188,10 +187,12 @@ class SkillMapper:
             clean_ojo_skill_ids = list(clean_ojo_skills.keys())
 
             self.skill_mapper_dict = dict()
-            for skill in clean_ojo_skill_ids[:2]:
+            for skill in clean_ojo_skill_ids:
                 top_tax_skills = []
                 top_tax_scores = []
-                clean_ojo_skill_embeddings = self.fit_transform(clean_ojo_skills[skill])
+                clean_ojo_skill_embeddings = self.bert_vectorizer.transform(
+                    clean_ojo_skills[skill]
+                )
                 ojo_taxonomoy_sims = cosine_similarity(
                     clean_ojo_skill_embeddings, self.taxonomy_skills_embeddings
                 )
@@ -224,9 +225,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument(
-        "--taxonomy",
-        help="Name of taxonomy to be mapped to.",
-        default="esco",
+        "--taxonomy", help="Name of taxonomy to be mapped to.", default="esco",
     )
 
     parser.add_argument(
