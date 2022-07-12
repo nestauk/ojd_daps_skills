@@ -42,6 +42,5 @@ logger = logging.getLogger(__name__)
 _base_config_path = Path(__file__).parent.resolve() / "config/base.yaml"
 config = get_yaml_config(_base_config_path)
 
-# %%
-# Define bucket
+# The S3 bucket we are using
 bucket_name = "open-jobs-lake"
