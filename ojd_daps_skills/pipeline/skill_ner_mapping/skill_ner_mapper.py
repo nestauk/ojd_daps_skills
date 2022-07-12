@@ -1,6 +1,10 @@
-"""Script to map extracted skills from NER model to
-taxonomy skills."""
-##############################################################
+"""
+Script to map extracted skills from NER model to
+taxonomy skills.
+"""
+# %% [markdown]
+#
+# %%
 from ojd_daps_skills import config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
@@ -20,7 +24,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import os
 
-##############################################################
+
+# %%
 
 
 class BertVectorizer:
@@ -140,9 +145,11 @@ class SkillMapper:
         for ojo_job_id in self.ojo_job_ids:
             ojo_job_skills = self.ojo_skills["predictions"][ojo_job_id]["SKILL"]
             if ojo_job_skills != []:
-                self.clean_ojo_skills[ojo_job_id] = list(
-                    set([preprocess_skill(skill) for skill in ojo_job_skills])
-                )
+                self.clean_ojo_skills[ojo_job_id] = {
+                    "clean_skills": list(
+                        set([preprocess_skill(skill) for skill in ojo_job_skills])
+                    )
+                }
 
         return self.clean_ojo_skills
 
@@ -164,8 +171,8 @@ class SkillMapper:
 
     def transform(self, skills):
         # Load BERT model and transform skill
-        self.skills_vec = self.bert_vectorizer.transform(skills)
-        return self.skills_vec
+        skills_vec = self.bert_vectorizer.transform(skills)
+        return skills_vec
 
     def map_skills(self, taxonomy, taxonomy_file_name, ojo_skills_file_name):
         self.taxonomy_skills = self.get_taxonomy_skills(self.taxonomy_file_name)
@@ -184,38 +191,50 @@ class SkillMapper:
             )
 
             clean_ojo_skills = self.preprocess_ojo_skills(self.ojo_skills)
-            clean_ojo_skill_ids = list(clean_ojo_skills.keys())
 
-            self.skill_mapper_dict = dict()
-            for skill in clean_ojo_skill_ids:
+            flat_clean_ojo_skills = list(
+                itertools.chain(*[i["clean_skills"] for i in clean_ojo_skills.values()])
+            )
+            clean_ojo_skill_embeddings = self.bert_vectorizer.transform(
+                flat_clean_ojo_skills
+            )
+
+            # map embeds onto clean_ojo_skills
+            for id_, skill in clean_ojo_skills.items():
+                ojo_skill_embeds = [
+                    clean_ojo_skill_embeddings[flat_clean_ojo_skills.index(s)]
+                    for s in skill["clean_skills"]
+                ]
+                skill["clean_ojo_embeds"] = ojo_skill_embeds
+
+            skill_mapper_dict = dict()
+            for id_, skill in clean_ojo_skills.items():
                 top_tax_skills = []
-                top_tax_scores = []
-                clean_ojo_skill_embeddings = self.bert_vectorizer.transform(
-                    clean_ojo_skills[skill]
-                )
                 ojo_taxonomoy_sims = cosine_similarity(
-                    clean_ojo_skill_embeddings, self.taxonomy_skills_embeddings
+                    skill["clean_ojo_embeds"], self.taxonomy_skills_embeddings
                 )
+                top_skill_indxs = [
+                    list(np.argsort(sim)[::-1][:5]) for sim in ojo_taxonomoy_sims
+                ]
+                top_skill_scores = [
+                    np.sort(sim)[::-1][:5] for sim in ojo_taxonomoy_sims
+                ]
 
-                for sim in ojo_taxonomoy_sims:
-                    top_skill_ids = [
-                        self.taxonomy_ids[i] for i in np.argsort(sim)[::-1][:5]
-                    ]
-                    top_tax_skills.append(
+                skill_mapper_dict[id_] = {
+                    "ojo_ner_skills": skill["clean_skills"],
+                    "esco_taxonomy_skills": [
                         [
-                            self.taxonomy_skills[i][self.skill_name_col]
-                            for i in top_skill_ids
+                            self.clean_taxonomy_skills["esco_" + str(i)]["clean_skills"]
+                            for i in top_skills
                         ]
-                    )
-                    top_tax_scores.append(
-                        [float(i) for i in np.sort(sim)[::-1][:5]]
-                    )  # so its JSON serializable
-                self.skill_mapper_dict[skill] = {
-                    "ojo_ner_skills": clean_ojo_skills[skill],
-                    self.taxonomy + "_taxonomy_skills": top_tax_skills,
-                    self.taxonomy + "_taxonomy_scores": top_tax_scores,
+                        for top_skills in top_skill_indxs
+                    ],
+                    "esco_taxonomy_scores": [
+                        [float(i) for i in top_skill_score]
+                        for top_skill_score in top_skill_scores
+                    ],  # to navigate JSON serializable issues
                 }
-            return self.skill_mapper_dict
+            return skill_mapper_dict
         else:
             print("Warning! No taxonomy to map skill spans to.")
 
@@ -225,7 +244,9 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument(
-        "--taxonomy", help="Name of taxonomy to be mapped to.", default="esco",
+        "--taxonomy",
+        help="Name of taxonomy to be mapped to.",
+        default="esco",
     )
 
     parser.add_argument(
