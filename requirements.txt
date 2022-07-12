@@ -9,6 +9,9 @@ typer
 sh
 sqlalchemy
 pymysql
+transformers
+sentence-transformers==1.2.0
+scikit-learn==0.23.2
 spacy==3.4.0
 jupyter
 nervaluate
