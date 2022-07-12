@@ -31,6 +31,9 @@ exception_camelcases = [
     "QuickBooks",
 ]
 
+# Any trailing chars that match these are removed
+trim_chars = [" ", ".", ",", ";", ":", "\xa0"]
+
 
 def edit_ents(text, orig_ents):
     """
@@ -41,14 +44,6 @@ def edit_ents(text, orig_ents):
 
     editted = False
     # Don't include trailing whitespace from entity spans
-    trim_chars = [
-        " ",
-        ".",
-        ",",
-        ";",
-        ":",
-        "\xa0",
-    ]  # any trailing chars that match these are removed
     trimmed_ents = []
     for b, e, l in orig_ents:
         if text[b] in trim_chars:

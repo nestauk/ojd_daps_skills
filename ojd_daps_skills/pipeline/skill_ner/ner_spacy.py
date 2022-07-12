@@ -117,6 +117,23 @@ class JobNER(object):
         """
         Process the raw labelled data about job adverts, some text cleaning is needed,
         but we need to be careful to make sure span indices are still correct
+
+        Parameters
+        ----------
+        job_advert_labels : dict
+            The raw label-studio labelled data for one job advert
+        all_labels : list
+            The list of all labels given to entities
+
+        Returns
+        ------
+        text : str
+            The cleaned job advert text
+        ent_list : list
+            The entity span list (modified after cleaning the text)
+            this is in the form [(start_char, end_char, label),...]
+        all_labels : list
+            The list of all labels given to entities
         """
 
         text = job_advert_labels["task"]["data"]["text"]
@@ -141,6 +158,20 @@ class JobNER(object):
         return text, ent_list, all_labels
 
     def load_data(self):
+        """
+        Load all the labelled job adverts from the label-studio output in S3.
+        If more than one person has labelled a job advert only the latest labels
+        will be used.
+
+        Returns
+        ------
+        data : list
+
+            The job adverts and the entities within them in a format suitable for Spacy
+            training, i.e. a list of tuples
+            [(text, {"entities": [(0,4,"SKILL"),...]}, {"task_id": 1,"job_ad_id": 'as34d',"label_id": 150}),...]
+        """
+
         s3 = get_s3_resource()
         file_names = get_s3_data_paths(s3, self.BUCKET_NAME, self.S3_FOLDER, "*")
         file_names.remove(self.S3_FOLDER)
@@ -205,6 +236,10 @@ class JobNER(object):
         return data
 
     def get_test_train(self, data):
+        """
+        Split the data into a training and test set, and keep a record
+        of which job ids were used in each.
+        """
 
         train_n = round(len(data) * self.train_prop)
 
@@ -222,6 +257,9 @@ class JobNER(object):
         return train_data, test_data
 
     def prepare_model(self):
+        """
+        Prepare a Spacy model to have it's NER component trained
+        """
         self.nlp = spacy.blank("en")
         self.nlp.add_pipe("ner")
         self.nlp.begin_training()
@@ -241,8 +279,27 @@ class JobNER(object):
 
     def train(self, train_data, print_losses=True, drop_out=0.3, num_its=30):
         """
+        Train a Spacy model for the NER task
         See https://www.machinelearningplus.com/nlp/training-custom-ner-model-in-spacy/
         for the inspiration for this function.
+
+        Parameters
+        ----------
+        train_data : list
+            A list of tuples for each job advert in the training set, e.g.
+            [(text, {"entities": [(0,4,"SKILL"),...]}, {"task_id": ...}),...]
+            only the first two elements of the tuples are needed
+        print_losses : bool
+            Print the losses as you train (can be useful in experimentation to check you have converged)
+        drop_out : float
+            Drop out rate for the training
+        num_its : int
+            Number of iterations to train the model
+
+        Returns
+        ------
+        nlp : Spacy language model
+            A nlp language model with a NER component to recognise skill entities
         """
         self.train_data_length = len(train_data)
         self.drop_out = drop_out
@@ -280,6 +337,18 @@ class JobNER(object):
         return self.nlp
 
     def predict(self, job_text):
+        """
+        Predict the entities in a single job advert text
+        Parameters
+        ----------
+        job_text : str
+
+        Returns
+        ------
+        pred_ents : list of dicts
+            The entity span predictions in the form
+            e.g. [{"label": "SKILL", "start": start_entity_char, "end": end_entity_char}, ...]
+        """
         doc = self.nlp(job_text)
         pred_ents = []
         for ent in doc.ents:
@@ -293,6 +362,10 @@ class JobNER(object):
         displacy.render(doc, style="ent")
 
     def evaluate(self, data):
+        """
+        For a dataset of text and entity truths, evaluate how well the model
+        finds entities. Various metrics are outputted.
+        """
 
         truth = []
         preds = []

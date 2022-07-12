@@ -9,6 +9,6 @@ typer
 sh
 sqlalchemy
 pymysql
-spacy
+spacy==3.4.0
 jupyter
 nervaluate
