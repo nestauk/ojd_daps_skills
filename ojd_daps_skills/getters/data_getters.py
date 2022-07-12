@@ -41,6 +41,7 @@ def load_json_dict(file_name: str) -> dict:
 def save_json_dict(dictionary: dict, file_name: str):
 
     """Saves a dict to a json file.
+
     Args:
             dictionary (dict): The dictionary to be saved
             file_name (str): Local path to json.
@@ -82,9 +83,21 @@ def save_to_s3(s3, bucket_name, output_var, output_file_dir):
     print(f"Saved to s3://{bucket_name} + {output_file_dir} ...")
 
 
+def load_s3_json(s3, bucket_name, file_name):
+    """
+    Load a file from S3 without relying on the file_name extension
+    as load_s3_data does. Good for files which have no extension.
+    """
+
+    obj = s3.Object(bucket_name, file_name)
+    file = obj.get()["Body"].read().decode()
+    return json.loads(file)
+
+
 def load_s3_data(s3, bucket_name, file_name):
     """
     Load data from S3 location.
+
     s3: S3 boto3 resource
     bucket_name: The S3 bucket name
     file_name: S3 key to load
@@ -116,6 +129,7 @@ def load_s3_data(s3, bucket_name, file_name):
 def get_s3_data_paths(s3, bucket_name, root, file_types=["*.jsonl"]):
     """
     Get all paths to particular file types in a S3 root location
+
     s3: S3 boto3 resource
     bucket_name: The S3 bucket name
     root: The root folder to look for files in
