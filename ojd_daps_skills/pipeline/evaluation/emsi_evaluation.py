@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# %%
 """
 Script to extract EMSI skills from a random sample of 50 OJO job ads.
 
@@ -22,6 +20,7 @@ from ojd_daps_skills.getters.data_getters import (
     load_s3_data,
     save_to_s3,
 )
+from datetime import datetime as date
 
 ##################################################################
 def get_job_advert_skills(conn, job_ids: list) -> dict:
@@ -164,5 +163,5 @@ if __name__ == "__main__":
         get_s3_resource(),
         bucket_name,
         ojo_esmi_skills,
-        config["esmi_ojo_skills_v1_path"],
+        (filename + f"{str(date.today().date()).replace('-', '')}.json"),
     )
