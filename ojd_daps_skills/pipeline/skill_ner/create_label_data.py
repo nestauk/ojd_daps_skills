@@ -29,7 +29,7 @@ if __name__ == "__main__":
     file_name = os.path.join(config["s3_ner_folder"], config["sample_file_name"])
     print(f"Processing job advert sample from {file_name}")
 
-    sample_data = load_s3_data(s3, bucket_name, config, file_name)
+    sample_data = load_s3_data(s3, bucket_name, file_name)
     date_stamp = str(date.today().date()).replace("-", "")
 
     s3_label_output_folder = config["s3_label_output_folder"]
