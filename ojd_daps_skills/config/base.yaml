@@ -1,7 +1,10 @@
 ojo_job_count: 100
 evaluation_results_v1_path: "escoe_extension/outputs/evaluation/aggregate_ojo_esco/ojo_esco_occupation_skills_results_v1.json"
+esmi_ojo_skills_v1_path: "escoe_extension/outputs/evaluation/ojo_esmi_skills/ojo_esmi_skills_v1"
 esco_path: "escoe_extension/inputs/data/esco/"
 esco_data_dir: "escoe_extension/inputs/data/esco/"
+ojo_random_sample_path: "escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json"
+esmi_confidence_threshold: 0.6
 s3_ner_folder: "escoe_extension/inputs/data/skill_ner/"
 sample_file_name: "data_sample/20220622_sampled_job_ads.json"
 s3_label_output_folder: "escoe_extension/outputs/data/skill_ner/label_chunks/"
