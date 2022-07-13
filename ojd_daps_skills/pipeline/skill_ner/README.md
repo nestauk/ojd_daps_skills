@@ -116,7 +116,7 @@ The `s3_download=True` argument will mean this model will be first downloaded fr
 Running
 
 ```
-python ojd_daps_skills/pipeline/skill_ner/get_skills.py --model_path outputs/models/ner_model/20220704/ --output_file_dir escoe_extension/outputs/data/skill_ner/skill_predictions/ --job_adverts_filename escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json
+python ojd_daps_skills/pipeline/skill_ner/get_skills.py --model_path outputs/models/ner_model/20220713/ --output_file_dir escoe_extension/outputs/data/skill_ner/skill_predictions/ --job_adverts_filename escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json
 ```
 
 will make skill predictions on the data in `job_adverts_filename` (an output of `create_data_sample.py`) using the model loaded from `model_path`. By default this will look for the model on S3, but if you want to load a locally stored model just add `--use_local_model`.

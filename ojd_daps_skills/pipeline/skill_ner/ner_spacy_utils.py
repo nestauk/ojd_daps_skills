@@ -14,8 +14,10 @@ from toolz import pipe
 
 # Pattern for fixing a missing space between enumerations, for split_sentences()
 compiled_missing_space_pattern = re.compile("([a-z])([A-Z])([a-z])")
+# Characters outside these rules will be padded, for pad_punctuation()
 # compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9 #(++)+])")
-compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9 ])")
+# compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9\'\’\- ])")
+compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9] )")
 
 # The list of camel cases which should be kept in
 exception_camelcases = [
