@@ -12,12 +12,12 @@ python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py
     --num_its 50
 
 This will save out the model in a time stamped folder,
-e.g. `outputs/models/ner_model/20220629/`, it also saves out the evaluation results
+e.g. `outputs/models/ner_model/2022XXXX/`, it also saves out the evaluation results
 and some general information about the model training in the file
-`outputs/models/ner_model/20220629/train_details.json`.
+`outputs/models/ner_model/2022XXXX/train_details.json`.
 
 By default this won't sync the newly trained model to S3, but by adding
-`--save_s3` it will sync the `outputs/models/ner_model/20220629/` to S3.
+`--save_s3` it will sync the `outputs/models/ner_model/2022XXXX/` to S3.
 
 Additionally you can use the class in this script to load a model and make predictions:
 
@@ -35,6 +35,7 @@ import pandas as pd
 import os
 from datetime import datetime as date
 from argparse import ArgumentParser
+import pickle
 
 from spacy.util import minibatch, compounding
 from spacy.training.example import Example
@@ -53,6 +54,7 @@ from ojd_daps_skills.getters.data_getters import (
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import (
     clean_entities_text,
 )
+from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import MultiskillClassifier
 from ojd_daps_skills import bucket_name
 
 
@@ -79,6 +81,9 @@ class JobNER(object):
         needed for training.
     get_test_train(data):
         Split the data into a test and training set.
+    train_multiskill_classifier(train_data, test_data):
+        Uses the clean labelled test and train set to train a simple
+        classifier to predict whether a skill is multi or single skill.
     prepare_model():
         Prepare to train the NER model.
     train(train_data, print_losses=True, drop_out=0.3, num_its=30):
@@ -143,8 +148,6 @@ class JobNER(object):
         for ent_tag in ent_tags:
             ent_tag_value = ent_tag["value"]
             label = ent_tag_value["labels"][0]
-            if self.convert_multiskill:
-                label = "SKILL" if label == "MULTISKILL" else label
             ent_list.append((ent_tag_value["start"], ent_tag_value["end"], label))
             if label not in all_labels:
                 all_labels.add(label)
@@ -233,6 +236,9 @@ class JobNER(object):
                     )
                 )
 
+        if self.convert_multiskill:
+            self.all_labels.remove("MULTISKILL")
+
         return data
 
     def get_test_train(self, data):
@@ -256,6 +262,19 @@ class JobNER(object):
 
         return train_data, test_data
 
+    def multiskill_conversion(self, data):
+        """
+        Convert rest of the multiskill labels to skills if desired
+        """
+        data_cleaned = []
+        for text, ents, meta in data:
+            ents_cleaned = []
+            for start, end, label in ents["entities"]:
+                label = "SKILL" if label == "MULTISKILL" else label
+                ents_cleaned.append((start, end, label))
+            data_cleaned.append((text, {"entities": ents_cleaned}, meta))
+        return data_cleaned
+
     def prepare_model(self):
         """
         Prepare a Spacy model to have it's NER component trained
@@ -276,6 +295,39 @@ class JobNER(object):
         # Resume training
         self.optimizer = self.nlp.resume_training()
         move_names = list(ner.move_names)
+
+    def train_multiskill_classifier(self, train_data, test_data):
+        """
+        Uses the clean labelled test and train set (same as the NER model will use)
+        to train a simple classifier to predict whether a skill is multi or single skill.
+        Also gets train and test scores for the output.
+        """
+
+        def separate_labels(data, ms_classifier):
+            """
+            Only needed in this function
+            """
+            skill_ent_list = []
+            multiskill_ent_list = []
+            for text, ents, _ in data:
+                for start, end, label in ents["entities"]:
+                    if label == "SKILL":
+                        skill_ent_list.append(text[start:end])
+                    if label == "MULTISKILL":
+                        multiskill_ent_list.append(text[start:end])
+            X, y = ms_classifier.create_training_data(
+                skill_ent_list, multiskill_ent_list
+            )
+            return X, y
+
+        self.ms_classifier = MultiskillClassifier()
+        X_train, y_train = separate_labels(train_data, self.ms_classifier)
+        X_test, y_test = separate_labels(test_data, self.ms_classifier)
+
+        self.ms_classifier.fit(X_train, y_train)
+
+        self.ms_classifier_train_evaluation = self.ms_classifier.score(X_train, y_train)
+        self.ms_classifier_test_evaluation = self.ms_classifier.score(X_test, y_test)
 
     def train(self, train_data, print_losses=True, drop_out=0.3, num_its=30):
         """
@@ -301,6 +353,13 @@ class JobNER(object):
         nlp : Spacy language model
             A nlp language model with a NER component to recognise skill entities
         """
+
+        # Before converting multiskills to skill entities, train the classifier
+        self.train_multiskill_classifier(train_data, test_data)
+
+        if self.convert_multiskill:
+            train_data = self.multiskill_conversion(train_data)
+
         self.train_data_length = len(train_data)
         self.drop_out = drop_out
         self.num_its = num_its
@@ -349,9 +408,14 @@ class JobNER(object):
             The entity span predictions in the form
             e.g. [{"label": "SKILL", "start": start_entity_char, "end": end_entity_char}, ...]
         """
+
         doc = self.nlp(job_text)
         pred_ents = []
         for ent in doc.ents:
+            if ent.label_ == "SKILL":
+                # Apply the classifier to see whether it's likely to be a multiskill
+                if self.ms_classifier.predict(ent.text)[0] == 1:
+                    ent.label_ = "MULTISKILL"
             pred_ents.append(
                 {"label": ent.label_, "start": ent.start_char, "end": ent.end_char}
             )
@@ -366,6 +430,9 @@ class JobNER(object):
         For a dataset of text and entity truths, evaluate how well the model
         finds entities. Various metrics are outputted.
         """
+
+        if self.convert_multiskill:
+            data = self.multiskill_conversion(data)
 
         truth = []
         preds = []
@@ -409,6 +476,10 @@ class JobNER(object):
             os.makedirs(output_folder)
 
         self.nlp.to_disk(output_folder)
+        pickle.dump(
+            self.ms_classifier,
+            open(os.path.join(output_folder, "ms_classifier.pkl"), "wb"),
+        )
 
         # Output the training details of the model inc evaluation results (if done)
         try:
@@ -425,6 +496,8 @@ class JobNER(object):
                 "train_data_length": self.train_data_length,
                 "drop_out": self.drop_out,
                 "num_its": self.num_its,
+                "ms_classifier_train_evaluation": self.ms_classifier_train_evaluation,
+                "ms_classifier_test_evaluation": self.ms_classifier_test_evaluation,
                 "seen_job_ids": self.seen_job_ids,
             }
         )
@@ -446,6 +519,9 @@ class JobNER(object):
 
         try:
             self.nlp = spacy.load(model_folder)
+            self.ms_classifier = pickle.load(
+                open(os.path.join(model_folder, "ms_classifier.pkl"), "rb")
+            )
         except OSError:
             print(
                 "Model not found locally - you may need to download it from S3 (set s3_download to True)"
@@ -511,6 +587,7 @@ if __name__ == "__main__":
     )
     data = job_ner.load_data()
     train_data, test_data = job_ner.get_test_train(data)
+
     job_ner.prepare_model()
     nlp = job_ner.train(
         train_data,
