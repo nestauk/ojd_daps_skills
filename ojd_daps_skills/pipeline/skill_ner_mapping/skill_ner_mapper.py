@@ -1,15 +1,9 @@
-"""
-Script to map extracted skills from NER model to
-taxonomy skills.
-"""
-# %% [markdown]
-#
-# %%
 from ojd_daps_skills import config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     load_s3_data,
     save_to_s3,
+    get_s3_data_paths
 )
 from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
     preprocess_skill,
@@ -24,10 +18,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import os
 
-
-# %%
-
-
 class BertVectorizer:
     """
     Use a pretrained transformers model to embed skills.
@@ -36,7 +26,7 @@ class BertVectorizer:
 
     def __init__(
         self,
-        bert_model_name="sentence-transformers/paraphrase-MiniLM-L6-v2",
+        bert_model_name="jjzha/jobspanbert-base-cased",
         multi_process=True,
         batch_size=32,
     ):
@@ -71,7 +61,7 @@ class SkillMapper:
     Attributes
     ----------
     taxonomy (str): name of taxonomy to be mapped to
-    taxonomy_file_name (str): file name of taxonomy to be mapped to
+    taxonomy_skill_list (list): list of skills at any taxonomy level
     skill_name_col (str): skill column name
     skill_desc_col (str): skill description name
     bert_model_name (str): name of sentence transformer
@@ -81,20 +71,17 @@ class SkillMapper:
     ----------
     Methods
     ----------
-    get_taxonomy_skills(taxonomy_file_name):
-        loads taxonomy from file and converts
-        to dict where key is taxonomy skill id and values are skill and skill description.
     get_ojo_skills(ojo_skills_file_name):
         loads extracted skills from NER model.
     preprocess_ojo_skills(ojo_skills):
         preprocess skills extracted OJO skills from NER model.
     preprocess_taxonomy_skills(taxonomy_skills):
-        preprocesses taxonomy skills.
+        preprocesses list of taxonomy skills.
     load_bert:
         loads bert vectoriser.
-    fit_transform(skills):
-        fits and transforms skills.
-    map_skills(taxonomy, taxonomy_file_name, ojo_skills_file_name):
+    transform(skills):
+        transforms skills.
+    map_skills(taxonomy, taxonomy_skill_list, ojo_skills_file_name):
         loads taxonomy and OJO skills; preprocesses skills; embeds
         and maps OJO onto taxonomy skills based on cosine similarity.
     """
@@ -102,16 +89,14 @@ class SkillMapper:
     def __init__(
         self,
         taxonomy: "esco",
-        taxonomy_file_name: "escoe_extension/inputs/data/esco/skills_en.csv",
         skill_name_col: "preferredLabel",
         skill_desc_col: "description",
-        bert_model_name: "sentence-transformers/paraphrase-MiniLM-L6-v2",
+        bert_model_name: "jjzha/jobspanbert-base-cased",
         multi_process: True,
         batch_size: 32,
         ojo_skills_file_name: config["ojo_skills_ner_path"],
     ):
         self.taxonomy = taxonomy
-        self.taxonomy_file_name = taxonomy_file_name
         self.skill_name_col = skill_name_col
         self.skill_desc_col = skill_desc_col
         self.bert_model_name = bert_model_name
@@ -119,18 +104,6 @@ class SkillMapper:
         self.batch_size = batch_size
         self.ojo_skills_file_name = ojo_skills_file_name
 
-    def get_taxonomy_skills(self, taxonomy_file_name):
-        self.taxonomy_skills = load_s3_data(
-            get_s3_resource(), bucket_name, self.taxonomy_file_name
-        )
-        self.taxonomy_skills["skill_id"] = [
-            self.taxonomy + "_" + str(i) for i in self.taxonomy_skills.index
-        ]
-        self.taxonomy_skills_dict = self.taxonomy_skills.set_index("skill_id")[
-            [self.skill_name_col, self.skill_desc_col]
-        ].T.to_dict()
-
-        return self.taxonomy_skills_dict
 
     def get_ojo_skills(self, ojo_skills_file_name):
         self.ojo_skills = load_s3_data(
@@ -153,13 +126,9 @@ class SkillMapper:
 
         return self.clean_ojo_skills
 
-    def preprocess_taxonomy_skills(self, taxonomy_skills_dict):
-        self.taxonomy_ids = list(self.taxonomy_skills_dict.keys())
-        for skill in self.taxonomy_ids:
-            self.taxonomy_skills_dict[skill]["clean_skills"] = preprocess_skill(
-                self.taxonomy_skills_dict[skill][self.skill_name_col]
-            )
-        return self.taxonomy_skills_dict
+    def preprocess_taxonomy_skills(self, taxonomy_skill_list):
+        self.clean_taxonomy_skills = [preprocess_skill(skill) for skill in taxonomy_skill_list]
+        return self.clean_taxonomy_skills
 
     def load_bert(self):
         self.bert_vectorizer = BertVectorizer(
@@ -174,71 +143,62 @@ class SkillMapper:
         skills_vec = self.bert_vectorizer.transform(skills)
         return skills_vec
 
-    def map_skills(self, taxonomy, taxonomy_file_name, ojo_skills_file_name):
-        self.taxonomy_skills = self.get_taxonomy_skills(self.taxonomy_file_name)
+    def map_skills(self, taxonomy, taxonomy_skill_list, ojo_skills_file_name):
+
         self.ojo_skills = self.get_ojo_skills(self.ojo_skills_file_name)
         self.bert_vectorizer = self.load_bert()
 
-        if self.taxonomy_skills:
-            self.clean_taxonomy_skills = self.preprocess_taxonomy_skills(
-                self.taxonomy_skills
+        self.clean_taxonomy_skills = self.preprocess_taxonomy_skills(
+            taxonomy_skill_list
+        )
+        self.taxonomy_skills_embeddings = self.bert_vectorizer.transform(self.clean_taxonomy_skills)
+
+        clean_ojo_skills = self.preprocess_ojo_skills(self.ojo_skills)
+
+        flat_clean_ojo_skills = list(
+            itertools.chain(*[i["clean_skills"] for i in clean_ojo_skills.values()])
+        )
+        clean_ojo_skill_embeddings = self.bert_vectorizer.transform(
+            flat_clean_ojo_skills
+        )
+
+        # map embeds onto clean_ojo_skills
+        for id_, skill in clean_ojo_skills.items():
+            ojo_skill_embeds = [
+                clean_ojo_skill_embeddings[flat_clean_ojo_skills.index(s)]
+                for s in skill["clean_skills"]
+            ]
+            skill["clean_ojo_embeds"] = ojo_skill_embeds
+
+        skill_mapper_dict = dict()
+        for id_, skill in clean_ojo_skills.items():
+            top_tax_skills = []
+            ojo_taxonomoy_sims = cosine_similarity(
+                skill["clean_ojo_embeds"], self.taxonomy_skills_embeddings
             )
-            self.taxonomy_skills_embeddings = self.bert_vectorizer.transform(
-                [
-                    self.clean_taxonomy_skills[skill]["clean_skills"]
-                    for skill in self.taxonomy_ids
-                ]
-            )
+            top_skill_indxs = [
+                list(np.argsort(sim)[::-1][:5]) for sim in ojo_taxonomoy_sims
+            ]
+            top_skill_scores = [
+                np.sort(sim)[::-1][:5] for sim in ojo_taxonomoy_sims
+            ]
 
-            clean_ojo_skills = self.preprocess_ojo_skills(self.ojo_skills)
-
-            flat_clean_ojo_skills = list(
-                itertools.chain(*[i["clean_skills"] for i in clean_ojo_skills.values()])
-            )
-            clean_ojo_skill_embeddings = self.bert_vectorizer.transform(
-                flat_clean_ojo_skills
-            )
-
-            # map embeds onto clean_ojo_skills
-            for id_, skill in clean_ojo_skills.items():
-                ojo_skill_embeds = [
-                    clean_ojo_skill_embeddings[flat_clean_ojo_skills.index(s)]
-                    for s in skill["clean_skills"]
-                ]
-                skill["clean_ojo_embeds"] = ojo_skill_embeds
-
-            skill_mapper_dict = dict()
-            for id_, skill in clean_ojo_skills.items():
-                top_tax_skills = []
-                ojo_taxonomoy_sims = cosine_similarity(
-                    skill["clean_ojo_embeds"], self.taxonomy_skills_embeddings
-                )
-                top_skill_indxs = [
-                    list(np.argsort(sim)[::-1][:5]) for sim in ojo_taxonomoy_sims
-                ]
-                top_skill_scores = [
-                    np.sort(sim)[::-1][:5] for sim in ojo_taxonomoy_sims
-                ]
-
-                skill_mapper_dict[id_] = {
-                    "ojo_ner_skills": skill["clean_skills"],
-                    "esco_taxonomy_skills": [
-                        [
-                            self.clean_taxonomy_skills["esco_" + str(i)]["clean_skills"]
-                            for i in top_skills
-                        ]
-                        for top_skills in top_skill_indxs
-                    ],
-                    "esco_taxonomy_scores": [
-                        [float(i) for i in top_skill_score]
-                        for top_skill_score in top_skill_scores
-                    ],  # to navigate JSON serializable issues
-                }
-            return skill_mapper_dict
-        else:
-            print("Warning! No taxonomy to map skill spans to.")
-
-
+            skill_mapper_dict[id_] = {
+                "ojo_ner_skills": skill["clean_skills"],
+                "esco_taxonomy_skills": [
+                    [
+                        self.clean_taxonomy_skills[i]
+                        for i in top_skills
+                    ]
+                    for top_skills in top_skill_indxs
+                ],
+                "esco_taxonomy_scores": [
+                    [float(i) for i in top_skill_score]
+                    for top_skill_score in top_skill_scores
+                ],  # to navigate JSON serializable issues
+            }
+        return skill_mapper_dict
+        
 if __name__ == "__main__":
 
     parser = ArgumentParser()
@@ -250,12 +210,6 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--taxonomy_fn",
-        help="Name of taxonomy skills file name to be mapped to.",
-        default="escoe_extension/inputs/data/esco/skills_en.csv",
-    )
-
-    parser.add_argument(
         "--ojo_skill_fn",
         help="Name of ojo skills file name to be mapped to.",
         default=config["ojo_skills_ner_path"],
@@ -264,12 +218,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     taxonomy = args.taxonomy
-    taxonomy_file_name = args.taxonomy_fn
     ojo_skill_file_name = args.ojo_skill_fn
 
     skill_mapper = SkillMapper(
         taxonomy=taxonomy,
-        taxonomy_file_name=taxonomy_file_name,
         skill_name_col="preferredLabel",
         skill_desc_col="description",
         bert_model_name="sentence-transformers/paraphrase-MiniLM-L6-v2",
@@ -278,8 +230,14 @@ if __name__ == "__main__":
         ojo_skills_file_name=config["ojo_skills_ner_path"],
     )
 
+    ##Modify this to be less 
+    esco_data = get_s3_data_paths(get_s3_resource(), bucket_name, 'escoe_extension/inputs/data/esco', '*.csv')
+    esco_dfs = {esco_df.split('/')[-1].split('_')[0]:load_s3_data(get_s3_resource(), bucket_name, esco_df) for esco_df in esco_data}
+    all_skills = list(esco_dfs['skillGroups']['preferredLabel']) + list(esco_dfs['skills']['preferredLabel']) + list(esco_dfs['skillsHierarchy']['Level 1 preferred term']) + list(esco_dfs['skillsHierarchy']['Level 2 preferred term']) + list(esco_dfs['skillsHierarchy']['Level 3 preferred term'])
+    taxonomy_skill_list = [i for i in list(set(all_skills)) if type(i) != float]
+
     skills_to_taxonomy = skill_mapper.map_skills(
-        taxonomy, taxonomy_file_name, ojo_skill_file_name
+        taxonomy, taxonomy_skill_list, ojo_skill_file_name
     )
 
     skill_mapper_file_name = (

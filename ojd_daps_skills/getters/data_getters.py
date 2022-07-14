@@ -70,15 +70,16 @@ def save_to_s3(s3, bucket_name, output_var, output_file_dir):
 
     obj = s3.Object(bucket_name, output_file_dir)
 
-    if fnmatch(output_file_dir, "*.pkl") or fnmatch(output_file_dir, "*.pickle"):
-        byte_obj = pickle.dumps(output_var)
+    if fnmatch(output_file_dir, "*.csv"):
+        output_var.to_csv("s3://" + bucket_name + output_file_dir, index=False)
+    elif fnmatch(output_file_dir, "*.pkl") or fnmatch(output_file_dir, "*.pickle"):
+        obj.put(Body=pickle.dumps(output_var))
     elif fnmatch(output_file_dir, "*.gz"):
-        byte_obj = gzip.compress(json.dumps(output_var).encode())
+        obj.put(Body=gzip.compress(json.dumps(output_var).encode()))
     elif fnmatch(output_file_dir, "*.txt"):
-        byte_obj = output_var
+        obj.put(Body=output_var)
     else:
-        byte_obj = json.dumps(output_var)
-    obj.put(Body=byte_obj)
+        obj.put(Body=json.dumps(output_var))
 
     print(f"Saved to s3://{bucket_name} + {output_file_dir} ...")
 
