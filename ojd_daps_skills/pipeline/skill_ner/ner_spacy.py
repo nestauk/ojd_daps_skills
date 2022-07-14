@@ -71,6 +71,7 @@ class JobNER(object):
         The S3 location where the metadata for the labelled data sample is.
     convert_multiskill : bool
         Where you want to convert all MULTISKILL spans to SKILL (True) or not (False)
+        for the training of the NER model
     train_prop : float
         What proportion of the data do you want to use in the train split.
 
@@ -236,9 +237,6 @@ class JobNER(object):
                     )
                 )
 
-        if self.convert_multiskill:
-            self.all_labels.remove("MULTISKILL")
-
         return data
 
     def get_test_train(self, data):
@@ -288,8 +286,12 @@ class JobNER(object):
         # Getting the ner component
         ner = self.nlp.get_pipe("ner")
 
-        # Add the new labels to ner
-        for label in self.all_labels:
+        # Add the new labels to ner (don't train the MULTISKILL)
+        self.train_labels = self.all_labels.copy()
+        if self.convert_multiskill:
+            self.train_labels.remove("MULTISKILL")
+
+        for label in self.train_labels:
             ner.add_label(label)
 
         # Resume training
@@ -354,7 +356,7 @@ class JobNER(object):
             A nlp language model with a NER component to recognise skill entities
         """
 
-        # Before converting multiskills to skill entities, train the classifier
+        # Before converting multiskills to skill entities, train the multiskill classifier
         self.train_multiskill_classifier(train_data, test_data)
 
         if self.convert_multiskill:
@@ -431,8 +433,8 @@ class JobNER(object):
         finds entities. Various metrics are outputted.
         """
 
-        if self.convert_multiskill:
-            data = self.multiskill_conversion(data)
+        # if self.convert_multiskill:
+        #     data = self.multiskill_conversion(data)
 
         truth = []
         preds = []
