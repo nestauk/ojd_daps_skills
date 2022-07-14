@@ -18,7 +18,7 @@ python get_skill_mapper_threshold_sample.py --min 0.3 --max 1 --threshold_len 10
 
 ## get_skill_mapper_threshold
 
-This script loads labelled skill matches and prints true positive and false negatives per threshold window. It also prints the percentage of skill spans that we would be able to label based on thresholding.
+This script loads labelled skill matches and prints accuracy per threshold window. It also prints the percentage of skill spans that we would be able to label based on thresholding.
 
 python get_skill_mapper_threshold.py --thresh threshold
 
