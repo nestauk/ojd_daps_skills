@@ -6,7 +6,7 @@ This directory contains the class to map extracted OJO skill spans to a list of 
 
 This class maps skill spans to (currently) ESCO skill names based on cosine similarity. It reports on the top 5 skills and skill scores associated to each OJO skill span. The outputs of this class are saved to s3.
 
-To run the script, python skill_ner_mapper.py
+`python skill_ner_mapper.py`
 
 ## get skill mapper threshold sample
 
@@ -14,13 +14,13 @@ This script generates a sample of n size of skill matches per threshold window. 
 
 To run script, you can define the minimum threshold, the maximum threshold, the threshold length and the sample size.
 
-python get_skill_mapper_threshold_sample.py --min 0.3 --max 1 --threshold_len 10 --sample_size 20
+`python get_skill_mapper_threshold_sample.py --min 0.3 --max 1 --threshold_len 10 --sample_size 20`
 
 ## get_skill_mapper_threshold
 
 This script loads labelled skill matches and prints accuracy per threshold window. It also prints the percentage of skill spans that we would be able to label based on thresholding.
 
-python get_skill_mapper_threshold.py --thresh threshold
+`python get_skill_mapper_threshold.py --thresh threshold`
 
 ### Thresholding
 
