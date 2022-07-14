@@ -1,9 +1,10 @@
-"""Utils to map extracted skills from NER model to 
+"""Utils to map extracted skills from NER model to
 taxonomy skills."""
 
 import re
 import nltk
 from nltk.corpus import stopwords
+import pandas as pd
 
 lem = nltk.WordNetLemmatizer()
 
@@ -28,12 +29,12 @@ def preprocess_skill(skill):
     """Preprocess skill to remove bullet points, convert colon, hyphens
     and slashes to spaces, lowercase, remove trailing whitespace and
     lemmatise skill.
-    
+
     Inputs:
         skill (str): skill to be preprocessed.
-    
+
     Outputs:
-        skill (str): preprocessed skill. 
+        skill (str): preprocessed skill.
     """
     # get rid of bullet points
     for j, pattern in enumerate(compiled_punct_patterns):
@@ -50,3 +51,29 @@ def preprocess_skill(skill):
 
     # lowercase and remove trailing with spaces
     return skill.lower().strip()
+
+def get_top_skill_score_df(ojo_to_taxonomy: dict, taxonomy: str) -> pd.DataFrame:
+    """Convert to DataFrame and get top skill and top score
+    per ojo to taxonomy skill match.
+
+    Inputs:
+        ojo_to_taxonomy (dict): Saved data from ojo skill span to taxonomy skill.
+        taxonomy (str): Name of taxonomy
+
+    Outputs:
+        ojo_to_taxonomy (pd.DataFrame): DataFrame where each row has a ojo skill,
+        taxonomy skill and a closeness score.
+
+    """
+    ojo_to_taxonomy = pd.DataFrame(ojo_to_taxonomy).T
+    for col in (taxonomy + '_taxonomy_skills', taxonomy + '_taxonomy_scores'):
+        col_name = "top_" + col.split("_")[-1]
+        ojo_to_taxonomy[col_name] = ojo_to_taxonomy[col].apply(
+            lambda x: [i[0] for i in x]
+        )
+
+    ojo_to_taxonomy = ojo_to_taxonomy.apply(pd.Series.explode)[
+        ["ojo_ner_skills", "top_skills", "top_scores"]
+    ]
+
+    return ojo_to_taxonomy

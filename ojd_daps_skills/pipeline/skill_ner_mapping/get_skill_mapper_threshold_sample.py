@@ -1,24 +1,25 @@
-""""Generate random sample of skill span matches
+"""
+"Generate random sample of skill span matches
 per threshold score.
 
 To run script,
 
 python get_skill_mapper_threshold_sample.py --min 0.3 --max 1 --threshold_len 10 --sample_size 20
 """
-#####################################################
+
 import numpy as np
 import pandas as pd
 from argparse import ArgumentParser
 
 from ojd_daps_skills import config, bucket_name
+from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import get_top_skill_score_df
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     load_s3_data,
     save_to_s3,
 )
 
-#####################################################
-
+# %%
 if __name__ == "__main__":
 
     parser = ArgumentParser()
@@ -50,21 +51,8 @@ if __name__ == "__main__":
     skills_to_esco = load_s3_data(
         get_s3_resource(), bucket_name, config["skills_ner_mapping_esco"]
     )
-    skills_to_esco_df = pd.DataFrame(skills_to_esco).T
-    # get top esco skill and score
-    for col in "esco_taxonomy_skills", "esco_taxonomy_scores":
-        col_name = "top_" + col.split("_")[-1]
-        skills_to_esco_df[col_name] = skills_to_esco_df[col].apply(
-            lambda x: [g[0] for g in x]
-        )
-
-    # then explode
-    skills_to_esco_df = skills_to_esco_df.apply(pd.Series.explode)[
-        ["ojo_ner_skills", "top_skills", "top_scores"]
-    ].reset_index(drop=True)
-
+    skills_to_esco_df = get_top_skill_score_df(skills_to_esco, 'esco')
     # generate threshold list
-
     thresholds = [
         round(_, 2)
         for _ in list(np.linspace(min_threshold, max_threshold, threshold_len))
