@@ -25,6 +25,7 @@ from ojd_daps_skills.getters.data_getters import (
 )
 from ojd_daps_skills import bucket_name
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
+from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import clean_text_pipeline
 from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import split_multiskill
 
 import spacy
@@ -100,7 +101,7 @@ if __name__ == "__main__":
     skills_from_multi_split = {}
     skills_from_multi_not_split = {}
     for job_id, job_info in tqdm(job_adverts.items()):
-        job_advert_text = job_info["description"].replace("\n", " ")
+        job_advert_text = clean_text_pipeline(job_info["description"])
         pred_ents = job_ner.predict(job_advert_text)
         skills = {label: [] for label in labels}
         skills_split = []
