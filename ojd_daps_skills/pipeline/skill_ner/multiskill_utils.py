@@ -216,34 +216,36 @@ def split_skill_mentions(parsed_phrase, verbose=False):
 
             has_AND = False
 
-            root = [token for token in parsed_phrase if token.dep_ == "ROOT"][0]
+            root = [token for token in parsed_phrase if token.dep_ == "ROOT"]
+            if root:
+                root = root[0]
 
-            for child in root.subtree:
+                for child in root.subtree:
 
-                if child.pos_ == "CCONJ" and child.lemma_ == "and":
-                    has_AND = True
+                    if child.pos_ == "CCONJ" and child.lemma_ == "and":
+                        has_AND = True
 
-            if has_AND:
-                skill_def = " ".join(
-                    [c.text for c in root.subtree if c.text != token.text]
-                )
+                if has_AND:
+                    skill_def = " ".join(
+                        [c.text for c in root.subtree if c.text != token.text]
+                    )
 
-                split_skills = skill_def.split("and")
-                first_skill = split_skills[0].strip()
-                sec_skill = split_skills[1].strip()
+                    split_skills = skill_def.split("and")
+                    first_skill = split_skills[0].strip()
+                    sec_skill = split_skills[1].strip()
 
-                first_skill = "{} {}".format(first_skill, token.text)
-                second_skill = "{} {}".format(sec_skill, token.text)
+                    first_skill = "{} {}".format(first_skill, token.text)
+                    second_skill = "{} {}".format(sec_skill, token.text)
 
-                if verbose:
+                    if verbose:
 
-                    print("Original skill:", parsed_sent)
-                    print("\n--- Split skills ---")
-                    print("-", first_skill)
-                    print("-", second_skill)
-                    print()
+                        print("Original skill:", parsed_sent)
+                        print("\n--- Split skills ---")
+                        print("-", first_skill)
+                        print("-", second_skill)
+                        print()
 
-                return first_skill, second_skill
+                    return first_skill, second_skill
 
 
 def split_multiskill(parsed_text):
