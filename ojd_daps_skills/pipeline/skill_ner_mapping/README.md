@@ -16,7 +16,7 @@ To run script, you can define the minimum threshold, the maximum threshold, the 
 
 `python get_skill_mapper_threshold_sample.py --min 0.3 --max 1 --threshold_len 10 --sample_size 20`
 
-## get_skill_mapper_threshold
+## get skill mapper threshold
 
 This script loads labelled skill matches and prints accuracy per threshold window. It also prints the percentage of skill spans that we would be able to label based on thresholding.
 
