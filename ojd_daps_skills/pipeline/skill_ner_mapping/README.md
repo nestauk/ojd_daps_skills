@@ -24,7 +24,8 @@ python get_skill_mapper_threshold.py --thresh threshold
 
 ### Thresholding
 
-In terms of thresholding, the a sample of skill matchs were labelled as either being good or not based off of different threshold windows. The accuracy and percentage of skill matches that would be labelled based on thresholding in a sample of 5,000 job adverts is reported below:
+In terms of thresholding, a sample of skill matchs were labelled as either being good or not based off of different threshold windows. The accuracy and percentage of skill matches that would be labelled based on thresholds in a sample of 5,000 job adverts is reported below:
+
 
 | threshold window | percentage labelled (upper band) | accuracy |
 | ---------------- | -------------------------------- | -------- |
