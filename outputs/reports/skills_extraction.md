@@ -28,8 +28,6 @@ Sometimes it was hard to distinctly label each skill mentioned, for example when
 
 An example of this is "Working in a team and on an individual basis" - we could label "Working in a team" as a single skill, but "on an individual basis" makes no sense without the "Working" word.
 
-**Add information about dealing with multiskill**
-
 ### Labelling comparison analysis
 
 Four members of the team labelled job adverts, so to get a sense of how consistent we were about labelled we all labelled the same 10 job adverts.
@@ -44,20 +42,27 @@ For this, we used [Spacy's](https://spacy.io/) NER neural network architecture. 
 
 ![](figures/skill_ner_cardea.png)
 
+### Multiskill classifier
+
+During the training of the NER model we also train a very basic SVM classifier to predict whether a skill entity contains a single skill or multiple skills. We use the same test/train split for this as for the NER model.
+
+Thus, when we predict the entities for a job advert, any skill entities predicted are also classified as being a SKILL (single skill) or MULTISKILL.
+
 ### Experiments
 
-When `Convert multiskill?` is True, the model doesn't differentiate between "multiskill" and "skill" entities.
+When `Convert multiskill?` is True, the model doesn't differentiate between "multiskill" and "skill" entities. This is the default.
 
 Our evaluation scores use the [nervaluate](https://pypi.org/project/nervaluate/) package. We are happy for the model to find similar but not exact span matches, e.g. finding "Excel" rather than the labelled "Excel skills". This is because it is hard for even human labellers to agree on where a skill entity starts and ends. Thus, we use the 'partial' metric - this is a _"partial boundary match over the surface string, regardless of the type"_. Even so, we find that this metric is still very strict, and on inspection some of the false positives should arguably be true positives.
 
 A summary of the experiments with training the model is below.
 
-| Date (model name) | Base model     | Training size | Evaluation size | Number of iterations | Drop out rate | Convert multiskill? | Other info         | Skill F1 | Experience F1 | All F1 |
-| ----------------- | -------------- | ------------- | --------------- | -------------------- | ------------- | ------------------- | ------------------ | -------- | ------------- | ------ |
-| 20220705          | en_core_web_sm | 182           | 45              | 50                   | 0.3           | True                | Camel case cleaned | 0.52     | 0.48          | 0.52   |
-| 20220704          | blank en       | 182           | 45              | 50                   | 0.3           | True                | Camel case cleaned | 0.54     | 0.39          | 0.52   |
-| 20220630          | blank en       | 180           | 45              | 50                   | 0.3           | True                |                    | 0.49     | 0.39          | 0.48   |
-| 20220629          | blank en       | 156           | 39              | 50                   | 0.3           | True                |                    | 0.52     | 0.45          | 0.51   |
+| Date (model name) | Base model     | Training size | Evaluation size | Number of iterations | Drop out rate | Convert multiskill? | Other info                                                                | Skill F1 | Experience F1 | All F1 | Multiskill test score |
+| ----------------- | -------------- | ------------- | --------------- | -------------------- | ------------- | ------------------- | ------------------------------------------------------------------------- | -------- | ------------- | ------ | --------------------- |
+| 20220714\*        | blank en       | 182           | 46              | 50                   | 0.3           | True                | Camel case cleaned, multiskill classifier added and labelled data cleaned | 0.55     | 0.42          | 0.54   | 0.85                  |
+| 20220705          | en_core_web_sm | 182           | 45              | 50                   | 0.3           | True                | Camel case cleaned                                                        | 0.52     | 0.48          | 0.52   |                       |
+| 20220704          | blank en       | 182           | 45              | 50                   | 0.3           | True                | Camel case cleaned                                                        | 0.54     | 0.39          | 0.52   |                       |
+| 20220630          | blank en       | 180           | 45              | 50                   | 0.3           | True                |                                                                           | 0.49     | 0.39          | 0.48   |                       |
+| 20220629          | blank en       | 156           | 39              | 50                   | 0.3           | True                |                                                                           | 0.52     | 0.45          | 0.51   |                       |
 
 More in-depth metrics for `20220704`:
 
@@ -66,6 +71,17 @@ More in-depth metrics for `20220704`:
 | Skill      | 0.543 | 0.715     | 0.437  |
 | Experience | 0.385 | 0.467     | 0.328  |
 | All        | 0.524 | 0.684     | 0.425  |
+
+More in-depth metrics for `20220714`:
+
+| Entity     | F1    | Precision | Recall |
+| ---------- | ----- | --------- | ------ |
+| Skill      | 0.551 | 0.617     | 0.498  |
+| Multiskill | 0.570 | 0.565     | 0.575  |
+| Experience | 0.424 | 0.568     | 0.338  |
+| All        | 0.540 | 0.608     | 0.486  |
+
+\* For model `20220714` we relabelled the MULTISKILL labels in the dataset - we were trying to see whether some of them should actually be single skills, or could be separated into single skills rather than (as we found) labelling a large span as a multiskill. This process increased our number of labelled skill entities (from 2603 to 2887) and decreased the number of multiskill entities (from 404 to 218), resulting in a net increase in entities labelled (from 3400 to 3498).
 
 ### Error analysis
 
