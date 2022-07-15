@@ -3,7 +3,7 @@ from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     load_s3_data,
     save_to_s3,
-    get_s3_data_paths
+    get_s3_data_paths,
 )
 from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
     preprocess_skill,
@@ -17,6 +17,7 @@ import itertools
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import os
+
 
 class BertVectorizer:
     """
@@ -104,7 +105,6 @@ class SkillMapper:
         self.batch_size = batch_size
         self.ojo_skills_file_name = ojo_skills_file_name
 
-
     def get_ojo_skills(self, ojo_skills_file_name):
         self.ojo_skills = load_s3_data(
             get_s3_resource(), bucket_name, self.ojo_skills_file_name
@@ -127,7 +127,9 @@ class SkillMapper:
         return self.clean_ojo_skills
 
     def preprocess_taxonomy_skills(self, taxonomy_skill_list):
-        self.clean_taxonomy_skills = [preprocess_skill(skill) for skill in taxonomy_skill_list]
+        self.clean_taxonomy_skills = [
+            preprocess_skill(skill) for skill in taxonomy_skill_list
+        ]
         return self.clean_taxonomy_skills
 
     def load_bert(self):
@@ -151,7 +153,9 @@ class SkillMapper:
         self.clean_taxonomy_skills = self.preprocess_taxonomy_skills(
             taxonomy_skill_list
         )
-        self.taxonomy_skills_embeddings = self.bert_vectorizer.transform(self.clean_taxonomy_skills)
+        self.taxonomy_skills_embeddings = self.bert_vectorizer.transform(
+            self.clean_taxonomy_skills
+        )
 
         clean_ojo_skills = self.preprocess_ojo_skills(self.ojo_skills)
 
@@ -179,17 +183,12 @@ class SkillMapper:
             top_skill_indxs = [
                 list(np.argsort(sim)[::-1][:5]) for sim in ojo_taxonomoy_sims
             ]
-            top_skill_scores = [
-                np.sort(sim)[::-1][:5] for sim in ojo_taxonomoy_sims
-            ]
+            top_skill_scores = [np.sort(sim)[::-1][:5] for sim in ojo_taxonomoy_sims]
 
             skill_mapper_dict[id_] = {
                 "ojo_ner_skills": skill["clean_skills"],
                 "esco_taxonomy_skills": [
-                    [
-                        self.clean_taxonomy_skills[i]
-                        for i in top_skills
-                    ]
+                    [self.clean_taxonomy_skills[i] for i in top_skills]
                     for top_skills in top_skill_indxs
                 ],
                 "esco_taxonomy_scores": [
@@ -198,15 +197,14 @@ class SkillMapper:
                 ],  # to navigate JSON serializable issues
             }
         return skill_mapper_dict
-        
+
+
 if __name__ == "__main__":
 
     parser = ArgumentParser()
 
     parser.add_argument(
-        "--taxonomy",
-        help="Name of taxonomy to be mapped to.",
-        default="esco",
+        "--taxonomy", help="Name of taxonomy to be mapped to.", default="esco",
     )
 
     parser.add_argument(
@@ -230,11 +228,24 @@ if __name__ == "__main__":
         ojo_skills_file_name=config["ojo_skills_ner_path"],
     )
 
-    ##Modify this to be less 
-    esco_data = get_s3_data_paths(get_s3_resource(), bucket_name, 'escoe_extension/inputs/data/esco', '*.csv')
-    esco_dfs = {esco_df.split('/')[-1].split('_')[0]:load_s3_data(get_s3_resource(), bucket_name, esco_df) for esco_df in esco_data}
-    all_skills = list(esco_dfs['skillGroups']['preferredLabel']) + list(esco_dfs['skills']['preferredLabel']) + list(esco_dfs['skillsHierarchy']['Level 1 preferred term']) + list(esco_dfs['skillsHierarchy']['Level 2 preferred term']) + list(esco_dfs['skillsHierarchy']['Level 3 preferred term'])
-    taxonomy_skill_list = [i for i in list(set(all_skills)) if type(i) != float]
+    ##TO DO: Modify class to take list instead
+    #esco_data = get_s3_data_paths(
+    #    get_s3_resource(), bucket_name, "escoe_extension/inputs/data/esco", "*.csv"
+    #)
+    #esco_dfs = {
+    #    esco_df.split("/")[-1].split("_")[0]: load_s3_data(
+    #        get_s3_resource(), bucket_name, esco_df
+    #    )
+    #    for esco_df in esco_data
+    #}
+    #all_skills = (
+    #    list(esco_dfs["skillGroups"]["preferredLabel"])
+    #    + list(esco_dfs["skills"]["preferredLabel"])
+    #    + list(esco_dfs["skillsHierarchy"]["Level 1 preferred term"])
+    #    + list(esco_dfs["skillsHierarchy"]["Level 2 preferred term"])
+    #    + list(esco_dfs["skillsHierarchy"]["Level 3 preferred term"])
+    #)
+    #taxonomy_skill_list = [i for i in list(set(all_skills)) if type(i) != float]
 
     skills_to_taxonomy = skill_mapper.map_skills(
         taxonomy, taxonomy_skill_list, ojo_skill_file_name
