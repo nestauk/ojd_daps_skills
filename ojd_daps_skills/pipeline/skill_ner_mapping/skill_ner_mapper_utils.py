@@ -5,6 +5,9 @@ import re
 import nltk
 from nltk.corpus import stopwords
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+from collections import Counter
 
 lem = nltk.WordNetLemmatizer()
 
@@ -15,7 +18,7 @@ stopwords = set(stopwords.words("english"))
 # load punctuation replacement rules
 punctuation_replacement_rules = {
     # old patterns: replacement pattern
-    "[\u2022,\u2023,\u25E6,\u2043,\u2219]": "",  # Convert bullet points to empty string
+    "[\u2022,\u2023,\u25E6,\u2043,\u2219]": " ",  # Convert bullet points to space
     r"[-/:\\]": " ",  # Convert colon, hyphens and forward and backward slashes to spaces
     r"[^a-zA-Z0-9,.; #(++)]": "",  # Preserve spaces, commas, full stops, semicollons
 }
@@ -37,26 +40,27 @@ def preprocess_skill(skill):
         skill (str): preprocessed skill.
     """
 
-    job_stopwords = list("skill", "skills")
+    # job_stopwords = list("skill", "skills")
     # get rid of bullet points
     for j, pattern in enumerate(compiled_punct_patterns):
         skill = pattern.sub(punct_replacement[j], skill)
 
-    # get first half of skill where skills contain camel cases (assumes skill was first half)
-    skill = compiled_missing_space_pattern.sub(r"\1. \2\3", skill).split(".")[0]
+    # # get first half of skill where skills contain camel cases (assumes skill was first half)
+    # skill = compiled_missing_space_pattern.sub(r"\1. \2\3", skill).split(".")[0]
 
-    # remove stopwords
-    skill = " ".join(
-        filter(
-            lambda token: token not in stopwords | set(job_stopwords), skill.split(" ")
-        )
-    )
+    # # remove stopwords
+    # skill = " ".join(
+    #     filter(
+    #         lambda token: token not in stopwords | set(job_stopwords), skill.split(" ")
+    #     )
+    # )
 
-    # lemmatise tokens in skill
-    skill = " ".join([lem.lemmatize(token) for token in skill.split(" ")])
+    # # lemmatise tokens in skill
+    # skill = " ".join([lem.lemmatize(token) for token in skill.split(" ")])
 
-    # lowercase and remove trailing with spaces
-    return skill.lower().strip()
+    # # lowercase and remove trailing with spaces
+    # skill = skill.lower().strip()
+    return skill
 
 
 def get_top_skill_score_df(ojo_to_taxonomy: dict, taxonomy: str) -> pd.DataFrame:
@@ -84,3 +88,45 @@ def get_top_skill_score_df(ojo_to_taxonomy: dict, taxonomy: str) -> pd.DataFrame
     ]
 
     return ojo_to_taxonomy
+
+
+def get_top_comparisons(ojo_embs, taxonomy_embs, match_sim_thresh=0.5):
+    """
+    Get the cosine similarities between two embedding matrices and
+    output the top index and score, and the indices and scores of
+    those matches with a threshold over sim_thresh
+    """
+
+    emb_sims = cosine_similarity(ojo_embs, taxonomy_embs)
+
+    # top_sim_indxs = [list(np.argsort(sim)[::-1][:1])[0] for sim in emb_sims]
+    # top_sim_scores = [list(np.sort(sim)[::-1][:1])[0] for sim in emb_sims]
+    top_sim_indxs = [list(np.argsort(sim)[::-1][:5]) for sim in emb_sims]
+    top_sim_scores = [list(np.sort(sim)[::-1][:5]) for sim in emb_sims]
+
+    high_sim_indxs = [
+        [t[0] for t in np.argwhere(sim > match_sim_thresh).tolist()] for sim in emb_sims
+    ]
+    high_sim_scores = [
+        [sim[ix] for ix in high_sim_indxs[i]] for i, sim in enumerate(emb_sims)
+    ]
+
+    return top_sim_indxs, top_sim_scores, high_sim_indxs, high_sim_scores
+
+
+def get_most_common_code(split_possible_codes, lev_n):
+    """
+    split_possible_codes = [['S4', 'S4.8', 'S4.8.1'],['S1', 'S1.8', 'S1.8.1'],['S1', 'S1.8', 'S1.8.1'], ['S1', 'S1.12', 'S1.12.3']]
+    lev_n = 0
+    will output ('S1', 0.75) [i.e. 'S1' is 75% of the level 0 codes]
+    """
+    if split_possible_codes:
+        lev_code, lev_num = Counter(
+            [w[lev_n] for w in split_possible_codes]
+        ).most_common(1)[0]
+        lev_prop = (
+            0 if len(split_possible_codes) == 0 else lev_num / len(split_possible_codes)
+        )
+        return lev_code, lev_prop
+    else:
+        return None, None
