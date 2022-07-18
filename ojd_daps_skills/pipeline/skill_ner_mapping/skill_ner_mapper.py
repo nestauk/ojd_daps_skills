@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
+
 from ojd_daps_skills import config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
@@ -27,7 +31,7 @@ class BertVectorizer:
 
     def __init__(
         self,
-        bert_model_name="jjzha/jobspanbert-base-cased",
+        bert_model_name="sentence-transformers/paraphrase-MiniLM-L6-v2",
         multi_process=True,
         batch_size=32,
     ):
@@ -92,7 +96,7 @@ class SkillMapper:
         taxonomy: "esco",
         skill_name_col: "preferredLabel",
         skill_desc_col: "description",
-        bert_model_name: "jjzha/jobspanbert-base-cased",
+        bert_model_name: "sentence-transformers/paraphrase-MiniLM-L6-v2",
         multi_process: True,
         batch_size: 32,
         ojo_skills_file_name: config["ojo_skills_ner_path"],
@@ -222,30 +226,30 @@ if __name__ == "__main__":
         taxonomy=taxonomy,
         skill_name_col="preferredLabel",
         skill_desc_col="description",
-        bert_model_name="sentence-transformers/paraphrase-MiniLM-L6-v2",
+        bert_model_name="jjzha/jobspanbert-base-cased",
         multi_process=True,
         batch_size=32,
         ojo_skills_file_name=config["ojo_skills_ner_path"],
     )
 
     ##TO DO: Modify class to take list instead
-    #esco_data = get_s3_data_paths(
-    #    get_s3_resource(), bucket_name, "escoe_extension/inputs/data/esco", "*.csv"
-    #)
-    #esco_dfs = {
-    #    esco_df.split("/")[-1].split("_")[0]: load_s3_data(
-    #        get_s3_resource(), bucket_name, esco_df
-    #    )
-    #    for esco_df in esco_data
-    #}
-    #all_skills = (
-    #    list(esco_dfs["skillGroups"]["preferredLabel"])
-    #    + list(esco_dfs["skills"]["preferredLabel"])
-    #    + list(esco_dfs["skillsHierarchy"]["Level 1 preferred term"])
-    #    + list(esco_dfs["skillsHierarchy"]["Level 2 preferred term"])
-    #    + list(esco_dfs["skillsHierarchy"]["Level 3 preferred term"])
-    #)
-    #taxonomy_skill_list = [i for i in list(set(all_skills)) if type(i) != float]
+    esco_data = get_s3_data_paths(
+        get_s3_resource(), bucket_name, "escoe_extension/inputs/data/esco", "*.csv"
+    )
+    esco_dfs = {
+        esco_df.split("/")[-1].split("_")[0]: load_s3_data(
+            get_s3_resource(), bucket_name, esco_df
+        )
+        for esco_df in esco_data
+    }
+    all_skills = (
+        list(esco_dfs["skillGroups"]["preferredLabel"])
+        + list(esco_dfs["skills"]["preferredLabel"])
+        + list(esco_dfs["skillsHierarchy"]["Level 1 preferred term"])
+        + list(esco_dfs["skillsHierarchy"]["Level 2 preferred term"])
+        + list(esco_dfs["skillsHierarchy"]["Level 3 preferred term"])
+    )
+    taxonomy_skill_list = [i for i in list(set(all_skills)) if type(i) != float]
 
     skills_to_taxonomy = skill_mapper.map_skills(
         taxonomy, taxonomy_skill_list, ojo_skill_file_name

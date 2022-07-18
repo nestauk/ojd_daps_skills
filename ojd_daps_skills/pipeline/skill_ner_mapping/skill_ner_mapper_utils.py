@@ -36,6 +36,8 @@ def preprocess_skill(skill):
     Outputs:
         skill (str): preprocessed skill.
     """
+
+    job_stopwords = list("skill", "skills")
     # get rid of bullet points
     for j, pattern in enumerate(compiled_punct_patterns):
         skill = pattern.sub(punct_replacement[j], skill)
@@ -44,13 +46,18 @@ def preprocess_skill(skill):
     skill = compiled_missing_space_pattern.sub(r"\1. \2\3", skill).split(".")[0]
 
     # remove stopwords
-    skill = " ".join(filter(lambda token: token not in stopwords, skill.split(" ")))
+    skill = " ".join(
+        filter(
+            lambda token: token not in stopwords | set(job_stopwords), skill.split(" ")
+        )
+    )
 
     # lemmatise tokens in skill
     skill = " ".join([lem.lemmatize(token) for token in skill.split(" ")])
 
     # lowercase and remove trailing with spaces
     return skill.lower().strip()
+
 
 def get_top_skill_score_df(ojo_to_taxonomy: dict, taxonomy: str) -> pd.DataFrame:
     """Convert to DataFrame and get top skill and top score
@@ -66,7 +73,7 @@ def get_top_skill_score_df(ojo_to_taxonomy: dict, taxonomy: str) -> pd.DataFrame
 
     """
     ojo_to_taxonomy = pd.DataFrame(ojo_to_taxonomy).T
-    for col in (taxonomy + '_taxonomy_skills', taxonomy + '_taxonomy_scores'):
+    for col in (taxonomy + "_taxonomy_skills", taxonomy + "_taxonomy_scores"):
         col_name = "top_" + col.split("_")[-1]
         ojo_to_taxonomy[col_name] = ojo_to_taxonomy[col].apply(
             lambda x: [i[0] for i in x]
