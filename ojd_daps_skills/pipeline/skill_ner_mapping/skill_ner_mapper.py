@@ -2,7 +2,6 @@
 The taxonomy being mapped to in the script needs to be in a specific format.
 There should be the 3 columns skill_name_col, skill_id_col, skill_type_col
 with an optional 4th column (skill_hier_info_col).
-
 ### Example 1:
 At the most basic level your taxonomy input could be:
 "name" | "id" | "type"
@@ -11,44 +10,33 @@ At the most basic level your taxonomy input could be:
 "give presentations" | 333 | "skill"
 "communicating well" | 456 | "skill"
 ...
-
 with skill_type_dict = {'skill_types': ['skill']}.
-
 Your output match for the OJO skill "communicate" might look like this:
-
 {
 'ojo_ner_skills': "communicate",
 'top_5_tax_skills': [("communicating well", 456, 0.978), ("give presentations", 333, 0.762), ..]
 }
 - the closest skill to this ojo skill is "communicating well" which is code 456 and had a cosine distance of 0.978
-
-
 ### Example 2:
 A more complicated example would have hierarchy levels given too
-
 "name" | "id" | "type" | "hierarchy_levels"
 ---|---|---|---
 "driving a car" | 123 | "skill" | ['A2.1']
 "give presentations" | 333 | "skill" | ['A1.2']
 "communicating well" | 456 | "skill"| ['A1.3']
 ...
-
 with skill_type_dict = {'skill_types': ['skill']}.
-
 This might give the result:
 {
 'ojo_ner_skills': "communicate",
 'top_5_tax_skills': [("communicating well", 456, 0.978), ("give presentations", 333, 0.762), ..],
 'high_tax_skills':  {'num_over_thresh': 2, 'most_common_level_0: ('A1', 1) , 'most_common_level_1': ('A1.3', 0.5)},
 }
-
 - 100% of the skills where the similarity is greater than the threshold are in the 'A1' skill level 0 group
 - 50% of the skills where the similarity is greater than the threshold are in the 'A1.3' skill level 1 group
-
 ### Example 3:
 And an even more complicated example would have skill level names given too (making use
 of the 'type' column to differentiate them).
-
 "name" | "id" | "type" | "hierarchy_levels"
 ---|---|---|---
 "driving a car" | 123 | "skill" | ['A2.1']
@@ -58,9 +46,7 @@ of the 'type' column to differentiate them).
 "driving" | 'A2' | "level 0"| None
 "communicate verbally" | 'A1.3' | "level 1"| None
 ...
-
 with skill_type_dict = {'skill_types': ['skill'], 'hier_types': ["level A", "level B"]} and num_hier_levels=2
-
 This might give the result:
 {
 'ojo_ner_skills': "communicate",
@@ -71,13 +57,11 @@ This might give the result:
 }
 - the skill level 0 group 'communication' (code 'A1') is the closest to thie ojo skill with distance 0.998
 - the skill level 1 group 'communicate verbally' (code 'A1.3') is the closest to thie ojo skill with distance 0.98
-
-
 """
 
-# import sys
+import sys
 
-# sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
 
 from ojd_daps_skills import config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
@@ -107,7 +91,6 @@ import ast
 class SkillMapper:
     """
     Class to map extracted skills from NER model to a skills taxonomy.
-
     Attributes
     ----------
     skill_name_col (str): the taxonomy column name of the description of the skill/skill level

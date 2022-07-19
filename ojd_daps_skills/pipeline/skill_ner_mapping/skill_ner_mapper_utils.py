@@ -8,6 +8,8 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from collections import Counter
+import numpy as np
+import json
 
 lem = nltk.WordNetLemmatizer()
 

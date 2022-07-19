@@ -7,6 +7,21 @@ import os
 import pandas as pd
 from pandas import DataFrame
 import boto3
+from decimal import Decimal
+import numpy
+
+
+class CustomJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        elif isinstance(obj, numpy.integer):
+            return int(obj)
+        elif isinstance(obj, numpy.floating):
+            return float(obj)
+        elif isinstance(obj, numpy.ndarray):
+            return obj.tolist()
+        return super(CustomJsonEncoder, self).default(obj)
 
 
 def load_data(file_name: str, local=True) -> DataFrame:
@@ -79,7 +94,7 @@ def save_to_s3(s3, bucket_name, output_var, output_file_dir):
     elif fnmatch(output_file_dir, "*.txt"):
         obj.put(Body=output_var)
     else:
-        obj.put(Body=json.dumps(output_var))
+        obj.put(Body=json.dumps(output_var, cls=CustomJsonEncoder))
 
     print(f"Saved to s3://{bucket_name} + {output_file_dir} ...")
 
