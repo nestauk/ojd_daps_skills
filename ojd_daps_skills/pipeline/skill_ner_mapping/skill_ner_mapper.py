@@ -59,9 +59,9 @@ This might give the result:
 - the skill level 1 group 'communicate verbally' (code 'A1.3') is the closest to thie ojo skill with distance 0.98
 """
 
-import sys
+# import sys
 
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
+# sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
 
 from ojd_daps_skills import config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
@@ -183,7 +183,7 @@ class SkillMapper:
         num_hier_levels (int): the number of levels there are in this taxonomy
         skill_type_dict (dict):
                 A dictionary of the values of the skill_type_col column which fit into either the skill_types or the hier_types
-                e.g. {'skill_types': ['preferredLabel', 'altLabels'], 'hier_types': ['Level 2 preferred term', 'Level 3 preferred term']}
+                e.g. {'skill_types': ['preferredLabel', 'altLabels'], 'hier_types': ["level_2", "level_3"],}
         """
 
         self.ojo_skills = self.get_ojo_skills(self.ojo_skills_file_name)
@@ -235,18 +235,19 @@ class SkillMapper:
 
         # Find the closest matches to the hierarchy levels information
         hier_types = {i: v for i, v in enumerate(skill_type_dict.get("hier_types", []))}
-        hier_top_sims = {}
-        for hier_type_ix, hier_type in hier_types.items():
-            tax_hier_ix = taxonomy_skills[
+        hier_types_top_sims = {}
+        for hier_type_num, hier_type in hier_types.items():
+            taxonomy_skills_ix = taxonomy_skills[
                 taxonomy_skills[self.skill_type_col] == hier_type
             ].index
             top_sim_indxs, top_sim_scores, _, _ = get_top_comparisons(
-                clean_ojo_skill_embeddings, self.taxonomy_skills_embeddings[tax_hier_ix]
+                clean_ojo_skill_embeddings,
+                self.taxonomy_skills_embeddings[taxonomy_skills_ix],
             )
-            hier_top_sims[hier_type_ix] = {
+            hier_types_top_sims[hier_type_num] = {
                 "top_sim_indxs": top_sim_indxs,
                 "top_sim_scores": top_sim_scores,
-                "tax_hier_ix": tax_hier_ix,
+                "taxonomy_skills_ix": taxonomy_skills_ix,
             }
 
         # Output the top matches (using the different metrics) for each OJO skill
@@ -300,15 +301,16 @@ class SkillMapper:
                 match_results["high_tax_skills"] = high_tax_skills_results
 
             # Now get the top matches using the hierarchy descriptions (if hier_types isnt empty)
-            for hier_type_ix, hier_type in hier_types.items():
-                hier_sim_id = hier_top_sims[hier_type_ix]
+            for hier_type_num, hier_type in hier_types.items():
+                hier_sims_info = hier_types_top_sims[hier_type_num]
+                taxonomy_skills_ix = hier_sims_info["taxonomy_skills_ix"]
                 tax_info = taxonomy_skills.iloc[
-                    tax_hier_ix[hier_sim_id["top_sim_indxs"][match_i][0]]
+                    taxonomy_skills_ix[hier_sims_info["top_sim_indxs"][match_i][0]]
                 ]
                 match_results[f"top_'{hier_type}'_tax_level"] = (
                     tax_info[self.skill_name_col],
                     tax_info[self.skill_id_col],
-                    hier_sim_id["top_sim_scores"][match_i][0],
+                    hier_sims_info["top_sim_scores"][match_i][0],
                 )
 
             job_id, skill_num = flat_clean_ojo_skills_ix[match_i]
@@ -339,11 +341,12 @@ if __name__ == "__main__":
     ojo_skill_file_name = args.ojo_skill_fn
 
     # Hard code how many levels there are in the taxonomy (if any)
+    # This should correspond to the length of the data in taxonomy_skills["hierarchy_levels"] e.g. ['S', S4', 'S4.8, 'S4.8.1']
     if taxonomy == "esco":
-        num_hier_levels = 3
+        num_hier_levels = 4
         skill_type_dict = {
             "skill_types": ["preferredLabel", "altLabels"],
-            "hier_types": ["Level 2 preferred term", "Level 3 preferred term"],
+            "hier_types": ["level_2", "level_3"],
         }
         tax_input_file_name = (
             "escoe_extension/outputs/data/skill_ner_mapping/esco_data_formatted.csv"

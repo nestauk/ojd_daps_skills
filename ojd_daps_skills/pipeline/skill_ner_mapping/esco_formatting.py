@@ -20,20 +20,27 @@ from ojd_daps_skills.getters.data_getters import (
 )
 from ojd_daps_skills import bucket_name
 
+import re
+
 import pandas as pd
+
+
+def find_lev_0(code):
+    return " ".join(re.findall("[a-zA-Z]+", code))
 
 
 def split_up_code(code):
     """
-    ESCO specific code splitting e.g. 'S4.8.1'-> ['S4', 'S4.8, 'S4.8.1']
+    ESCO specific code splitting e.g. 'S4.8.1'-> ['S', S4', 'S4.8, 'S4.8.1']
     """
+    lev_0 = find_lev_0(code)
     c = code.split(".")
     if len(c) == 1:
-        return [c[0], None, None]
+        return [lev_0, c[0], None, None]
     elif len(c) == 2:
-        return [c[0], ".".join(c[0:2]), None]
+        return [lev_0, c[0], ".".join(c[0:2]), None]
     else:
-        return [c[0], ".".join(c[0:2]), ".".join(c)]
+        return [lev_0, c[0], ".".join(c[0:2]), ".".join(c)]
 
 
 def concepturi_2_tax(skills_concept_mapper, trans_skills_concept_mapper, concepturi):
@@ -83,6 +90,9 @@ if __name__ == "__main__":
         "escoe_extension/inputs/data/esco/transversalSkillsCollection_en.csv"
     )
 
+    lev_2_name = "Level 2 preferred term"
+    lev_3_name = "Level 3 preferred term"
+
     esco_skills = load_s3_data(s3, bucket_name, skills_file_name)
     esco_hierarchy = load_s3_data(s3, bucket_name, hierarchy_file_name)
     skills_concept_mapper = load_s3_data(s3, bucket_name, skill_file_name)
@@ -115,24 +125,20 @@ if __name__ == "__main__":
 
     # Get level 2 and 3 hierarchy information separately
     lev_2_skills = (
-        esco_hierarchy[["Level 2 preferred term", "Level 2 code"]]
-        .dropna()
-        .drop_duplicates()
+        esco_hierarchy[[lev_2_name, "Level 2 code"]].dropna().drop_duplicates()
     )
-    lev_2_skills["type"] = ["Level 2 preferred term"] * len(lev_2_skills)
+    lev_2_skills["type"] = ["level_2"] * len(lev_2_skills)
     lev_2_skills.rename(
-        columns={"Level 2 preferred term": "description", "Level 2 code": "id"},
+        columns={lev_2_name: "description", "Level 2 code": "id"},
         inplace=True,
     )
 
     lev_3_skills = (
-        esco_hierarchy[["Level 3 preferred term", "Level 3 code"]]
-        .dropna()
-        .drop_duplicates()
+        esco_hierarchy[[lev_3_name, "Level 3 code"]].dropna().drop_duplicates()
     )
-    lev_3_skills["type"] = ["Level 3 preferred term"] * len(lev_3_skills)
+    lev_3_skills["type"] = ["level_3"] * len(lev_3_skills)
     lev_3_skills.rename(
-        columns={"Level 3 preferred term": "description", "Level 3 code": "id"},
+        columns={lev_3_name: "description", "Level 3 code": "id"},
         inplace=True,
     )
 
