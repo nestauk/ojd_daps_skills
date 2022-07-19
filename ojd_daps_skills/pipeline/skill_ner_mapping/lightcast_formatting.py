@@ -18,13 +18,13 @@ from ojd_daps_skills.getters.data_getters import (
     save_to_s3,
 )
 from ojd_daps_skills import bucket_name
-from ojd_daps_skills.pipeline.evaluation.emsi_evaluation import (
-    get_emsi_access_token
-    )
+from ojd_daps_skills.pipeline.evaluation.emsi_evaluation import get_emsi_access_token
 
 import pandas as pd
 from argparse import ArgumentParser
 import requests
+import numpy as np
+
 
 def get_lightcast_skills(access_code: str) -> pd.DataFrame:
     """Call lightcast API to return Open Skills taxonomy.
@@ -40,40 +40,62 @@ def get_lightcast_skills(access_code: str) -> pd.DataFrame:
 
     querystring = {"fields": "id,name,type,category,subcategory"}
 
-    headers = {'Authorization': 'Bearer ' + access_code}
+    headers = {"Authorization": "Bearer " + access_code}
 
     response = requests.request("GET", url, headers=headers, params=querystring)
 
     if response.ok:
-        return pd.DataFrame(response.json()['data'])
+        return pd.DataFrame(response.json()["data"])
     else:
         return response
+
 
 def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
     """Format lightcast skills taxonomy into format needed for
     skill_ner_mapper.py."""
 
-    lightcast_skills[['category_id', 'category_name']] = pd.json_normalize(lightcast_skills['category'])
-    lightcast_skills[['subcategory_id', 'subcategory_name']] = pd.json_normalize(lightcast_skills['subcategory'])
+    lightcast_skills[["category_id", "category_name"]] = pd.json_normalize(
+        lightcast_skills["category"]
+    )
+    lightcast_skills[["subcategory_id", "subcategory_name"]] = pd.json_normalize(
+        lightcast_skills["subcategory"]
+    )
 
-    def add_columns(skills_df, level_type:str):
-        skills_df['hierarchy_levels'] = np.nan
-        skills_df['type'] = level_type
+    def add_columns(skills_df, level_type: str):
+        skills_df["hierarchy_levels"] = np.nan
+        skills_df["type"] = level_type
 
         return skills_df
 
-    all_skills = lightcast_skills[['id', 'name']].rename(columns={'name': 'description'})
-    all_skills = add_columns(all_skills, 'skill')
+    all_skills = lightcast_skills[["id", "name"]].rename(
+        columns={"name": "description"}
+    )
+    all_skills = add_columns(all_skills, "skill")
 
-    category_skills = lightcast_skills[['category_id', 'category_name']].drop_duplicates().rename(columns={'category_id':'id', 'category_name':'description'})
-    category_skills = add_columns(category_skills, 'category')
+    category_skills = (
+        lightcast_skills[["category_id", "category_name"]]
+        .drop_duplicates()
+        .rename(columns={"category_id": "id", "category_name": "description"})
+    )
+    category_skills = add_columns(category_skills, "category")
 
-    subcategory_skills = lightcast_skills[['category_id', 'subcategory_id', 'subcategory_name']].drop_duplicates().rename(columns={'subcategory_name': 'description'})
-    subcategory_skills['id'] = subcategory_skills['category_id'].astype(str) + '.' + subcategory_skills['subcategory_id'].astype(str)
-    subcategory_skills = subcategory_skills[['id', 'description']]
-    subcategory_skills = add_columns(subcategory_skills, 'subcategory')
+    subcategory_skills = (
+        lightcast_skills[["category_id", "subcategory_id", "subcategory_name"]]
+        .drop_duplicates()
+        .rename(columns={"subcategory_name": "description"})
+    )
+    subcategory_skills["id"] = (
+        subcategory_skills["category_id"].astype(str)
+        + "."
+        + subcategory_skills["subcategory_id"].astype(str)
+    )
+    subcategory_skills = subcategory_skills[["id", "description"]]
+    subcategory_skills = add_columns(subcategory_skills, "subcategory")
 
-    return pd.concat([all_skills, category_skills, subcategory_skills]).reset_index(drop=True)
+    return pd.concat([all_skills, category_skills, subcategory_skills]).reset_index(
+        drop=True
+    )
+
 
 if __name__ == "__main__":
 
@@ -86,7 +108,8 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument(
-        "--client-id", help="EMSI skills API client id",
+        "--client-id",
+        help="EMSI skills API client id",
     )
 
     parser.add_argument("--client-secret", help="EMSI skills API client secret.")
