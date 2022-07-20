@@ -95,25 +95,17 @@ def get_top_skill_score_df(ojo_to_taxonomy: dict, taxonomy: str) -> pd.DataFrame
 def get_top_comparisons(ojo_embs, taxonomy_embs, match_sim_thresh=0.5):
     """
     Get the cosine similarities between two embedding matrices and
-    output the top index and score, and the indices and scores of
-    those matches with a threshold over sim_thresh
+    output the top index and score
 
     Need to convert score to float for saving to JSON
     """
 
     emb_sims = cosine_similarity(ojo_embs, taxonomy_embs)
 
-    top_sim_indxs = [list(np.argsort(sim)[::-1][:5]) for sim in emb_sims]
-    top_sim_scores = [[float(s) for s in np.sort(sim)[::-1][:5]] for sim in emb_sims]
+    top_sim_indxs = [list(np.argsort(sim)[::-1][:10]) for sim in emb_sims]
+    top_sim_scores = [[float(s) for s in np.sort(sim)[::-1][:10]] for sim in emb_sims]
 
-    high_sim_indxs = [
-        [t[0] for t in np.argwhere(sim > match_sim_thresh).tolist()] for sim in emb_sims
-    ]
-    high_sim_scores = [
-        [float(sim[ix]) for ix in high_sim_indxs[i]] for i, sim in enumerate(emb_sims)
-    ]
-
-    return top_sim_indxs, top_sim_scores, high_sim_indxs, high_sim_scores
+    return top_sim_indxs, top_sim_scores
 
 
 def get_most_common_code(split_possible_codes, lev_n):

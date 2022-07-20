@@ -222,12 +222,7 @@ class SkillMapper:
         tax_skills_ix = taxonomy_skills[
             taxonomy_skills[self.skill_type_col].isin(skill_types)
         ].index
-        (
-            skill_top_sim_indxs,
-            skill_top_sim_scores,
-            skill_high_sim_indxs,
-            skill_high_sim_scores,
-        ) = get_top_comparisons(
+        (skill_top_sim_indxs, skill_top_sim_scores) = get_top_comparisons(
             clean_ojo_skill_embeddings,
             self.taxonomy_skills_embeddings[tax_skills_ix],
             match_sim_thresh=0.5,
@@ -240,7 +235,7 @@ class SkillMapper:
             taxonomy_skills_ix = taxonomy_skills[
                 taxonomy_skills[self.skill_type_col] == hier_type
             ].index
-            top_sim_indxs, top_sim_scores, _, _ = get_top_comparisons(
+            top_sim_indxs, top_sim_scores = get_top_comparisons(
                 clean_ojo_skill_embeddings,
                 self.taxonomy_skills_embeddings[taxonomy_skills_ix],
             )
@@ -258,7 +253,7 @@ class SkillMapper:
             # Top highest matches (any threshold)
             match_results = {
                 "ojo_ner_skills": match_text,
-                "top_5_tax_skills": list(
+                "top_tax_skills": list(
                     zip(
                         [
                             taxonomy_skills.iloc[tax_skills_ix[top_ix]][
@@ -277,22 +272,19 @@ class SkillMapper:
                 ),
             }
 
-            # Using the matches with similarity scores over a threshold, find the most common codes
-            # for each level of the hierarchy (if hierarchy details are given)
+            # Using the top matches, find the most common codes for each level of the
+            # hierarchy (if hierarchy details are given), weighted by their similarity score
             if self.skill_hier_info_col:
                 high_hier_codes = []
                 for sim_ix, sim_score in zip(
-                    skill_high_sim_indxs[match_i], skill_high_sim_scores[match_i]
+                    skill_top_sim_indxs[match_i], skill_top_sim_scores[match_i]
                 ):
                     tax_info = taxonomy_skills.iloc[tax_skills_ix[sim_ix]]
                     hier_levels = ast.literal_eval(tax_info[self.skill_hier_info_col])
                     for hier_level in hier_levels:
-                        high_hier_codes.append(hier_level)
+                        high_hier_codes += [hier_level] * round(sim_score * 10)
 
-                high_tax_skills_results = {
-                    "num_over_thresh": len(skill_high_sim_indxs[match_i])
-                }
-                most_common_hier = {}
+                high_tax_skills_results = {}
                 for i in range(num_hier_levels):
                     high_tax_skills_results[
                         f"most_common_level_{i}"
