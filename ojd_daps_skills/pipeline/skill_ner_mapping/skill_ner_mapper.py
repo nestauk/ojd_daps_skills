@@ -365,6 +365,7 @@ if __name__ == "__main__":
     )
 
     taxonomy_skills = load_s3_data(get_s3_resource(), bucket_name, tax_input_file_name)
+    taxonomy_skills = taxonomy_skills.replace({np.nan: None})
 
     skills_to_taxonomy = skill_mapper.map_skills(
         taxonomy_skills,
