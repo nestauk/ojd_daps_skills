@@ -283,9 +283,12 @@ class SkillMapper:
                     skill_top_sim_indxs[match_i], skill_top_sim_scores[match_i]
                 ):
                     tax_info = taxonomy_skills.iloc[tax_skills_ix[sim_ix]]
-                    hier_levels = ast.literal_eval(tax_info[self.skill_hier_info_col])
-                    for hier_level in hier_levels:
-                        high_hier_codes += [hier_level] * round(sim_score * 10)
+                    if tax_info[self.skill_hier_info_col]:
+                        hier_levels = ast.literal_eval(
+                            tax_info[self.skill_hier_info_col]
+                        )
+                        for hier_level in hier_levels:
+                            high_hier_codes += [hier_level] * round(sim_score * 10)
 
                 high_tax_skills_results = {}
                 for i in range(num_hier_levels):

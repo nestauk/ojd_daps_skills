@@ -127,6 +127,12 @@ def concepturi_2_tax(skills_concept_mapper, trans_skills_concept_mapper):
                     )
                 else:
                     not_found.append(broader_code)
+    # Get rid of duplicates e.g. [['K', 'K00', 'K00', None], ['K', 'K00', 'K00', None], ['S', 'S2', None, None]]
+    concept_mapper = {
+        k: [list(item) for item in set(tuple(row) for row in v)]
+        for k, v in concept_mapper.items()
+        if k != []
+    }
 
     return concept_mapper
 
@@ -183,29 +189,29 @@ if __name__ == "__main__":
     alt_label_skills.rename(columns={"altLabels": "description"}, inplace=True)
 
     print(
-        f"Removing {sum(pref_label_skills['hierarchy_levels'].apply(lambda x: len(x)==0))} out of {len(pref_label_skills)} preferred label skills weren't mapped"
+        f"Removing {sum(pd.isnull(pref_label_skills['hierarchy_levels']))} out of {len(pref_label_skills)} preferred label skills weren't mapped"
     )
     print(
-        f"Removing {sum(alt_label_skills['hierarchy_levels'].apply(lambda x: len(x)==0))} out of {len(alt_label_skills)} alternative label skills weren't mapped"
+        f"Removing {sum(pd.isnull(alt_label_skills['hierarchy_levels']))} out of {len(alt_label_skills)} alternative label skills weren't mapped"
     )
 
     not_found_concept_id = list(
         set(
-            pref_label_skills[
-                pref_label_skills["hierarchy_levels"].apply(lambda x: len(x) == 0)
-            ]["id"].tolist()
-            + alt_label_skills[
-                alt_label_skills["hierarchy_levels"].apply(lambda x: len(x) == 0)
-            ]["id"].tolist()
+            pref_label_skills[pd.isnull(pref_label_skills["hierarchy_levels"])][
+                "id"
+            ].tolist()
+            + alt_label_skills[pd.isnull(alt_label_skills["hierarchy_levels"])][
+                "id"
+            ].tolist()
         )
     )
 
     # Remove data not mapped
     pref_label_skills = pref_label_skills[
-        pref_label_skills["hierarchy_levels"].apply(lambda x: len(x) != 0)
+        pd.notnull(pref_label_skills["hierarchy_levels"])
     ]
     alt_label_skills = alt_label_skills[
-        alt_label_skills["hierarchy_levels"].apply(lambda x: len(x) != 0)
+        pd.notnull(alt_label_skills["hierarchy_levels"])
     ]
     print(f"{len(pref_label_skills)} remaining preferred labels")
     print(f"{len(alt_label_skills)} remaining alternate labels")
