@@ -21,6 +21,7 @@ from ojd_daps_skills.getters.data_getters import (
 from ojd_daps_skills import bucket_name
 
 import re
+from collections import defaultdict
 
 import pandas as pd
 
@@ -35,7 +36,9 @@ def split_up_code(code):
     """
     lev_0 = find_lev_0(code)
     c = code.split(".")
-    if len(c) == 1:
+    if len(code) == 1:  # e.g. just "S"
+        return [code, None, None, None]
+    elif len(c) == 1:  # e.g. ["S1"]
         return [lev_0, c[0], None, None]
     elif len(c) == 2:
         return [lev_0, c[0], ".".join(c[0:2]), None]
@@ -43,34 +46,89 @@ def split_up_code(code):
         return [lev_0, c[0], ".".join(c[0:2]), ".".join(c)]
 
 
-def concepturi_2_tax(skills_concept_mapper, trans_skills_concept_mapper, concepturi):
+def split_up_isced_code(code):
     """
-    Get the hierarchy codes for skills using the concept mappers.
+    isced codes are the knowledge codes, they are in the form "0901"
+    The first 2 digits are highest level.
+    Problems will arise if ESCO introduce more than 9 groups per level :/
+    e.g. '0000' -> ['K', 'K00', 'K000', 'K0000']
+    We introduce a 'K' to make the knowledge link more obvious.
+    """
+    if code.isnumeric():
+        c = "K" + code
+        if len(c) == 2:
+            return [c[0], c[0:3], None, None]
+        elif len(c) == 3:
+            return [c[0], c[0:3], c[0:4], None]
+        else:
+            return [c[0], c[0:3], c[0:4], c]
+    else:
+        return split_up_code(code)
+
+
+def concepturi_2_tax(skills_concept_mapper, trans_skills_concept_mapper):
+    """
+    Create a concept ID to hierarchy codes mapper dict.
     If the code is of length >10 then it wont be a hierarchy level code
 
     e.g. a skill concept code is '8f18f987-33e2-4228-9efb-65de25d03330' but a hierarchy code is 'S1.5.0'
 
     """
-    codes = []
-    # There may be multiple rows found for this uri, go through each one
-    for uri in skills_concept_mapper[skills_concept_mapper["conceptUri"] == concepturi][
-        "broaderUri"
-    ].tolist():
-        if "http://data.europa.eu/esco/skill/" in uri:
-            code = uri.split("http://data.europa.eu/esco/skill/")[1]
-            if len(code) < 10:
-                codes.append(split_up_code(code))
+    # 2 step process,
+    # 1. find mappings from concept id to broader id (as long as this is len <10 - otherwise its actually a concept id)
+    # 2. go through broader ids which were >=10 (i.e. concept ids) and try to find them in the step 1 mapping dict, update
+    # Add the transversal skills to this too in the same way
 
-    for uris in trans_skills_concept_mapper[
-        trans_skills_concept_mapper["conceptUri"] == concepturi
-    ]["broaderConceptUri"].tolist():
-        for uri in uris.split(" | "):
-            if "http://data.europa.eu/esco/skill/" in uri:
-                code = uri.split("http://data.europa.eu/esco/skill/")[1]
-                if len(code) < 10:
-                    codes.append(split_up_code(code))
+    concept_mapping_df_concat = pd.concat(
+        [skills_concept_mapper, trans_skills_concept_mapper]
+    )
 
-    return codes
+    concept_mapper = defaultdict(list)
+    for i, row in concept_mapping_df_concat.iterrows():
+        uri = row["conceptUri"]
+        concept_code = uri.split("/")[-1]
+        if "isced" not in uri:
+            # Skill mappings
+            # Only transversal data uses 'broaderConceptUri' column, otherwise 'broaderUri' column
+            broader_uris = (
+                row["broaderConceptUri"]
+                if pd.notnull(row["broaderConceptUri"])
+                else row["broaderUri"]
+            )  # can be multiple
+            for broader_uri in broader_uris.split(" | "):
+                broader_code = broader_uri.split("/")[-1]
+                if "isced" not in broader_uri:
+                    if len(broader_code) < 10:
+                        concept_mapper[concept_code].append(split_up_code(broader_code))
+                else:
+                    concept_mapper[concept_code].append(
+                        split_up_isced_code(broader_code)
+                    )
+        else:
+            # Map the isced codes (knowledge)
+            # These just require cleaning up the concept code
+            concept_mapper[concept_code].append(split_up_isced_code(concept_code))
+
+    not_found = []
+    for i, row in concept_mapping_df_concat.iterrows():
+        uri = row["conceptUri"]
+        concept_code = uri.split("/")[-1]
+        broader_uris = (
+            row["broaderConceptUri"]
+            if pd.notnull(row["broaderConceptUri"])
+            else row["broaderUri"]
+        )  # can be multiple
+        for broader_uri in broader_uris.split(" | "):
+            broader_code = broader_uri.split("/")[-1]
+            if len(broader_code) >= 10:
+                if concept_mapper.get(broader_code):
+                    concept_mapper[concept_code].extend(
+                        concept_mapper.get(broader_code)
+                    )
+                else:
+                    not_found.append(broader_code)
+
+    return concept_mapper
 
 
 if __name__ == "__main__":
@@ -89,6 +147,7 @@ if __name__ == "__main__":
     transskill_file_name = (
         "escoe_extension/inputs/data/esco/transversalSkillsCollection_en.csv"
     )
+    skill_groups_file_name = "escoe_extension/inputs/data/esco/skillGroups_en.csv"
 
     lev_2_name = "Level 2 preferred term"
     lev_3_name = "Level 3 preferred term"
@@ -96,18 +155,18 @@ if __name__ == "__main__":
     esco_skills = load_s3_data(s3, bucket_name, skills_file_name)
     esco_hierarchy = load_s3_data(s3, bucket_name, hierarchy_file_name)
     skills_concept_mapper = load_s3_data(s3, bucket_name, skill_file_name)
-    skills_concept_mapper = skills_concept_mapper[
-        skills_concept_mapper["broaderType"] == "SkillGroup"
-    ]
     trans_skills_concept_mapper = load_s3_data(s3, bucket_name, transskill_file_name)
+    knowledge_skills = load_s3_data(s3, bucket_name, skill_groups_file_name)
+
+    # Concatenate the skills and the knowledge skills
+    esco_skills = pd.concat([esco_skills, knowledge_skills])
 
     # Get hierarchy codes for skills and clean
-    esco_skills["hierarchy_levels"] = esco_skills["conceptUri"].apply(
-        lambda x: concepturi_2_tax(
-            skills_concept_mapper, trans_skills_concept_mapper, x
-        )
+    concept_mapper = concepturi_2_tax(
+        skills_concept_mapper, trans_skills_concept_mapper
     )
     esco_skills["id"] = esco_skills["conceptUri"].apply(lambda x: x.split("/")[-1])
+    esco_skills["hierarchy_levels"] = esco_skills["id"].map(concept_mapper)
     esco_skills["altLabels"] = esco_skills["altLabels"].apply(
         lambda x: x.split("\n") if isinstance(x, str) else x
     )
@@ -122,6 +181,34 @@ if __name__ == "__main__":
     ]
     alt_label_skills["type"] = ["altLabels"] * len(alt_label_skills)
     alt_label_skills.rename(columns={"altLabels": "description"}, inplace=True)
+
+    print(
+        f"Removing {sum(pref_label_skills['hierarchy_levels'].apply(lambda x: len(x)==0))} out of {len(pref_label_skills)} preferred label skills weren't mapped"
+    )
+    print(
+        f"Removing {sum(alt_label_skills['hierarchy_levels'].apply(lambda x: len(x)==0))} out of {len(alt_label_skills)} alternative label skills weren't mapped"
+    )
+
+    not_found_concept_id = list(
+        set(
+            pref_label_skills[
+                pref_label_skills["hierarchy_levels"].apply(lambda x: len(x) == 0)
+            ]["id"].tolist()
+            + alt_label_skills[
+                alt_label_skills["hierarchy_levels"].apply(lambda x: len(x) == 0)
+            ]["id"].tolist()
+        )
+    )
+
+    # Remove data not mapped
+    pref_label_skills = pref_label_skills[
+        pref_label_skills["hierarchy_levels"].apply(lambda x: len(x) != 0)
+    ]
+    alt_label_skills = alt_label_skills[
+        alt_label_skills["hierarchy_levels"].apply(lambda x: len(x) != 0)
+    ]
+    print(f"{len(pref_label_skills)} remaining preferred labels")
+    print(f"{len(alt_label_skills)} remaining alternate labels")
 
     # Get level 2 and 3 hierarchy information separately
     lev_2_skills = (

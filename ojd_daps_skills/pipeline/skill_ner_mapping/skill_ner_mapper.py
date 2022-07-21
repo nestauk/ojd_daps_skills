@@ -247,12 +247,15 @@ class SkillMapper:
 
         # Output the top matches (using the different metrics) for each OJO skill
         # Need to match indexes back correctly (hence all the ix variables)
-        skill_mapper_dict = {}
+        skill_mapper_list = []
         for match_i, match_text in enumerate(flat_clean_ojo_skills):
 
             # Top highest matches (any threshold)
+            job_id, skill_num = flat_clean_ojo_skills_ix[match_i]
             match_results = {
-                "ojo_ner_skills": match_text,
+                "job_id": job_id,
+                "skill_num": skill_num,
+                "ojo_ner_skill": match_text,
                 "top_tax_skills": list(
                     zip(
                         [
@@ -305,10 +308,9 @@ class SkillMapper:
                     hier_sims_info["top_sim_scores"][match_i][0],
                 )
 
-            job_id, skill_num = flat_clean_ojo_skills_ix[match_i]
-            skill_mapper_dict[job_id] = match_results
+            skill_mapper_list.append(match_results)
 
-        return skill_mapper_dict
+        return skill_mapper_list
 
 
 if __name__ == "__main__":
