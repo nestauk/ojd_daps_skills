@@ -4,7 +4,7 @@ Use a trained NER model to predict skills and experience spans in a sample of jo
 Running
 
 python ojd_daps_skills/pipeline/skill_ner/get_skills.py
-    --model_path outputs/models/ner_model/20220630/
+    --model_path outputs/models/ner_model/20220714/
     --output_file_dir escoe_extension/outputs/data/skill_ner/skill_predictions/
     --job_adverts_filename escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json
 
@@ -25,10 +25,14 @@ from ojd_daps_skills.getters.data_getters import (
 )
 from ojd_daps_skills import bucket_name
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
+from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import clean_text_pipeline
+from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import split_multiskill
 
 import spacy
-from tqdm import tqdm
 
+nlp_parser = spacy.load("en_core_web_sm")  # Needed for parsing the text
+
+from tqdm import tqdm
 from datetime import datetime as date
 import json
 import os
@@ -40,7 +44,7 @@ def parse_arguments(parser):
     parser.add_argument(
         "--model_path",
         help="The path to the model you want to make predictions with",
-        default="outputs/models/ner_model/20220630/",
+        default="outputs/models/ner_model/20220714/",
     )
 
     parser.add_argument(
@@ -78,7 +82,7 @@ if __name__ == "__main__":
     nlp = job_ner.load_model(
         model_path, s3_download=False if args.use_local_model else True
     )
-    labels = nlp.get_pipe("ner").labels
+    labels = nlp.get_pipe("ner").labels + ("MULTISKILL",)
 
     s3 = get_s3_resource()
 
@@ -94,19 +98,46 @@ if __name__ == "__main__":
     job_adverts = load_s3_data(s3, bucket_name, job_adverts_filename)
 
     predicted_skills = {}
+    skills_from_multi_split = {}
+    skills_from_multi_not_split = {}
     for job_id, job_info in tqdm(job_adverts.items()):
-        job_advert_text = job_info["description"].replace("\n", " ")
+        job_advert_text = clean_text_pipeline(job_info["description"])
         pred_ents = job_ner.predict(job_advert_text)
         skills = {label: [] for label in labels}
+        skills_split = []
+        skills_not_split = []
         for ent in pred_ents:
-            skills[ent["label"]].append(job_advert_text[ent["start"] : ent["end"]])
+            label = ent["label"]
+            ent_text = job_advert_text[ent["start"] : ent["end"]]
+            if label == "MULTISKILL":
+                parsed_text = nlp_parser(ent_text)
+                split_list = split_multiskill(parsed_text)
+                if split_list:
+                    # If we can split up the multiskill into individual skills
+                    for split_entity in split_list:
+                        skills["SKILL"].append(split_entity)
+                        skills_split.append(split_entity)
+                else:
+                    # We havent split up the multiskill, just add it all in
+                    skills[label].append(ent_text)
+                    skills_not_split.append(ent_text)
+            else:
+                skills[label].append(ent_text)
         skills["Train_flag"] = True if job_id in train_job_ids else False
         predicted_skills[job_id] = skills
+        skills_from_multi_split[job_id] = skills_split
+        skills_from_multi_not_split[job_id] = skills_not_split
 
     output_dict = {
         "model_path": model_path,
         "job_adverts_filename": job_adverts_filename,
         "predictions": predicted_skills,
+        "skills_from_multi_split": {
+            k: v for k, v in skills_from_multi_split.items() if len(v) > 0
+        },
+        "skills_from_multi_not_split": {
+            k: v for k, v in skills_from_multi_not_split.items() if len(v) > 0
+        },
     }
     date_stamp = str(date.today().date()).replace("-", "")
     save_to_s3(
