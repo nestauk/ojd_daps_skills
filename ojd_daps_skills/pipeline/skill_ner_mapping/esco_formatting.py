@@ -137,13 +137,73 @@ def concepturi_2_tax(skills_concept_mapper, trans_skills_concept_mapper):
     return concept_mapper
 
 
+def get_esco_hier_mapper(esco_hierarchy, knowledge_skills):
+    """
+    Create a dictionary from esco hierarchy codes to level name
+    """
+
+    esco_mapper = {
+        k: v
+        for k, v in esco_hierarchy.set_index("Level 1 code")
+        .to_dict()["Level 1 preferred term"]
+        .items()
+        if pd.notnull(k)
+    }
+    esco_mapper.update(
+        {
+            k: v
+            for k, v in esco_hierarchy.set_index("Level 2 code")
+            .to_dict()["Level 2 preferred term"]
+            .items()
+            if pd.notnull(k)
+        }
+    )
+    esco_mapper.update(
+        {
+            k: v
+            for k, v in esco_hierarchy.set_index("Level 3 code")
+            .to_dict()["Level 3 preferred term"]
+            .items()
+            if pd.notnull(k)
+        }
+    )
+
+    def get_isco_name(concepturi):
+        concept_code = concepturi.split("/")[-1]
+        if ("isced" in concepturi) and (concept_code.isnumeric()):
+            c = "K" + concept_code
+            return c
+        else:
+            return None
+
+    knowledge_skills["conceptUri_mapped"] = knowledge_skills["conceptUri"].apply(
+        lambda x: get_isco_name(x)
+    )
+
+    ## Add to level mappers
+    for k, v in (
+        knowledge_skills.set_index("conceptUri_mapped")
+        .to_dict()["preferredLabel"]
+        .items()
+    ):
+        if pd.notnull(k):
+            if len(k) == 3:
+                esco_mapper[k] = v
+            elif len(k) == 4:
+                esco_mapper[k] = v
+            elif len(k) == 5:
+                esco_mapper[k] = v
+    return esco_mapper
+
+
 if __name__ == "__main__":
 
     s3 = get_s3_resource()
 
-    output_file_name = (
-        "/escoe_extension/outputs/data/skill_ner_mapping/esco_data_formatted.csv"
-    )
+    output_file_dir = "escoe_extension/outputs/data/skill_ner_mapping/"
+
+    output_mapper_file_name = output_file_dir + "esco_hier_mapper.json"
+    output_file_name = output_file_dir + "esco_data_formatted.csv"
 
     # Load ESCO skills and hierarchy data
 
@@ -163,6 +223,10 @@ if __name__ == "__main__":
     skills_concept_mapper = load_s3_data(s3, bucket_name, skill_file_name)
     trans_skills_concept_mapper = load_s3_data(s3, bucket_name, transskill_file_name)
     knowledge_skills = load_s3_data(s3, bucket_name, skill_groups_file_name)
+
+    # Create a name mapper with the data which will be useful in later pipeline steps
+    esco_mapper = get_esco_hier_mapper(esco_hierarchy, knowledge_skills)
+    save_to_s3(s3, bucket_name, esco_mapper, output_mapper_file_name)
 
     # Concatenate the skills and the knowledge skills
     esco_skills = pd.concat([esco_skills, knowledge_skills])

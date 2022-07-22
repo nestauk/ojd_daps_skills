@@ -84,6 +84,7 @@ import time
 import itertools
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import pandas as pd
 import os
 import ast
 
@@ -247,7 +248,7 @@ class SkillMapper:
 
         # Output the top matches (using the different metrics) for each OJO skill
         # Need to match indexes back correctly (hence all the ix variables)
-        skill_mapper_list = []
+        self.skill_mapper_list = []
         for match_i, match_text in enumerate(flat_clean_ojo_skills):
 
             # Top highest matches (any threshold)
@@ -311,9 +312,96 @@ class SkillMapper:
                     hier_sims_info["top_sim_scores"][match_i][0],
                 )
 
-            skill_mapper_list.append(match_results)
+            self.skill_mapper_list.append(match_results)
 
-        return skill_mapper_list
+        return self.skill_mapper_list
+
+    def final_prediction(
+        self,
+        skills_to_taxonomy,
+        hier_name_mapper,
+        match_thresholds_dict,
+        num_hier_levels,
+    ):
+        """
+
+        Using all the information in skill_mapper_list get a final ESCO match (if any)
+        for each ojo skill, based off a set of rules.
+        """
+
+        self.rank_matches = []
+        for match_id, v in enumerate(skills_to_taxonomy):
+            match_num = 0
+
+            # Try to find a close similarity skill
+            skill_info = {
+                "ojo_skill": v["ojo_ner_skill"],
+                "job_id": v["job_id"],
+                "match_id": match_id,
+            }
+            match_hier_info = {}
+            top_skill, top_skill_code, top_sim_score = v["top_tax_skills"][0]
+            if top_sim_score >= match_thresholds_dict["skill_match_thresh"]:
+                skill_info.update({f"match {match_num}": top_skill})
+                match_hier_info[match_num] = {
+                    "match_code": top_skill_code,
+                    "type": "skill",
+                    "value": top_sim_score,
+                }
+                match_num += 1
+
+            # Go through hierarchy levels from most granular to least
+            # and try to find a close match first in the most common level then in
+            # the level name with the closest similarity
+            for n in reversed(range(num_hier_levels)):
+                # Look at level n most common
+                type_name = f"most_common_level_{n}"
+                if (type_name in v["high_tax_skills"]) and (
+                    n in match_thresholds_dict["max_share"]
+                ):
+                    c0 = v["high_tax_skills"][type_name]
+                    if (c0[1]) and (c0[1] >= match_thresholds_dict["max_share"][n]):
+                        match_name = hier_name_mapper.get(c0[0], c0[0])
+                        skill_info.update({f"match {match_num}": match_name})
+                        match_hier_info[match_num] = {
+                            "match_code": c0[0],
+                            "type": type_name,
+                            "value": c0[1],
+                        }
+                        match_num += 1
+
+                # Look at level n closest similarity
+                type_name = f"top_'level_{n}'_tax_level"
+                if (type_name in v) and (n in match_thresholds_dict["top_tax_skills"]):
+                    c1 = v[type_name]
+                    if c1[2] >= match_thresholds_dict["top_tax_skills"][n]:
+                        skill_info.update({f"match {match_num}": c1[0]})
+                        match_hier_info[match_num] = {
+                            "match_code": c1[1],
+                            "type": type_name,
+                            "value": c1[2],
+                        }
+                        match_num += 1
+
+            skill_info.update({"match_info": match_hier_info})
+            self.rank_matches.append(skill_info)
+
+        # Just pull out the top matches for each ojo skill
+        self.final_match = []
+        for rank_match in self.rank_matches:
+            self.final_match.append(
+                {
+                    "ojo_skill": rank_match["ojo_skill"],
+                    "ojo_job_id": rank_match["job_id"],
+                    "ojo_job_skill_num": rank_match["match_id"],
+                    "match_skill": rank_match["match 0"],
+                    "match_score": rank_match["match_info"][0]["value"],
+                    "match_type": rank_match["match_info"][0]["type"],
+                    "match_id": rank_match["match_info"][0]["match_code"],
+                }
+            )
+
+        return self.final_match
 
 
 if __name__ == "__main__":
@@ -348,6 +436,15 @@ if __name__ == "__main__":
         tax_input_file_name = (
             "escoe_extension/outputs/data/skill_ner_mapping/esco_data_formatted.csv"
         )
+        match_thresholds_dict = {
+            "skill_match_thresh": 0.7,
+            "top_tax_skills": {1: 0.5, 2: 0.5, 3: 0.5},
+            "max_share": {1: 0, 2: 0.2, 3: 0.2},
+        }
+        hier_name_mapper_file_name = (
+            "escoe_extension/outputs/data/skill_ner_mapping/esco_hier_mapper.json"
+        )
+
     else:
         num_hier_levels = 0
         skill_type_dict = {}
@@ -374,13 +471,35 @@ if __name__ == "__main__":
         skill_type_dict=skill_type_dict,
     )
 
-    skill_mapper_file_name = (
-        ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
+    full_skill_mapper_file_name = (
+        ojo_skill_file_name.split("/")[-1].split(".")[0]
+        + "_to_"
+        + taxonomy
+        + "_full_matches.json"
     )
 
     save_to_s3(
         get_s3_resource(),
         bucket_name,
         skills_to_taxonomy,
+        os.path.join(config["ojo_skills_ner_mapping_dir"], full_skill_mapper_file_name),
+    )
+
+    # Get the final result - one match per OJO skill
+    hier_name_mapper = load_s3_data(
+        get_s3_resource(), bucket_name, hier_name_mapper_file_name
+    )
+
+    final_matches = skill_mapper.final_prediction(
+        skills_to_taxonomy, hier_name_mapper, match_thresholds_dict, num_hier_levels
+    )
+
+    skill_mapper_file_name = (
+        ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
+    )
+    save_to_s3(
+        get_s3_resource(),
+        bucket_name,
+        final_matches,
         os.path.join(config["ojo_skills_ner_mapping_dir"], skill_mapper_file_name),
     )

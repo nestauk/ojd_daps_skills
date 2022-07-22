@@ -123,3 +123,23 @@ def get_most_common_code(split_possible_codes, lev_n):
         return lev_code, lev_prop
     else:
         return None, None
+
+
+def get_top_match(score_0, score_1, threshold_0, threshold_1):
+    # Returns the index of which one is bigger
+    # To deal with times where there is no score
+    if not score_0:
+        score_0 = 0
+    if not score_1:
+        score_1 = 0
+
+    if score_0 < threshold_0:
+        if score_1 < threshold_1:
+            return None
+        else:
+            return 1
+    else:
+        if score_1 < threshold_1:
+            return 0
+        else:
+            return np.argmax([score_0, score_1])
