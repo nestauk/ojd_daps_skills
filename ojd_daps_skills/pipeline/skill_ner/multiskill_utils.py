@@ -91,7 +91,7 @@ class MultiskillClassifier:
         return classification_report(y, y_pred, target_names=["Skill", "Multiskill"])
 
 
-def duplicate_object(parsed_sent, verbose=True):
+def duplicate_object(parsed_sent):
     """
     Deal with 2 verbs + 1 object
     e.g.
@@ -132,20 +132,43 @@ def duplicate_object(parsed_sent, verbose=True):
                 first_skill = "{} {}".format(first_verb, dobj)
                 second_skill = "{} {}".format(second_verb, dobj)
 
-                if verbose:
-
-                    print("Original skill:", parsed_sent)
-                    print("\n--- Split skills ---")
-                    print("-", first_skill)
-                    print("-", second_skill)
-                    print()
-
-                return first_skill, second_skill
+                return [first_skill, second_skill]
 
     return None
 
 
-def duplicate_verb(parsed_phrase, verbose=True):
+def split_on_and(text):
+    """
+    Split some text on the word 'and' and commas, but deal with oxford commas
+    and consider 'and' in words (pad with space).
+    e.g. don't split up "understanding"
+    """
+    # Get rid of any double spacing
+    text = re.sub("\s\s+", " ", text)
+
+    split_on = " and "
+
+    # Sort out any combinations of 'and' and commas/semi-colons.
+    text = text.replace(";", ",")
+    text = (
+        text.replace(", and ,", split_on)
+        .replace(", and,", split_on)
+        .replace(",and ,", split_on)
+        .replace(", and ", split_on)
+        .replace(" and ,", split_on)
+    )
+    text = (
+        text.replace(",and,", split_on)
+        .replace(" and,", split_on)
+        .replace(",and ", split_on)
+    )
+
+    # Split on commas and 'and'
+    text = text.replace(",", split_on).split(" and ")
+    return [t.strip() for t in text]
+
+
+def duplicate_verb(parsed_phrase):
     """
     Deal with 1 verb + 2 objects
 
@@ -169,10 +192,11 @@ def duplicate_verb(parsed_phrase, verbose=True):
                         [c.text for c in token.subtree if c.text != token.text]
                     )
 
-                    if "and" in objects:
-                        split_objects = objects.split("and")
-                        first_object = split_objects[0].strip()
-                        sec_object = split_objects[1].strip()
+                    split_objects = split_on_and(objects)
+
+                    object_list = []
+                    for split_skill in split_objects:
+                        object_list.append(split_skill)
 
                     for subchild in child.children:
 
@@ -184,23 +208,17 @@ def duplicate_verb(parsed_phrase, verbose=True):
 
                     if has_AND and has_dobj and has_sec_obj:
 
-                        first_skill = "{} {}".format(token.text, first_object)
-                        second_skill = "{} {}".format(token.text, sec_object)
+                        skill_lists = [
+                            "{} {}".format(token.text, split_skill)
+                            for split_skill in object_list
+                        ]
 
-                        if verbose:
-
-                            print("Original skill:", parsed_sent)
-                            print("\n--- Split skills ---")
-                            print("-", first_skill)
-                            print("-", second_skill)
-                            print()
-
-                        return first_skill, second_skill
+                        return skill_lists
 
     return None
 
 
-def split_skill_mentions(parsed_phrase, verbose=False):
+def split_skill_mentions(parsed_phrase):
     """
     Deal with compounds, noun modifiers --> split noun phrases and complete
 
@@ -230,32 +248,55 @@ def split_skill_mentions(parsed_phrase, verbose=False):
                         [c.text for c in root.subtree if c.text != token.text]
                     )
 
-                    split_skills = skill_def.split("and")
-                    first_skill = split_skills[0].strip()
-                    sec_skill = split_skills[1].strip()
+                    split_skills = split_on_and(skill_def)
 
-                    first_skill = "{} {}".format(first_skill, token.text)
-                    second_skill = "{} {}".format(sec_skill, token.text)
+                    skill_lists = []
+                    for split_skill in split_skills:
+                        skill_lists.append("{} {}".format(split_skill, token.text))
 
-                    if verbose:
-
-                        print("Original skill:", parsed_sent)
-                        print("\n--- Split skills ---")
-                        print("-", first_skill)
-                        print("-", second_skill)
-                        print()
-
-                    return first_skill, second_skill
+                    return skill_lists
+    return None
 
 
-def split_multiskill(parsed_text):
+def split_multiskill(text, min_length=75):
     """
-    For a single parsed multiskill text, parse it and output it split into single skills
-    """
+    For a single multiskill text, parse it and output it split into single skills.
+    Will only be applied if the text is less than min_length characters.
 
+    Ideally no entity would contain multiple sentences, but this does happen, so
+    we should split by them.
+    """
     rule_list = [duplicate_object, duplicate_verb, split_skill_mentions]
 
-    for rule in rule_list:
-        output = rule(parsed_text, verbose=False)
-        if output is not None:
-            return list(output)
+    text = text.replace("&", "and")
+    # If there are fullstops then split by them
+    sentences = text.split(".")
+    sentences = [s.strip() for s in sentences]
+
+    if len(sentences) == 1:
+        sentence = sentences[0]
+        if len(sentence) <= min_length:
+            parsed_text = nlp(sentence)
+            for rule in rule_list:
+                output = rule(parsed_text)
+                if output is not None:
+                    return output
+    else:
+        # Multiple sentences, try to split further, but
+        # if not return the split sentence
+        split_skills = []
+        for sentence in sentences:
+            if len(sentence) <= min_length:
+                parsed_text = nlp(sentence)
+
+                for rule in rule_list:
+                    output = rule(parsed_text)
+                    if output is not None:
+                        split_skills.append(output)
+                        break
+                    else:
+                        split_skills.append(sentence)
+            else:
+                split_skills.append(sentence)
+
+        return split_skills

@@ -28,10 +28,6 @@ from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import clean_text_pipeline
 from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import split_multiskill
 
-import spacy
-
-nlp_parser = spacy.load("en_core_web_sm")  # Needed for parsing the text
-
 from tqdm import tqdm
 from datetime import datetime as date
 import json
@@ -78,6 +74,8 @@ if __name__ == "__main__":
     output_file_dir = args.output_file_dir
     job_adverts_filename = args.job_adverts_filename
 
+    min_length = 75
+
     job_ner = JobNER()
     nlp = job_ner.load_model(
         model_path, s3_download=False if args.use_local_model else True
@@ -110,8 +108,7 @@ if __name__ == "__main__":
             label = ent["label"]
             ent_text = job_advert_text[ent["start"] : ent["end"]]
             if label == "MULTISKILL":
-                parsed_text = nlp_parser(ent_text)
-                split_list = split_multiskill(parsed_text)
+                split_list = split_multiskill(ent_text, min_length=min_length)
                 if split_list:
                     # If we can split up the multiskill into individual skills
                     for split_entity in split_list:
