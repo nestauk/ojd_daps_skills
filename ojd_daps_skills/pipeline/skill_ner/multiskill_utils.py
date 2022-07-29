@@ -285,6 +285,7 @@ def split_multiskill(text, min_length=75):
         # Multiple sentences, try to split further, but
         # if not return the split sentence
         split_skills = []
+        split_found = False
         for sentence in sentences:
             if len(sentence) <= min_length:
                 parsed_text = nlp(sentence)
@@ -293,9 +294,10 @@ def split_multiskill(text, min_length=75):
                     output = rule(parsed_text)
                     if output is not None:
                         split_skills.append(output)
+                        split_found = True
                         break
-                    else:
-                        split_skills.append(sentence)
+                if not split_found:
+                    split_skills.append(sentence)
             else:
                 split_skills.append(sentence)
 

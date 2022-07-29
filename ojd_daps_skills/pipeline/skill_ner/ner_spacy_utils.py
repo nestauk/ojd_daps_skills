@@ -15,9 +15,18 @@ from toolz import pipe
 # Pattern for fixing a missing space between enumerations, for split_sentences()
 compiled_missing_space_pattern = re.compile("([a-z])([A-Z])([a-z])")
 # Characters outside these rules will be padded, for pad_punctuation()
-# compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9 #(++)+])")
-# compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9\'\’\- ])")
 compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9] )")
+
+# load punctuation replacement rules
+punctuation_replacement_rules = {
+    # old patterns: replacement pattern
+    "[\u2022\u2023\u25E6\u2043\u2219*]": ".",  # Convert bullet points to fullstops
+    r"[/:\\]": " ",  # Convert colon and forward and backward slashes to spaces
+}
+
+compiled_punct_patterns = {
+    re.compile(p): v for p, v in punctuation_replacement_rules.items()
+}
 
 # The list of camel cases which should be kept in
 exception_camelcases = [
@@ -141,6 +150,24 @@ def detect_sentences(text):
     return text
 
 
+def replacements(text):
+    """
+    Ampersands and bullet points need some tweaking to be most useful in the pipeline.
+
+    Some job adverts have different markers for a bullet pointed list. When this happens
+    we want them to be in a fullstop separated format.
+
+    e.g. ";• managing the grants database;• preparing financial and interna"
+    ":•\xa0NMC registration paid every year•\xa0Free train"
+
+    """
+    text = text.replace("&", "and").replace("\xa0", " ")
+
+    for pattern, rep in compiled_punct_patterns.items():
+        text = pattern.sub(rep, text)
+    return text
+
+
 def clean_text_pipeline(text):
     """
     Pipeline for preprocessing online job vacancy and skills-related text.
@@ -153,6 +180,7 @@ def clean_text_pipeline(text):
     """
     return pipe(
         text,
+        replacements,
         detect_sentences,
         pad_punctuation,
     )
