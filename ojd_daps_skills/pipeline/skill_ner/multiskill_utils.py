@@ -14,7 +14,6 @@ from ojd_daps_skills.getters.data_getters import (
     load_s3_json,
 )
 from ojd_daps_skills import bucket_name
-from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import clean_text_pipeline
 
 from sklearn import svm
 from sklearn.model_selection import train_test_split
@@ -268,7 +267,6 @@ def split_multiskill(text, min_length=75):
     """
     rule_list = [duplicate_object, duplicate_verb, split_skill_mentions]
 
-    text = text.replace("&", "and")
     # If there are fullstops then split by them
     sentences = text.split(".")
     sentences = [s.strip() for s in sentences]
@@ -293,7 +291,8 @@ def split_multiskill(text, min_length=75):
                 for rule in rule_list:
                     output = rule(parsed_text)
                     if output is not None:
-                        split_skills.append(output)
+                        for skill in output:
+                            split_skills.append(skill)
                         split_found = True
                         break
                 if not split_found:

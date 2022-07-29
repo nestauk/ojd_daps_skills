@@ -331,7 +331,7 @@ class JobNER(object):
         self.ms_classifier_train_evaluation = self.ms_classifier.score(X_train, y_train)
         self.ms_classifier_test_evaluation = self.ms_classifier.score(X_test, y_test)
 
-    def train(self, train_data, print_losses=True, drop_out=0.3, num_its=30):
+    def train(self, train_data, test_data, print_losses=True, drop_out=0.3, num_its=30):
         """
         Train a Spacy model for the NER task
         See https://www.machinelearningplus.com/nlp/training-custom-ner-model-in-spacy/
@@ -363,6 +363,8 @@ class JobNER(object):
             train_data = self.multiskill_conversion(train_data)
 
         self.train_data_length = len(train_data)
+        self.train_num_ents = sum([len(t[1]["entities"]) for t in train_data])
+        self.test_num_ents = sum([len(t[1]["entities"]) for t in test_data])
         self.drop_out = drop_out
         self.num_its = num_its
         # List of pipes you want to train
@@ -496,6 +498,8 @@ class JobNER(object):
                 "train_prop": self.train_prop,
                 "labels": list(self.all_labels),
                 "train_data_length": self.train_data_length,
+                "train_num_ents": self.train_num_ents,
+                "test_num_ents": self.test_num_ents,
                 "drop_out": self.drop_out,
                 "num_its": self.num_its,
                 "ms_classifier_train_evaluation": self.ms_classifier_train_evaluation,
@@ -593,6 +597,7 @@ if __name__ == "__main__":
     job_ner.prepare_model()
     nlp = job_ner.train(
         train_data,
+        test_data,
         print_losses=True,
         drop_out=float(args.drop_out),
         num_its=int(args.num_its),

@@ -75,7 +75,7 @@ from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
     get_most_common_code,
 )
 from ojd_daps_skills.utils.bert_vectorizer import BertVectorizer
-from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import clean_text_pipeline
+from ojd_daps_skills.utils.text_cleaning import clean_text
 
 from argparse import ArgumentParser
 from sentence_transformers import SentenceTransformer
@@ -154,9 +154,10 @@ class SkillMapper:
         for ojo_job_id in self.ojo_job_ids:
             ojo_job_skills = self.ojo_skills["predictions"][ojo_job_id]["SKILL"]
             if ojo_job_skills != []:
+                print(ojo_job_id)
                 self.clean_ojo_skills[ojo_job_id] = {
                     "clean_skills": list(
-                        set([clean_text_pipeline(skill) for skill in ojo_job_skills])
+                        set([clean_text(skill) for skill in ojo_job_skills])
                     )
                 }
 
@@ -168,7 +169,7 @@ class SkillMapper:
         delete rows (input length == output length)
         """
         self.clean_taxonomy_skills = [
-            clean_text_pipeline(skill) for skill in taxonomy_skill_list
+            clean_text(skill) for skill in taxonomy_skill_list
         ]
         return self.clean_taxonomy_skills
 
