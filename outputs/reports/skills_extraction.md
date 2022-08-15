@@ -56,13 +56,33 @@ Our evaluation scores use the [nervaluate](https://pypi.org/project/nervaluate/)
 
 A summary of the experiments with training the model is below.
 
-| Date (model name) | Base model     | Training size | Evaluation size | Number of iterations | Drop out rate | Convert multiskill? | Other info                                                                | Skill F1 | Experience F1 | All F1 | Multiskill test score |
-| ----------------- | -------------- | ------------- | --------------- | -------------------- | ------------- | ------------------- | ------------------------------------------------------------------------- | -------- | ------------- | ------ | --------------------- |
-| 20220714\*        | blank en       | 182           | 46              | 50                   | 0.3           | True                | Camel case cleaned, multiskill classifier added and labelled data cleaned | 0.55     | 0.42          | 0.54   | 0.85                  |
-| 20220705          | en_core_web_sm | 182           | 45              | 50                   | 0.3           | True                | Camel case cleaned                                                        | 0.52     | 0.48          | 0.52   |                       |
-| 20220704          | blank en       | 182           | 45              | 50                   | 0.3           | True                | Camel case cleaned                                                        | 0.54     | 0.39          | 0.52   |                       |
-| 20220630          | blank en       | 180           | 45              | 50                   | 0.3           | True                |                                                                           | 0.49     | 0.39          | 0.48   |                       |
-| 20220629          | blank en       | 156           | 39              | 50                   | 0.3           | True                |                                                                           | 0.52     | 0.45          | 0.51   |                       |
+| Date (model name) | Base model     | Training size   | Evaluation size | Number of iterations | Drop out rate | Convert multiskill? | Other info                                                                                       | Skill F1 | Experience F1 | All F1 | Multiskill test score |
+| ----------------- | -------------- | --------------- | --------------- | -------------------- | ------------- | ------------------- | ------------------------------------------------------------------------------------------------ | -------- | ------------- | ------ | --------------------- |
+| 20220729\*        | blank en       | 196 (2850 ents) | 49 (636 ents)   | 50                   | 0.3           | True                | More data, padding in cleaning but do fix_entity_annotations after fix_all_formatting to sort it | 0.57     | 0.44          | 0.54   | 0.87                  |
+| 20220729_nopad    | blank en       | 196             | 49              | 50                   | 0.3           | True                | No padding in cleaning, more data                                                                | 0.52     | 0.33          | 0.45   | 0.87                  |
+| 20220714          | blank en       | 182             | 46              | 50                   | 0.3           | True                | Camel case cleaned, multiskill classifier added and labelled data cleaned                        | 0.55     | 0.42          | 0.54   | 0.85                  |
+| 20220705          | en_core_web_sm | 182             | 45              | 50                   | 0.3           | True                | Camel case cleaned                                                                               | 0.52     | 0.48          | 0.52   |                       |
+| 20220704          | blank en       | 182             | 45              | 50                   | 0.3           | True                | Camel case cleaned                                                                               | 0.54     | 0.39          | 0.52   |                       |
+| 20220630          | blank en       | 180             | 45              | 50                   | 0.3           | True                |                                                                                                  | 0.49     | 0.39          | 0.48   |                       |
+| 20220629          | blank en       | 156             | 39              | 50                   | 0.3           | True                |                                                                                                  | 0.52     | 0.45          | 0.51   |                       |
+
+More in-depth metrics for `20220729`:
+
+| Entity     | F1    | Precision | Recall |
+| ---------- | ----- | --------- | ------ |
+| Skill      | 0.566 | 0.616     | 0.523  |
+| Experience | 0.437 | 0.447     | 0.428  |
+| All        | 0.543 | 0.577     | 0.512  |
+
+More in-depth metrics for `20220729_nopad`:
+
+| Entity     | F1    | Precision | Recall |
+| ---------- | ----- | --------- | ------ |
+| Skill      | 0.519 | 0.587     | 0.465  |
+| Experience | 0.330 | 0.430     | 0.268  |
+| All        | 0.500 | 0.562     | 0.450  |
+
+Not padding punctuation seems to make things worse, even though it means getting rid of some of the training and test data entities. I wonder why?
 
 More in-depth metrics for `20220704`:
 

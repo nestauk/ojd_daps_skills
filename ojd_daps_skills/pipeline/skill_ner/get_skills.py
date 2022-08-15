@@ -25,12 +25,8 @@ from ojd_daps_skills.getters.data_getters import (
 )
 from ojd_daps_skills import bucket_name
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
-from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import clean_text_pipeline
+from ojd_daps_skills.utils.text_cleaning import clean_text
 from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import split_multiskill
-
-import spacy
-
-nlp_parser = spacy.load("en_core_web_sm")  # Needed for parsing the text
 
 from tqdm import tqdm
 from datetime import datetime as date
@@ -44,7 +40,7 @@ def parse_arguments(parser):
     parser.add_argument(
         "--model_path",
         help="The path to the model you want to make predictions with",
-        default="outputs/models/ner_model/20220714/",
+        default="outputs/models/ner_model/20220729/",
     )
 
     parser.add_argument(
@@ -78,6 +74,8 @@ if __name__ == "__main__":
     output_file_dir = args.output_file_dir
     job_adverts_filename = args.job_adverts_filename
 
+    min_length = 75
+
     job_ner = JobNER()
     nlp = job_ner.load_model(
         model_path, s3_download=False if args.use_local_model else True
@@ -101,7 +99,7 @@ if __name__ == "__main__":
     skills_from_multi_split = {}
     skills_from_multi_not_split = {}
     for job_id, job_info in tqdm(job_adverts.items()):
-        job_advert_text = clean_text_pipeline(job_info["description"])
+        job_advert_text = clean_text(job_info["description"])
         pred_ents = job_ner.predict(job_advert_text)
         skills = {label: [] for label in labels}
         skills_split = []
@@ -110,8 +108,7 @@ if __name__ == "__main__":
             label = ent["label"]
             ent_text = job_advert_text[ent["start"] : ent["end"]]
             if label == "MULTISKILL":
-                parsed_text = nlp_parser(ent_text)
-                split_list = split_multiskill(parsed_text)
+                split_list = split_multiskill(ent_text, min_length=min_length)
                 if split_list:
                     # If we can split up the multiskill into individual skills
                     for split_entity in split_list:

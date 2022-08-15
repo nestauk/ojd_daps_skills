@@ -5,7 +5,12 @@ is included, or the entity starts in the middle of a "word" due to bad parsing, 
 2. fix_all_formatting: to clean all the text - removing any occurences of camelcase, but not
 neccessarily to do with the entity spans.
 
-These are combined in clean_entities_text
+These are combined in clean_entities_text.
+
+Warning: It is important to not apply any old text cleaning function where labelled data is concerned -
+changing the text means the span label information should also be changed.
+e.g. "This is   a SKILL" has SKILL entity at characters [13, 17]
+but "This is a SKILL" has SKILL entity at characters [11, 15]
 
 """
 import re
@@ -15,8 +20,6 @@ from toolz import pipe
 # Pattern for fixing a missing space between enumerations, for split_sentences()
 compiled_missing_space_pattern = re.compile("([a-z])([A-Z])([a-z])")
 # Characters outside these rules will be padded, for pad_punctuation()
-# compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9 #(++)+])")
-# compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9\'\’\- ])")
 compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9] )")
 
 # The list of camel cases which should be kept in
@@ -118,7 +121,7 @@ def pad_punctuation(text):
     return text
 
 
-def detect_sentences(text):
+def detect_camelcase(text):
     """
     Splits a word written in camel-case into separate sentences. This fixes a case
     when the last word of a sentence in not seperated from the capitalised word of
@@ -144,7 +147,7 @@ def detect_sentences(text):
 def clean_text_pipeline(text):
     """
     Pipeline for preprocessing online job vacancy and skills-related text.
-    This should only insert characters (eg spaces, fullstops) - not delete or replace any.
+    This should ONLY insert characters (eg spaces, fullstops) - not delete or replace any.
     This is because when it comes to cross referencing the cleaned text with entity spans
     our algorithm depends on only insertion.
 
@@ -153,8 +156,8 @@ def clean_text_pipeline(text):
     """
     return pipe(
         text,
-        detect_sentences,
-        pad_punctuation,
+        detect_camelcase,
+        pad_punctuation,  # messes up entity spans
     )
 
 
@@ -191,9 +194,6 @@ def fix_all_formatting(text, ents):
     new_text = clean_text_pipeline(text)
     old2new_chars_dict = get_old2new_chars_dict(text, new_text)
 
-    new_ents = [
-        (old2new_chars_dict.get(b), old2new_chars_dict.get(e), t) for b, e, t in ents
-    ]
     new_ents = []
     num_index_problems = 0
     for b, e, t in ents:
@@ -213,6 +213,8 @@ def fix_all_formatting(text, ents):
 
 
 def clean_entities_text(text, ents):
-    text, ents = fix_entity_annotations(text, ents)
     text, ents = fix_all_formatting(text, ents)
+    text, ents = fix_entity_annotations(
+        text, ents
+    )  # apply after to deal with the padding
     return text, ents
