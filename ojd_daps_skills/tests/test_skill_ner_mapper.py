@@ -126,6 +126,8 @@ def test_map_skills():
     assert len(final_match) == len(skills_to_taxonomy)
     assert len(final_match) == len(skill_hashes)
 
+    skill_hash_to_esco, final_ojo_skills = skill_mapper.link_skill_hash_to_job_id(
+        clean_ojo_skills, final_match
+    )
 
-# def test_append_final_predictions():
-# 	# TODO
+    assert final_ojo_skills.keys() == ojo_skills["predictions"].keys()
