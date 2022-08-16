@@ -59,8 +59,8 @@ This might give the result:
 - the skill level 1 group 'communicate verbally' (code 'A1.3') is the closest to thie ojo skill with distance 0.98
 """
 
-#import sys
-#sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
+# import sys
+# sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
 
 from ojd_daps_skills import config, bucket_name, PROJECT_DIR, logger
 from ojd_daps_skills.getters.data_getters import (
@@ -92,6 +92,7 @@ import ast
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
 
 S3 = get_s3_resource()
+
 
 class SkillMapper:
     """
@@ -126,6 +127,7 @@ class SkillMapper:
 
     def __init__(
         self,
+        taxonomy="esco",
         skill_name_col="description",
         skill_id_col="id",
         skill_hier_info_col=None,
@@ -134,6 +136,7 @@ class SkillMapper:
         job_ner=JobNER(),
         job_ner_model_folder="outputs/models/ner_model/20220729/",
     ):
+        self.taxonomy = taxonomy
         self.skill_name_col = skill_name_col
         self.skill_id_col = skill_id_col
         self.skill_hier_info_col = skill_hier_info_col
@@ -159,7 +162,7 @@ class SkillMapper:
         if not ojo_skills:
             ojo_skills = self.ojo_skills
         # preprocess skills
-        self.ojo_job_ids = list(ojo_skills["predictions"].keys())[:10]
+        self.ojo_job_ids = list(ojo_skills["predictions"].keys())
         self.clean_ojo_skills = dict()
         self.skill_hashes = dict()
 
@@ -241,9 +244,18 @@ class SkillMapper:
         if s3:
             self.ojo_esco = load_s3_data(S3, bucket_name, ojo_esco_mapper_file_name)
         else:
-            self.ojo_esco = load_json_dict(ojo_esco_mapper_file_name)
+            self.ojo_esco = load_json_dict(PROJECT_DIR / ojo_esco_mapper_file_name)
 
         return self.ojo_esco
+
+    def save_ojo_esco_mapper(self, ojo_esco_mapper_file_name, final_matches):
+        """Saves final predictions as ojo_esco mapper"""
+        ojo_esco_mapper = dict()
+        for final_match in final_matches:
+            skill_hash = final_match['ojo_job_skill_hash']
+            ojo_esco_mapper[skill_hash] = {k:v for k, v in final_match.items() if k != 'ojo_job_skill_hash'}
+
+        save_to_s3(S3, bucket_name, ojo_esco_mapper, ojo_esco_mapper_file_name)
 
     def filter_skill_hash(self, skill_hashes, ojo_esco):
         """Filters skill hashes for skills not in ojo esco look up table."""
@@ -290,7 +302,10 @@ class SkillMapper:
             ].index
             top_sim_indxs, top_sim_scores = get_top_comparisons(
                 clean_ojo_skill_embeddings,
-                [self.taxonomy_skills_embeddings_dict[str(i)] for i in taxonomy_skills_ix],
+                [
+                    self.taxonomy_skills_embeddings_dict[str(i)]
+                    for i in taxonomy_skills_ix
+                ],
             )
             hier_types_top_sims[hier_type_num] = {
                 "top_sim_indxs": top_sim_indxs,
@@ -449,28 +464,30 @@ class SkillMapper:
     def append_final_predictions(self, final_match, ojo_esco):
         """Append ojo to esco look up to the final predictions."""
         for skill_hash, esco_info in ojo_esco.items():
-            esco_info['ojo_job_skill_hash'] = skill_hash
+            esco_info["ojo_job_skill_hash"] = skill_hash
 
         return list(ojo_esco.values()) + self.final_match
 
     def link_skill_hash_to_job_id(self, clean_ojo_skills, final_matches):
         """Append ojo to esco look up to the final predictions."""
-        self.skill_hash_to_job_id = {job_id: [] for job_id in self.clean_ojo_skills.keys()}
+        self.skill_hash_to_job_id = {
+            job_id: [] for job_id in self.clean_ojo_skills.keys()
+        }
 
         for job_id, job_info in self.clean_ojo_skills.items():
-            job_skill_hashes = job_info['skill_hashes']
+            job_skill_hashes = job_info["skill_hashes"]
             for fm in final_matches:
-                skill_hash = fm['ojo_job_skill_hash']
+                skill_hash = fm["ojo_job_skill_hash"]
                 if skill_hash in job_skill_hashes:
                     self.skill_hash_to_job_id[job_id].append(fm)
 
         for job_id, job_info in self.clean_ojo_skills.items():
-            job_info['skill_to_' + taxonomy] = self.skill_hash_to_job_id[job_id]
+            job_info["skill_to_" + self.taxonomy] = self.skill_hash_to_job_id[job_id]
 
         return self.skill_hash_to_job_id, self.clean_ojo_skills
 
     ############################################################ FOR USERS: TBD ON THESE FUNCTIONS
-    #def extract_skills(self, job):
+    # def extract_skills(self, job):
 
     #    nlp = self.job_ner.load_model(self.job_ner_model_folder, s3_download=True)
     #    if isinstance(job, str):
@@ -478,13 +495,13 @@ class SkillMapper:
     #        return [job[ent["start"] : ent["end"]] for ent in pred_ents]
 
     #    elif isinstance(job, list):
-            # skill_spans = []
-            # for j in job:
-            #     pred_ents = self.job_ner.predict(j)
-            #     skill_spans.append(
-            #         [job[ent["start"] : ent["end"]] for ent in pred_ents]
-            #     )
-            # return skill_spans
+    # skill_spans = []
+    # for j in job:
+    #     pred_ents = self.job_ner.predict(j)
+    #     skill_spans.append(
+    #         [job[ent["start"] : ent["end"]] for ent in pred_ents]
+    #     )
+    # return skill_spans
 
     # def map_skills_final_match(
     #     self,
@@ -508,15 +525,10 @@ class SkillMapper:
 
     #     return self.final_match
 
+
 if __name__ == "__main__":
 
     parser = ArgumentParser()
-
-    parser.add_argument(
-        "--taxonomy",
-        help="Name of taxonomy to be mapped to.",
-        default="esco",
-    )
 
     parser.add_argument(
         "--ojo_skill_fn",
@@ -525,13 +537,17 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-
-    taxonomy = args.taxonomy
     ojo_skill_file_name = args.ojo_skill_fn
 
+    skill_mapper = SkillMapper(
+        skill_name_col="description",
+        skill_id_col="id",
+        skill_hier_info_col="hierarchy_levels",
+        skill_type_col="type",
+    )
     # Hard code how many levels there are in the taxonomy (if any)
     # This should correspond to the length of the data in taxonomy_skills["hierarchy_levels"] e.g. ['S', S4', 'S4.8, 'S4.8.1']
-    if taxonomy == "esco":  # put in a config file at some point
+    if skill_mapper.taxonomy == "esco":  # put in a config file at some point
         num_hier_levels = 4
         skill_type_dict = {
             "skill_types": ["preferredLabel", "altLabels"],
@@ -562,22 +578,15 @@ if __name__ == "__main__":
         esco_embeddings_file_name = ""
         ojo_esco_lookup_file_name = ""
 
-    skill_mapper = SkillMapper(
-        skill_name_col="description",
-        skill_id_col="id",
-        skill_hier_info_col="hierarchy_levels",
-        skill_type_col="type",
-    )
-
     ojo_skills = skill_mapper.load_job_skills(config["ojo_skills_ner_path"], s3=True)
-    logger.info('loaded ojo skills')
+    logger.info("loaded ojo skills")
     clean_ojo_skills, skill_hashes = skill_mapper.preprocess_job_skills(ojo_skills)
-    logger.info('cleaned ojo skills and skill hashes')
+    logger.info("cleaned ojo skills and skill hashes")
 
     taxonomy_skills = skill_mapper.load_taxonomy_skills(tax_input_file_name, s3=True)
-    logger.info('loaded taxonomy skills')
+    logger.info("loaded taxonomy skills")
     taxonomy_skills = skill_mapper.preprocess_taxonomy_skills(taxonomy_skills)
-    logger.info('preprocessed taxonomy skills')
+    logger.info("preprocessed taxonomy skills")
 
     embedding_lookup_files = get_s3_data_paths(
         S3,
@@ -591,7 +600,9 @@ if __name__ == "__main__":
             esco_embeddings_file_name
         )
     else:
-        skill_mapper.embed_taxonomy_skills(taxonomy_skills, esco_embeddings_file_name, save=True)
+        skill_mapper.embed_taxonomy_skills(
+            taxonomy_skills, esco_embeddings_file_name, save=True
+        )
         taxonomy_embeddings = skill_mapper.load_taxonomy_embeddings(
             esco_embeddings_file_name
         )
@@ -616,38 +627,46 @@ if __name__ == "__main__":
     )
 
     full_skill_mapper_file_name = (
-         ojo_skill_file_name.split("/")[-1].split(".")[0]
-         + "_to_"
-         + taxonomy
-         + "_full_matches.json"
-     )
+        ojo_skill_file_name.split("/")[-1].split(".")[0]
+        + "_to_"
+        + taxonomy
+        + "_full_matches.json"
+    )
 
     save_to_s3(
-         get_s3_resource(),
-         bucket_name,
-         skills_to_taxonomy,
-         os.path.join(config["ojo_skills_ner_mapping_dir"], full_skill_mapper_file_name),
-     )
+        get_s3_resource(),
+        bucket_name,
+        skills_to_taxonomy,
+        os.path.join(config["ojo_skills_ner_mapping_dir"], full_skill_mapper_file_name),
+    )
 
     # Get the final result - one match per OJO skill
-    hier_name_mapper = load_s3_data(
-        S3, bucket_name, hier_name_mapper_file_name
-    )
+    hier_name_mapper = load_s3_data(S3, bucket_name, hier_name_mapper_file_name)
 
     final_matches = skill_mapper.final_prediction(
         skills_to_taxonomy, hier_name_mapper, match_thresholds_dict, num_hier_levels
     )
 
-    #append final lookup to predictions
+    # append final lookup to predictions
     if ojo_esco_predefined:
-        final_matches = skill_mapper.append_final_predictions(final_matches, ojo_esco_predefined)
-        job_id_to_predictions, final_ojo_skills = skill_mapper.link_skill_hash_to_job_id(clean_ojo_skills, final_matches)
+        final_matches = skill_mapper.append_final_predictions(
+            final_matches, ojo_esco_predefined
+        )
+        (
+            job_id_to_predictions,
+            final_ojo_skills,
+        ) = skill_mapper.link_skill_hash_to_job_id(clean_ojo_skills, final_matches)
     else:
-        job_id_to_predictions, final_ojo_skills = skill_mapper.link_skill_hash_to_job_id(clean_ojo_skills, final_matches)
+        (
+            job_id_to_predictions,
+            final_ojo_skills,
+        ) = skill_mapper.link_skill_hash_to_job_id(clean_ojo_skills, final_matches)
+        #and save final matches as mapper
+        skill_mapper.save_ojo_esco_mapper(final_matches, ojo_esco_lookup_file_name)
 
-    skill_mapper_file_name = (
-         ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
-     )
+#    skill_mapper_file_name = (
+#        ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
+#    )
 
     # save_to_s3(
     #     S3,
