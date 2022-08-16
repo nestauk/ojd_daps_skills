@@ -88,6 +88,9 @@ import pandas as pd
 import os
 import ast
 
+from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
+
+S3 = get_s3_resource()
 
 class SkillMapper:
     """
@@ -98,7 +101,7 @@ class SkillMapper:
     skill_id_col (str): the taxonomy column name of the id for the skill/skill level
     skill_hier_info_col (str, optional): the taxonomy column name of the ids for the skill levels the skill belongs to
     skill_type_col (str): the taxonomy column name for which type of data the row is from (specific skill or skill levels)
-    bert_model_name (str): name of sentence transformer
+    bert_model (str): sentence transformer
     multi_process (bool): if vectoriser will multi_process
     batch_size (int): batch size
     ojo_skills_file_name (str): file name of extract ojo skills from ner model
@@ -126,30 +129,27 @@ class SkillMapper:
         skill_id_col: "id",
         skill_hier_info_col: None,
         skill_type_col: "type",
-        bert_model_name: "sentence-transformers/all-MiniLM-L6-v2",
-        multi_process: True,
-        batch_size: 32,
-        ojo_skills_file_name: config["ojo_skills_ner_path"],
+        bert_model: BertVectorizer().fit(), #instantiate bert bembedding here 
+        job_ner: JobNER(),
+        job_ner_model_folder: 'outputs/models/ner_model/20220729/'
     ):
         self.skill_name_col = skill_name_col
         self.skill_id_col = skill_id_col
         self.skill_hier_info_col = skill_hier_info_col
         self.skill_type_col = skill_type_col
-        self.bert_model_name = bert_model_name
-        self.multi_process = multi_process
-        self.batch_size = batch_size
-        self.ojo_skills_file_name = ojo_skills_file_name
+        self.bert_model = bert_model
+        self.job_ner = job_ner
+        self.job_ner_model_folder = job_ner_model_folder
 
-    def get_ojo_skills(self, ojo_skills_file_name):
+    def load_preprocess_job_skills(self, ojo_skills_file_name):
+        #load job skills here 
         self.ojo_skills = load_s3_data(
-            get_s3_resource(), bucket_name, self.ojo_skills_file_name
+            S3, bucket_name, ojo_skills_file_name
         )
-
-        return self.ojo_skills
-
-    def preprocess_ojo_skills(self, ojo_skills):
+        #preprocess skills 
         self.ojo_job_ids = list(self.ojo_skills["predictions"].keys())
         self.clean_ojo_skills = dict()
+        self.skill_hashes = dict()
 
         for ojo_job_id in self.ojo_job_ids:
             ojo_job_skills = self.ojo_skills["predictions"][ojo_job_id]["SKILL"]
@@ -160,67 +160,77 @@ class SkillMapper:
                         set([clean_text(skill) for skill in ojo_job_skills])
                     )
                 }
+        #create hashes of clean skills 
+            job_ad_skill_hashes = []
+            if ojo_job_id in self.clean_ojo_skills.keys():
+                for clean_skill in self.clean_ojo_skills[ojo_job_id]['clean_skills']:
+                    skill_hash = hash(clean_skill) 
+                    self.skill_hashes[skill_hash] = clean_skill
+                    job_ad_skill_hashes.append(skill_hash)
+                self.clean_ojo_skills[ojo_job_id]['skill_hashes'] = job_ad_skill_hashes
 
-        return self.clean_ojo_skills
+        return self.clean_ojo_skills, self.skill_hashes
 
-    def preprocess_taxonomy_skills(self, taxonomy_skill_list):
-        """
-        For the sake of indexing its important that this function doesnt
-        delete rows (input length == output length)
-        """
-        self.clean_taxonomy_skills = [
-            clean_text(skill) for skill in taxonomy_skill_list
-        ]
-        return self.clean_taxonomy_skills
+    def load_preprocess_taxonomy_skills(self, tax_input_file_name):
+        #load taxonomy skills
+        self.taxonomy_skills = load_s3_data(S3, bucket_name, tax_input_file_name)
+        #preprocess taxonomy skills 
+        self.clean_taxonomy_skills = taxonomy_skills[self.skill_name_col].apply(clean_text).to_list()
 
-    def transform(self, skills):
-        # Load BERT model and transform skill
-        skills_vec = self.bert_vectorizer.transform(skills)
-        return skills_vec
+        return self.clean_taxonomy_skills 
+
+    def embed_taxonomy_skills(self, taxonomy_embedding_file_name, save=False):
+        """embed and save clean taxonomy skills"""
+        self.taxonomy_skills_embeddings = self.bert_model.transform(
+            self.clean_taxonomy_skills
+        )
+        taxonomy_skills_embeddings_dict = dict(zip(self.clean_taxonomy_skills, self.taxonomy_skills_embeddings))
+
+        if save: #save to s3
+            save_to_s3(S3, bucket_name, taxonomy_skills_embeddings_dict, taxonomy_embedding_file_name)
+
+    def load_taxonomy_embeddings(self, taxonomy_embedding_file_name, s3=True):
+        """Load taxonomy embeddings from s3"""
+        if s3:
+            return load_s3_data(S3, bucket_name, taxonomy_embedding_file_name)
+        else:
+            return load_json_dict(taxonomy_embedding_file_name)
+
+    def load_ojo_esco_mapper(self, ojo_esco_mapper_file_name, s3=True):
+        """Load ojo esco mapper from s3"""
+        if s3:
+            self.ojo_esco = load_s3_data(S3, bucket_name, ojo_esco_mapper_file_name)
+            return self.ojo_esco
+        else:
+            self.ojo_esco = load_json_dict(ojo_esco_mapper_file_name)
+            return self.ojo_esco
+
+    def filter_skill_hash(self, skill_hashes, ojo_esco):
+        """Filters skill hashes for skills not in ojo esco look up table."""
+        self.skill_hashes_filtered = {skill_hash: skill for skill_hash, skill in skill_hashes.items() if skill not in self.ojo_esco.keys()}
+
+        return self.skill_hashes_filtered
+
+    def link_skill_hash_to_job_id(self, ):
+        """Link skill hash to job id"""
+
 
     def map_skills(
-        self, taxonomy_skills, ojo_skills_file_name, num_hier_levels, skill_type_dict
+        self, taxonomy_skills, skill_hashes_filtered, num_hier_levels, skill_type_dict
     ):
         """
+        Maps skills not in ojo to esco look up dictionary 
+
         num_hier_levels (int): the number of levels there are in this taxonomy
         skill_type_dict (dict):
                 A dictionary of the values of the skill_type_col column which fit into either the skill_types or the hier_types
                 e.g. {'skill_types': ['preferredLabel', 'altLabels'], 'hier_types': ["level_2", "level_3"],}
         """
-
-        self.ojo_skills = self.get_ojo_skills(self.ojo_skills_file_name)
-        self.bert_vectorizer = BertVectorizer(
-            bert_model_name=self.bert_model_name,
-            multi_process=self.multi_process,
-            batch_size=self.batch_size,
+        clean_ojo_skill_embeddings = self.bert_model.transform(
+            skill_hashes_filtered.values() 
         )
-        self.bert_vectorizer.fit()
-
-        clean_tax_skills = self.preprocess_taxonomy_skills(
-            taxonomy_skills[self.skill_name_col].tolist()
-        )
-
-        self.taxonomy_skills_embeddings = self.bert_vectorizer.transform(
-            clean_tax_skills
-        )
-
-        clean_ojo_skills = self.preprocess_ojo_skills(self.ojo_skills)
-
-        # Flatten the skills lists and keep track of the job ad and order of skills it was from
-        flat_clean_ojo_skills = []
-        flat_clean_ojo_skills_ix = []
-        for job_id, skills in clean_ojo_skills.items():
-            flat_clean_ojo_skills += skills["clean_skills"]
-            flat_clean_ojo_skills_ix += [
-                (job_id, skill_id) for skill_id, _ in enumerate(skills["clean_skills"])
-            ]
-
-        clean_ojo_skill_embeddings = self.bert_vectorizer.transform(
-            flat_clean_ojo_skills
-        )
-
         # Find the closest matches to skills information
-        skill_types = skill_type_dict.get("skill_types", [])
+        skill_types = skill_type_dict.get("skill_types", []) 
         tax_skills_ix = taxonomy_skills[
             taxonomy_skills[self.skill_type_col].isin(skill_types)
         ].index
@@ -229,7 +239,6 @@ class SkillMapper:
             self.taxonomy_skills_embeddings[tax_skills_ix],
             match_sim_thresh=0.5,
         )
-
         # Find the closest matches to the hierarchy levels information
         hier_types = {i: v for i, v in enumerate(skill_type_dict.get("hier_types", []))}
         hier_types_top_sims = {}
@@ -246,17 +255,13 @@ class SkillMapper:
                 "top_sim_scores": top_sim_scores,
                 "taxonomy_skills_ix": taxonomy_skills_ix,
             }
-
         # Output the top matches (using the different metrics) for each OJO skill
         # Need to match indexes back correctly (hence all the ix variables)
         self.skill_mapper_list = []
-        for match_i, match_text in enumerate(flat_clean_ojo_skills):
-
+        for match_i, match_text in skill_hashes_filtered.items():
             # Top highest matches (any threshold)
-            job_id, skill_num = flat_clean_ojo_skills_ix[match_i]
             match_results = {
-                "job_id": job_id,
-                "skill_num": skill_num,
+                "ojo_skill_id": match_i,
                 "ojo_ner_skill": match_text,
                 "top_tax_skills": list(
                     zip(
@@ -276,7 +281,6 @@ class SkillMapper:
                     )
                 ),
             }
-
             # Using the top matches, find the most common codes for each level of the
             # hierarchy (if hierarchy details are given), weighted by their similarity score
             if self.skill_hier_info_col:
@@ -299,7 +303,6 @@ class SkillMapper:
                     ] = get_most_common_code(high_hier_codes, i)
 
                 match_results["high_tax_skills"] = high_tax_skills_results
-
             # Now get the top matches using the hierarchy descriptions (if hier_types isnt empty)
             for hier_type_num, hier_type in hier_types.items():
                 hier_sims_info = hier_types_top_sims[hier_type_num]
@@ -337,8 +340,7 @@ class SkillMapper:
             # Try to find a close similarity skill
             skill_info = {
                 "ojo_skill": v["ojo_ner_skill"],
-                "job_id": v["job_id"],
-                "match_id": match_id,
+                "match_id": v["ojo_skill_id"],
             }
             match_hier_info = {}
             top_skill, top_skill_code, top_sim_score = v["top_tax_skills"][0]
@@ -393,7 +395,6 @@ class SkillMapper:
             self.final_match.append(
                 {
                     "ojo_skill": rank_match["ojo_skill"],
-                    "ojo_job_id": rank_match["job_id"],
                     "ojo_job_skill_num": rank_match["match_id"],
                     "match_skill": rank_match["match 0"],
                     "match_score": rank_match["match_info"][0]["value"],
@@ -404,6 +405,27 @@ class SkillMapper:
 
         return self.final_match
 
+    ############ FOR USERS: TBD ON THESE FUNCTIONS 
+    def extract_skills(self, job): 
+
+        nlp = self.job_ner.load_model(self.job_ner_model_folder, s3_download=True)  
+        if isinstance(job, str):
+            pred_ents = self.job_ner.predict(job)
+            return [job[ent['start']:ent['end']] for ent in pred_ents]
+
+        elif isinstance(job, list):
+            skill_spans = []
+            for j in job:
+                pred_ents = self.job_ner.predict(j)
+                skill_spans.append([job[ent['start']:ent['end']] for ent in pred_ents])
+            return skill_spans
+
+    def map_skills_final_match(self, taxonomy_skills, skill_hashes_filtered, num_hier_levels, skill_type_dict, match_thresholds_dict): 
+        """Wrapper function to return final match after mapping skills."""
+        self.skill_mapper_list = self.map_skills(self, taxonomy_skills, skill_hashes_filtered, num_hier_levels, skill_type_dict)
+        self.final_match = self.final_prediction(self, self.skill_mapper_list, match_thresholds_dict, num_hier_levels)
+
+        return self.final_match
 
 if __name__ == "__main__":
 
@@ -428,7 +450,7 @@ if __name__ == "__main__":
 
     # Hard code how many levels there are in the taxonomy (if any)
     # This should correspond to the length of the data in taxonomy_skills["hierarchy_levels"] e.g. ['S', S4', 'S4.8, 'S4.8.1']
-    if taxonomy == "esco":
+    if taxonomy == "esco": #put in a config file at some point
         num_hier_levels = 4
         skill_type_dict = {
             "skill_types": ["preferredLabel", "altLabels"],
@@ -456,14 +478,23 @@ if __name__ == "__main__":
         skill_id_col="id",
         skill_hier_info_col="hierarchy_levels",
         skill_type_col="type",
-        bert_model_name="sentence-transformers/all-MiniLM-L6-v2",
-        multi_process=True,
-        batch_size=32,
         ojo_skills_file_name=config["ojo_skills_ner_path"],
-    )
-
-    taxonomy_skills = load_s3_data(get_s3_resource(), bucket_name, tax_input_file_name)
+    ) 
+    
+    ojo_skills = skill_mapper.load_preprocess_job_data(ojo_skills_file_path) 
+    
+    taxonomy_skills = skill_mapper.load_preprocess_taxonomy_data(tax_input_file_name) 
     taxonomy_skills = taxonomy_skills.replace({np.nan: None})
+
+     if 'taxonomy_embeddings_file_path' exists:
+        taxonomy_embeddings = skill_mapper.load_taxonomy_embeddings(taxonomy_embeddings_file_path)
+    else: #else save and load 
+        skill_mapper.embed_taxonomy_skills(taxonomy_embeddings_file_path, save=True) 
+        taxonomy_embeddings = skill_mapper.load_taxonomy_embeddings(taxonomy_embeddings_file_path)
+        
+    if 'ojo_esco_lookup_file_path' exists:
+        ojo_esco = skill_mapper.load_ojo_esco_mapper(ojo_esco_lookup_file_path)
+
 
     skills_to_taxonomy = skill_mapper.map_skills(
         taxonomy_skills,
