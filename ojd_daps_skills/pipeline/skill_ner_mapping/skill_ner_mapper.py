@@ -264,14 +264,9 @@ class SkillMapper:
 
         return self.ojo_esco
 
-    def save_ojo_esco_mapper(self, ojo_esco_mapper_file_name, final_matches):
+    def save_ojo_esco_mapper(self, ojo_esco_mapper_file_name, skill_hash_to_esco):
         """Saves final predictions as ojo_esco mapper"""
-        ojo_esco_mapper = dict()
-        for final_match in final_matches:
-            skill_hash = final_match['ojo_job_skill_hash']
-            ojo_esco_mapper[skill_hash] = {k:v for k, v in final_match.items() if k != 'ojo_job_skill_hash'}
-
-        save_to_s3(S3, bucket_name, ojo_esco_mapper, ojo_esco_mapper_file_name)
+        save_to_s3(S3, bucket_name, skill_hash_to_esco, ojo_esco_mapper_file_name)
 
     def filter_skill_hash(self, skill_hashes, ojo_esco):
         """Filters skill hashes for skills not in ojo esco look up table."""
@@ -618,16 +613,16 @@ if __name__ == "__main__":
             final_matches, ojo_esco_predefined
         )
         (
-            job_id_to_predictions,
+            skill_hash_to_esco,
             final_ojo_skills,
         ) = skill_mapper.link_skill_hash_to_job_id(clean_ojo_skills, final_matches)
     else:
         (
-            job_id_to_predictions,
+            skill_hash_to_esco,
             final_ojo_skills,
         ) = skill_mapper.link_skill_hash_to_job_id(clean_ojo_skills, final_matches)
         #and save final matches as mapper
-        skill_mapper.save_ojo_esco_mapper(final_matches, ojo_esco_lookup_file_name)
+        skill_mapper.save_ojo_esco_mapper(skill_hash_to_esco, ojo_esco_lookup_file_name)
 
 #    skill_mapper_file_name = (
 #        ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
