@@ -157,7 +157,7 @@ class SkillMapper:
 
     def preprocess_job_skills(self, ojo_skills=None):
         """
-        ojo_skills: {'predictions': {'SKILL': , 'MULTISKILL': , 'EXPERIENCE': }, }
+        ojo_skills: {'predictions': {'job_id': {'SKILL': , 'MULTISKILL': , 'EXPERIENCE': }, }
         """
         if not ojo_skills:
             ojo_skills = self.ojo_skills
@@ -481,10 +481,13 @@ class SkillMapper:
             self.skill_hash_to_esco[fm["ojo_job_skill_hash"]] = fm
 
         for job_id, job_info in self.clean_ojo_skills.items():
+            esco_skills = []
             for skill_hash in job_info["skill_hashes"]:
-                job_info["skill_to_" + self.taxonomy] = self.skill_hash_to_esco[skill_hash]
+                esco_skills.append(self.skill_hash_to_esco[skill_hash])
+            job_info["skill_to_taxonomy"] = esco_skills
 
         return self.skill_hash_to_esco, self.clean_ojo_skills
+
 
 if __name__ == "__main__":
 
@@ -621,16 +624,16 @@ if __name__ == "__main__":
             skill_hash_to_esco,
             final_ojo_skills,
         ) = skill_mapper.link_skill_hash_to_job_id(clean_ojo_skills, final_matches)
-        #and save final matches as mapper
+        # and save final matches as mapper
         skill_mapper.save_ojo_esco_mapper(skill_hash_to_esco, ojo_esco_lookup_file_name)
 
 #    skill_mapper_file_name = (
 #        ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
 #    )
 
-    # save_to_s3(
-    #     S3,
-    #     bucket_name,
-    #     final_matches,
-    #     os.path.join(config["ojo_skills_ner_mapping_dir"], skill_mapper_file_name),
-    # )
+# save_to_s3(
+#     S3,
+#     bucket_name,
+#     final_matches,
+#     os.path.join(config["ojo_skills_ner_mapping_dir"], skill_mapper_file_name),
+# )
