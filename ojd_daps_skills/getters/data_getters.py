@@ -10,7 +10,6 @@ import boto3
 from decimal import Decimal
 import numpy
 
-
 class CustomJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):

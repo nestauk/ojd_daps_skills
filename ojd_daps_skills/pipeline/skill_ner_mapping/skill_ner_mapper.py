@@ -59,8 +59,8 @@ This might give the result:
 - the skill level 1 group 'communicate verbally' (code 'A1.3') is the closest to thie ojo skill with distance 0.98
 """
 
-# import sys
-# sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
+import sys
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
 
 from ojd_daps_skills import config, bucket_name, PROJECT_DIR, logger
 from ojd_daps_skills.getters.data_getters import (
@@ -77,7 +77,9 @@ from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
 )
 from ojd_daps_skills.utils.bert_vectorizer import BertVectorizer
 from ojd_daps_skills.utils.text_cleaning import clean_text
+from ojd_daps_skills.utils.logging import set_global_logging_level
 
+import logging
 from argparse import ArgumentParser
 from sentence_transformers import SentenceTransformer
 import re
@@ -87,12 +89,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import pandas as pd
 import os
-import ast
 
+import ast
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
+import boto3
 
 S3 = get_s3_resource()
-
 
 class SkillMapper:
     """
@@ -215,7 +217,7 @@ class SkillMapper:
         # preprocess taxonomy skills
         taxonomy_skills["cleaned skills"] = taxonomy_skills[self.skill_name_col].apply(
             clean_text
-        )
+        )[:10]
 
         taxonomy_skills.replace({np.nan: None}).reset_index(inplace=True, drop=True)
 
@@ -488,6 +490,7 @@ class SkillMapper:
 
 if __name__ == "__main__":
 
+    set_global_logging_level(level=logging.ERROR, prefices=["sentence_transformers", "boto"])
     parser = ArgumentParser()
 
     parser.add_argument(
