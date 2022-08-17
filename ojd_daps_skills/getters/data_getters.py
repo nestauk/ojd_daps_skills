@@ -10,6 +10,8 @@ import boto3
 from decimal import Decimal
 import numpy
 
+from ojd_daps_skills import bucket_name, PROJECT_DIR
+
 class CustomJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
@@ -162,3 +164,16 @@ def get_s3_data_paths(s3, bucket_name, root, file_types=["*.jsonl"]):
             s3_keys.append(key)
 
     return s3_keys
+
+
+def load_file(file_path, s3=True):
+    """
+    Load a file either from the repos s3 bucket or locally
+    """
+    if s3:
+        S3 = get_s3_resource()
+        data = load_s3_data(S3, bucket_name, file_path)
+    else:
+        data = load_json_dict(PROJECT_DIR / file_path)
+
+    return data

@@ -78,6 +78,7 @@ from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
 from ojd_daps_skills.utils.bert_vectorizer import BertVectorizer
 from ojd_daps_skills.utils.text_cleaning import clean_text
 from ojd_daps_skills.utils.logging import set_global_logging_level
+from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
 
 import logging
 from argparse import ArgumentParser
@@ -159,7 +160,7 @@ class SkillMapper:
 
     def preprocess_job_skills(self, ojo_skills=None):
         """
-        ojo_skills: {'predictions': {'SKILL': , 'MULTISKILL': , 'EXPERIENCE': }, }
+        ojo_skills: {'predictions': {'job_id': {'SKILL': , 'MULTISKILL': , 'EXPERIENCE': }, }
         """
         if not ojo_skills:
             ojo_skills = self.ojo_skills
@@ -181,7 +182,7 @@ class SkillMapper:
             job_ad_skill_hashes = []
             if ojo_job_id in self.clean_ojo_skills.keys():
                 for clean_skill in self.clean_ojo_skills[ojo_job_id]["clean_skills"]:
-                    skill_hash = hash(clean_skill)
+                    skill_hash = short_hash(clean_skill)
                     self.skill_hashes[skill_hash] = clean_skill
                     job_ad_skill_hashes.append(skill_hash)
                 self.clean_ojo_skills[ojo_job_id]["skill_hashes"] = job_ad_skill_hashes
@@ -223,9 +224,7 @@ class SkillMapper:
 
         return taxonomy_skills
 
-    def embed_taxonomy_skills(
-        self, taxonomy_skills, taxonomy_embedding_file_name, save=False
-    ):
+    def embed_taxonomy_skills(self, taxonomy_skills):
         """embed and save clean taxonomy skills"""
 
         self.taxonomy_skills_embeddings = self.bert_model.transform(
@@ -236,13 +235,13 @@ class SkillMapper:
             zip(taxonomy_skills.index, self.taxonomy_skills_embeddings)
         )
 
-        if save:  # save to s3
-            save_to_s3(
-                S3,
-                bucket_name,
-                self.taxonomy_skills_embeddings_dict,
-                taxonomy_embedding_file_name,
-            )
+    def save_taxonomy_embeddings(self, taxonomy_embedding_file_name):
+        save_to_s3(
+            S3,
+            bucket_name,
+            self.taxonomy_skills_embeddings_dict,
+            taxonomy_embedding_file_name,
+        )
 
     def load_taxonomy_embeddings(self, taxonomy_embedding_file_name, s3=True):
         """Load taxonomy embeddings from s3"""
@@ -275,7 +274,7 @@ class SkillMapper:
         self.skill_hashes_filtered = {
             skill_hash: skill
             for skill_hash, skill in skill_hashes.items()
-            if skill_hash not in self.ojo_esco.keys()
+            if skill_hash not in ojo_esco.keys()
         }
 
         return self.skill_hashes_filtered
@@ -483,10 +482,13 @@ class SkillMapper:
             self.skill_hash_to_esco[fm["ojo_job_skill_hash"]] = fm
 
         for job_id, job_info in self.clean_ojo_skills.items():
+            esco_skills = []
             for skill_hash in job_info["skill_hashes"]:
-                job_info["skill_to_" + self.taxonomy] = self.skill_hash_to_esco[skill_hash]
+                esco_skills.append(self.skill_hash_to_esco[skill_hash])
+            job_info["skill_to_taxonomy"] = esco_skills
 
         return self.skill_hash_to_esco, self.clean_ojo_skills
+
 
 if __name__ == "__main__":
 
@@ -564,8 +566,9 @@ if __name__ == "__main__":
         )
     else:
         skill_mapper.embed_taxonomy_skills(
-            taxonomy_skills, esco_embeddings_file_name, save=True
+            taxonomy_skills,
         )
+        skill_mapper.save_taxonomy_embeddings(esco_embeddings_file_name)
         taxonomy_embeddings = skill_mapper.load_taxonomy_embeddings(
             esco_embeddings_file_name
         )
@@ -624,16 +627,16 @@ if __name__ == "__main__":
             skill_hash_to_esco,
             final_ojo_skills,
         ) = skill_mapper.link_skill_hash_to_job_id(clean_ojo_skills, final_matches)
-        #and save final matches as mapper
+        # and save final matches as mapper
         skill_mapper.save_ojo_esco_mapper(skill_hash_to_esco, ojo_esco_lookup_file_name)
 
 #    skill_mapper_file_name = (
 #        ojo_skill_file_name.split("/")[-1].split(".")[0] + "_to_" + taxonomy + ".json"
 #    )
 
-    # save_to_s3(
-    #     S3,
-    #     bucket_name,
-    #     final_matches,
-    #     os.path.join(config["ojo_skills_ner_mapping_dir"], skill_mapper_file_name),
-    # )
+# save_to_s3(
+#     S3,
+#     bucket_name,
+#     final_matches,
+#     os.path.join(config["ojo_skills_ner_mapping_dir"], skill_mapper_file_name),
+# )
