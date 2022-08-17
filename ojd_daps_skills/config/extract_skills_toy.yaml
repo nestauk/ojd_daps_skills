@@ -1,5 +1,6 @@
 ner_model_path: "outputs/models/ner_model/20220729/"
-taxonomy_path: "toy"
+taxonomy_name: "toy"
+taxonomy_path: ""
 clean_job_ads: True
 min_multiskill_length: 75
 taxonomy_embedding_file_name: ""
