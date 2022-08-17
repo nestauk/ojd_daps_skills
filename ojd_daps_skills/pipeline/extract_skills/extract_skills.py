@@ -1,6 +1,9 @@
 """
 Extract skills from a list of job adverts and match them to a chosen taxonomy
 """
+import sys
+
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
 
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
 from ojd_daps_skills.utils.text_cleaning import clean_text
@@ -52,6 +55,7 @@ class ExtractSkills(object):
 
         self.s3 = s3
         self.ner_model_path = self.config["ner_model_path"]
+        self.taxonomy_name = self.config["taxonomy_name"]
         self.taxonomy_path = self.config["taxonomy_path"]
         self.clean_job_ads = self.config["clean_job_ads"]
         self.min_multiskill_length = self.config["min_multiskill_length"]
@@ -91,9 +95,7 @@ class ExtractSkills(object):
             self.taxonomy_skills = load_toy_taxonomy()
         else:
             if hier_name_mapper_file_name:
-                self.hier_name_mapper = load_file(
-                    hier_name_mapper_file_name, s3=self.s3
-                )
+                self.hier_name_mapper = load_file(hier_name_mapper_file_name, s3=True)
             else:
                 self.hier_name_mapper = {}
             self.config["hier_name_mapper"] = self.hier_name_mapper
@@ -120,7 +122,7 @@ class ExtractSkills(object):
             verbose=self.verbose,
         )
 
-        if self.taxonomy_path != "toy":
+        if self.taxonomy_name != "toy":
             self.taxonomy_skills = self.skill_mapper.load_taxonomy_skills(
                 self.taxonomy_path, s3=self.s3
             )
@@ -145,8 +147,8 @@ class ExtractSkills(object):
                 logger.info(
                     f"Loading previously found skill mappings from {prev_skill_matches_file_name}"
                 )
-            self.prev_skill_matches = load_ojo_esco_mapper(
-                self.skill_mapper.prev_skill_matches_file_name, s3=self.s3
+            self.prev_skill_matches = self.skill_mapper.load_ojo_esco_mapper(
+                self.prev_skill_matches_file_name, s3=self.s3
             )
             # self.prev_skill_matches = {1654958883999821: {'ojo_skill': 'maths skills', 'match_skill': 'communicate with others', 'match_score': 0.3333333333333333, 'match_type': 'most_common_level_1', 'match_id': 'S1.1'}}
         else:
@@ -267,12 +269,12 @@ class ExtractSkills(object):
 
 if __name__ == "__main__":
 
-    es = ExtractSkills(config_name="extract_skills_toy", s3=True)
+    es = ExtractSkills(config_name="extract_skills_esco", s3=True)
 
     es.load()
 
     job_adverts = [
-        "The job involves communication and maths skills",
+        "The job involves communication and maths skills. You should have ambitious skills.",
         "The job involves excel and presenting skills. You need good excel skills",
     ]
 
