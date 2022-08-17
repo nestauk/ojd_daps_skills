@@ -58,12 +58,6 @@ This might give the result:
 - the skill level 0 group 'communication' (code 'A1') is the closest to thie ojo skill with distance 0.998
 - the skill level 1 group 'communicate verbally' (code 'A1.3') is the closest to thie ojo skill with distance 0.98
 """
-
-import sys
-import sys
-
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
-
 from ojd_daps_skills import config, bucket_name, PROJECT_DIR, logger
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,

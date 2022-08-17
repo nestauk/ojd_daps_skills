@@ -1,10 +1,6 @@
 """
 Extract skills from a list of job adverts and match them to a chosen taxonomy
 """
-import sys
-
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
-
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
 from ojd_daps_skills.utils.text_cleaning import clean_text
 from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import split_multiskill
