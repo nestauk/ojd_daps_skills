@@ -221,9 +221,7 @@ class SkillMapper:
 
         return taxonomy_skills
 
-    def embed_taxonomy_skills(
-        self, taxonomy_skills, taxonomy_embedding_file_name, save=False
-    ):
+    def embed_taxonomy_skills(self, taxonomy_skills):
         """embed and save clean taxonomy skills"""
 
         self.taxonomy_skills_embeddings = self.bert_model.transform(
@@ -234,13 +232,13 @@ class SkillMapper:
             zip(taxonomy_skills.index, self.taxonomy_skills_embeddings)
         )
 
-        if save:  # save to s3
-            save_to_s3(
-                S3,
-                bucket_name,
-                self.taxonomy_skills_embeddings_dict,
-                taxonomy_embedding_file_name,
-            )
+    def save_taxonomy_embeddings(self, taxonomy_embedding_file_name):
+        save_to_s3(
+            S3,
+            bucket_name,
+            self.taxonomy_skills_embeddings_dict,
+            taxonomy_embedding_file_name,
+        )
 
     def load_taxonomy_embeddings(self, taxonomy_embedding_file_name, s3=True):
         """Load taxonomy embeddings from s3"""
@@ -563,9 +561,8 @@ if __name__ == "__main__":
             esco_embeddings_file_name
         )
     else:
-        skill_mapper.embed_taxonomy_skills(
-            taxonomy_skills, esco_embeddings_file_name, save=True
-        )
+        skill_mapper.embed_taxonomy_skills(taxonomy_skills,)
+        skill_mapper.save_taxonomy_embeddings(esco_embeddings_file_name)
         taxonomy_embeddings = skill_mapper.load_taxonomy_embeddings(
             esco_embeddings_file_name
         )
