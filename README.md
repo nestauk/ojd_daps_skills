@@ -2,6 +2,19 @@
 
 ojd_daps_skills is a package designed to extract skills from job adverts, and match them to an existing taxonomy if needed.
 
+This works by:
+
+1. Finding skills in job adverts using a Named Entity Recognition (NER) model.
+2. Matching these skills to an existing skills taxonomy using semantic similarity.
+
+Much more about these steps can be found in [this report](outputs/reports/skills_extraction.md).
+
+This package is split into the three pipeline steps:
+
+1. [skill_ner](ojd_daps_skills/ojd_daps_skills/pipeline/skill_ner/)
+2. [skill_ner_mapping](ojd_daps_skills/ojd_daps_skills/pipeline/skill_ner_mapping/)
+3. [evaluation](ojd_daps_skills/ojd_daps_skills/pipeline/evaluation/)
+
 ## Installation
 
 ```
