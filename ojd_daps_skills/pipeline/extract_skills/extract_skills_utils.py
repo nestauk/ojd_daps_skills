@@ -76,3 +76,32 @@ def load_toy_taxonomy():
     }
 
     return taxonomy_skills, taxonomy_info
+
+
+def load_esco_taxonomy_info():
+    """
+    The parameters for mapping to the ESCO taxonomy
+    """
+    num_hier_levels = 4
+    skill_type_dict = {
+        "skill_types": ["preferredLabel", "altLabels"],
+        "hier_types": ["level_2", "level_3"],
+    }
+
+    match_thresholds_dict = {
+        "skill_match_thresh": 0.7,
+        "top_tax_skills": {1: 0.5, 2: 0.5, 3: 0.5},
+        "max_share": {1: 0, 2: 0.2, 3: 0.2},
+    }
+
+    taxonomy_info = {
+        "num_hier_levels": num_hier_levels,
+        "skill_type_dict": skill_type_dict,
+        "match_thresholds_dict": match_thresholds_dict,
+        "skill_name_col": "description",
+        "skill_id_col": "id",
+        "skill_hier_info_col": "hierarchy_levels",
+        "skill_type_col": "type",
+    }
+
+    return taxonomy_info
