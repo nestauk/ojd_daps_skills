@@ -2,7 +2,6 @@ import pytest
 import spacy
 import itertools
 
-from ojd_daps_skills import logger
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 
 es = ExtractSkills()
