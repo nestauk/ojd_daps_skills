@@ -5,9 +5,6 @@ import numpy as np
 def load_toy_taxonomy():
     """
     A toy taxonomy for testing.
-
-    Which ever taxonomy is loaded it should output the pandas dataframe taxonomy_skills
-    and the dict of information/parameters in taxonomy_info
     """
 
     taxonomy_skills = pd.DataFrame(
@@ -44,64 +41,4 @@ def load_toy_taxonomy():
     )
     taxonomy_skills["cleaned skills"] = taxonomy_skills["description"]
 
-    num_hier_levels = 2
-    skill_type_dict = {
-        "skill_types": ["preferredLabel", "altLabels"],
-        "hier_types": ["level_2", "level_3"],
-    }
-
-    match_thresholds_dict = {
-        "skill_match_thresh": 0.7,
-        "top_tax_skills": {1: 0.5, 2: 0.5, 3: 0.5},
-        "max_share": {1: 0, 2: 0.2, 3: 0.2},
-    }
-
-    hier_name_mapper = {
-        "K2": "computer",
-        "K2.1": "computational skills",
-        "S1": "communicate",
-        "S1.1": "communicate with others",
-        "S1.2": "communication skills",
-    }
-
-    taxonomy_info = {
-        "num_hier_levels": num_hier_levels,
-        "skill_type_dict": skill_type_dict,
-        "match_thresholds_dict": match_thresholds_dict,
-        "hier_name_mapper": hier_name_mapper,
-        "skill_name_col": "description",
-        "skill_id_col": "id",
-        "skill_hier_info_col": "hierarchy_levels",
-        "skill_type_col": "type",
-    }
-
-    return taxonomy_skills, taxonomy_info
-
-
-def load_esco_taxonomy_info():
-    """
-    The parameters for mapping to the ESCO taxonomy
-    """
-    num_hier_levels = 4
-    skill_type_dict = {
-        "skill_types": ["preferredLabel", "altLabels"],
-        "hier_types": ["level_2", "level_3"],
-    }
-
-    match_thresholds_dict = {
-        "skill_match_thresh": 0.7,
-        "top_tax_skills": {1: 0.5, 2: 0.5, 3: 0.5},
-        "max_share": {1: 0, 2: 0.2, 3: 0.2},
-    }
-
-    taxonomy_info = {
-        "num_hier_levels": num_hier_levels,
-        "skill_type_dict": skill_type_dict,
-        "match_thresholds_dict": match_thresholds_dict,
-        "skill_name_col": "description",
-        "skill_id_col": "id",
-        "skill_hier_info_col": "hierarchy_levels",
-        "skill_type_col": "type",
-    }
-
-    return taxonomy_info
+    return taxonomy_skills

@@ -8,10 +8,12 @@ from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import split_multiskill
 from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper import SkillMapper
 from ojd_daps_skills.pipeline.extract_skills.extract_skills_utils import (
     load_toy_taxonomy,
-    load_esco_taxonomy_info,
 )
 from ojd_daps_skills.getters.data_getters import load_file
-from ojd_daps_skills import logger
+from ojd_daps_skills import logger, PROJECT_DIR
+
+import yaml
+import os
 
 
 class ExtractSkills(object):
@@ -19,78 +21,102 @@ class ExtractSkills(object):
     Class to extract skills from job adverts and map them to a skills taxonomy.
     Attributes
     ----------
-    ner_model_path (str): the path to the trained NER model (either s3 or local)
+    config_path (str): the config path for a default setting
     s3 (bool): whether you want to load/save data from this repos s3 bucket (True, needs access) or locally (False)
-    clean_job_ads (bool): whether you want to clean the job advert text before extracting skills (True) or not (False)
-    min_multiskill_length (int): the maximum entity length for which a multiskill entity will be split into skills
-    taxonomy_path (str): The filepath to the formatted taxonomy, can also set to "toy" to use a toy taxonomy
+    # ner_model_path (str): the path to the trained NER model (either s3 or local)
+    # clean_job_ads (bool): whether you want to clean the job advert text before extracting skills (True) or not (False)
+    # min_multiskill_length (int): the maximum entity length for which a multiskill entity will be split into skills
+    # taxonomy_path (str): The filepath to the formatted taxonomy, can also set to "toy" to use a toy taxonomy
     ----------
     Methods
     ----------
-    load_things(taxonomy_embedding_file_name, prev_skill_matches_filename, hier_name_mapper_file_name)
+    load(taxonomy_embedding_file_name, prev_skill_matches_file_name, hier_name_mapper_file_name)
         loads all the neccessary data and models for this class
-    get_ner_skills(job_adverts)
+    get_skills(job_adverts)
         For an inputted list of job adverts, or a single job advert text, predict skill/experience entities
     map_skills(predicted_skills)
-        For a list of predicted skills (the output of get_ner_skills - a list of dicts), map each entity
+        For a list of predicted skills (the output of get_skills - a list of dicts), map each entity
         onto a skill/skill group from a taxonomy
     extract_skills(job_adverts, map_to_tax=True)
-        Does both get_ner_skills and extract_skills if map_to_tax=True, otherwise just does get_ner_skills
+        Does both get_skills and extract_skills if map_to_tax=True, otherwise just does get_skills
     """
 
-    def __init__(
-        self,
-        ner_model_path="outputs/models/ner_model/20220729/",
-        s3=True,
-        clean_job_ads=True,
-        min_multiskill_length=75,
-        taxonomy_path="toy",
-    ):
-        self.ner_model_path = ner_model_path
-        self.s3 = s3
-        self.clean_job_ads = clean_job_ads
-        self.min_multiskill_length = min_multiskill_length
-        self.taxonomy_path = taxonomy_path
+    def __init__(self, config_name="extract_skills_toy", s3=True):
+        # Set variables from the config file
+        config_path = os.path.join(
+            PROJECT_DIR, "ojd_daps_skills/config/", config_name + ".yaml"
+        )
+        with open(config_path, "r") as f:
+            self.config = yaml.load(f, Loader=yaml.FullLoader)
 
-    def load_things(
+        self.s3 = s3
+        self.ner_model_path = self.config["ner_model_path"]
+        self.taxonomy_path = self.config["taxonomy_path"]
+        self.clean_job_ads = self.config["clean_job_ads"]
+        self.min_multiskill_length = self.config["min_multiskill_length"]
+        self.taxonomy_embedding_file_name = self.config.get(
+            "taxonomy_embedding_file_name"
+        )
+        self.prev_skill_matches_file_name = self.config.get(
+            "prev_skill_matches_file_name"
+        )
+        self.hier_name_mapper_file_name = self.config.get("hier_name_mapper_file_name")
+
+    def load(
         self,
         taxonomy_embedding_file_name=None,
-        prev_skill_matches_filename=None,
+        prev_skill_matches_file_name=None,
         hier_name_mapper_file_name=None,
     ):
         """
         Try to load as much as a one off as we can
         """
 
+        if (not taxonomy_embedding_file_name) and (self.taxonomy_embedding_file_name):
+            taxonomy_embedding_file_name = self.taxonomy_embedding_file_name
+        if (not prev_skill_matches_file_name) and (self.prev_skill_matches_file_name):
+            prev_skill_matches_file_name = self.prev_skill_matches_file_name
+        if (not hier_name_mapper_file_name) and (self.hier_name_mapper_file_name):
+            hier_name_mapper_file_name = self.hier_name_mapper_file_name
+
         self.job_ner = JobNER()
         self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
         self.labels = self.nlp.get_pipe("ner").labels + ("MULTISKILL",)
 
-        # Load taxonomy
         logger.info(f"Loading taxonomy information from {self.taxonomy_path}")
         if self.taxonomy_path == "toy":
-            self.taxonomy_skills, self.taxonomy_info = load_toy_taxonomy()
-
-            self.skill_mapper = SkillMapper(
-                skill_name_col=self.taxonomy_info["skill_name_col"],
-                skill_id_col=self.taxonomy_info["skill_id_col"],
-                skill_hier_info_col=self.taxonomy_info["skill_hier_info_col"],
-                skill_type_col=self.taxonomy_info["skill_type_col"],
-            )
+            self.taxonomy_skills = load_toy_taxonomy()
         else:
-            self.taxonomy_info = load_esco_taxonomy_info()
             if hier_name_mapper_file_name:
-                hier_name_mapper = load_file(hier_name_mapper_file_name, s3=self.s3)
+                self.hier_name_mapper = load_file(
+                    hier_name_mapper_file_name, s3=self.s3
+                )
             else:
-                hier_name_mapper = {}
-            self.taxonomy_info["hier_name_mapper"] = hier_name_mapper
-            self.skill_mapper = SkillMapper(
-                skill_name_col=self.taxonomy_info["skill_name_col"],
-                skill_id_col=self.taxonomy_info["skill_id_col"],
-                skill_hier_info_col=self.taxonomy_info["skill_hier_info_col"],
-                skill_type_col=self.taxonomy_info["skill_type_col"],
-            )
+                self.hier_name_mapper = {}
+            self.config["hier_name_mapper"] = self.hier_name_mapper
 
+        taxonomy_info_names = [
+            "num_hier_levels",
+            "skill_type_dict",
+            "match_thresholds_dict",
+            "hier_name_mapper",
+            "skill_name_col",
+            "skill_id_col",
+            "skill_hier_info_col",
+            "skill_type_col",
+        ]
+        self.taxonomy_info = {
+            name: self.config.get(name) for name in taxonomy_info_names
+        }
+
+        self.skill_mapper = SkillMapper(
+            skill_name_col=self.taxonomy_info.get("skill_name_col"),
+            skill_id_col=self.taxonomy_info.get("skill_id_col"),
+            skill_hier_info_col=self.taxonomy_info.get("skill_hier_info_col"),
+            skill_type_col=self.taxonomy_info.get("skill_type_col"),
+        )
+
+        if self.taxonomy_path != "toy":
             self.taxonomy_skills = self.skill_mapper.load_taxonomy_skills(
                 self.taxonomy_path, s3=self.s3
             )
@@ -109,18 +135,18 @@ class ExtractSkills(object):
         else:
             self.taxonomy_skills_embeddings_loaded = False
 
-        if prev_skill_matches_filename:
+        if prev_skill_matches_file_name:
             logger.info(
-                f"Loading previously found skill mappings from {prev_skill_matches_filename}"
+                f"Loading previously found skill mappings from {prev_skill_matches_file_name}"
             )
             self.prev_skill_matches = load_ojo_esco_mapper(
-                self.skill_mapper.prev_skill_matches_filename, s3=self.s3
+                self.skill_mapper.prev_skill_matches_file_name, s3=self.s3
             )
             # self.prev_skill_matches = {1654958883999821: {'ojo_skill': 'maths skills', 'match_skill': 'communicate with others', 'match_score': 0.3333333333333333, 'match_type': 'most_common_level_1', 'match_id': 'S1.1'}}
         else:
             self.prev_skill_matches = None
 
-    def get_ner_skills(self, job_adverts):
+    def get_skills(self, job_adverts):
         """
         Extract skills using the NER model from a single or a list of job adverts
         """
@@ -170,21 +196,19 @@ class ExtractSkills(object):
 
         if not self.taxonomy_skills_embeddings_loaded:
             # If we didn't already load the embeddings, then calculate them
-            self.skill_mapper.embed_taxonomy_skills(
-                self.taxonomy_skills, "notneeded", save=False
-            )
+            self.skill_mapper.embed_taxonomy_skills(self.taxonomy_skills)
 
         fully_mapped_skills = self.skill_mapper.map_skills(
             self.taxonomy_skills,
             skill_hashes,
-            self.taxonomy_info["num_hier_levels"],
-            self.taxonomy_info["skill_type_dict"],
+            self.taxonomy_info.get("num_hier_levels"),
+            self.taxonomy_info.get("skill_type_dict"),
         )
         skill_matches = self.skill_mapper.final_prediction(
             fully_mapped_skills,
             self.taxonomy_info.get("hier_name_mapper"),
-            self.taxonomy_info["match_thresholds_dict"],
-            self.taxonomy_info["num_hier_levels"],
+            self.taxonomy_info.get("match_thresholds_dict"),
+            self.taxonomy_info.get("num_hier_levels"),
         )
 
         if self.prev_skill_matches:
@@ -225,7 +249,7 @@ class ExtractSkills(object):
         Extract skills using the NER model from a single or a list of job adverts
         and if map_to_tax==True then also map them to the taxonomy
         """
-        skills = self.get_ner_skills(job_adverts)
+        skills = self.get_skills(job_adverts)
         if map_to_tax:
             mapped_skills = self.map_skills(skills)
             return mapped_skills
@@ -235,31 +259,9 @@ class ExtractSkills(object):
 
 if __name__ == "__main__":
 
-    ner_model_path = "outputs/models/ner_model/20220729/"
-    s3 = True
-    taxonomy_path = "toy"
-    clean_job_ads = True
-    min_multiskill_length = 75
+    es = ExtractSkills(config_name="extract_skills_toy", s3=True)
 
-    taxonomy_embedding_file_name = None
-    prev_skill_matches_filename = None
-    hier_name_mapper_file_name = (
-        "escoe_extension/outputs/data/skill_ner_mapping/esco_hier_mapper.json"
-    )
-
-    es = ExtractSkills(
-        ner_model_path=ner_model_path,
-        s3=s3,
-        taxonomy_path=taxonomy_path,
-        clean_job_ads=clean_job_ads,
-        min_multiskill_length=min_multiskill_length,
-    )
-
-    es.load_things(
-        taxonomy_embedding_file_name=taxonomy_embedding_file_name,
-        prev_skill_matches_filename=prev_skill_matches_filename,
-        hier_name_mapper_file_name=hier_name_mapper_file_name,
-    )
+    es.load()
 
     job_adverts = [
         "The job involves communication and maths skills",
@@ -267,7 +269,7 @@ if __name__ == "__main__":
     ]
 
     # 2 steps
-    predicted_skills = es.get_ner_skills(job_adverts)
+    predicted_skills = es.get_skills(job_adverts)
     job_skills_matched = es.map_skills(predicted_skills)
 
     # # 1 step
