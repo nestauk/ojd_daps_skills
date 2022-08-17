@@ -46,6 +46,7 @@ class ExtractSkills(object):
         config_path = os.path.join(
             PROJECT_DIR, "ojd_daps_skills/config/", config_name + ".yaml"
         )
+        verbose = True
         with open(config_path, "r") as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -61,6 +62,7 @@ class ExtractSkills(object):
             "prev_skill_matches_file_name"
         )
         self.hier_name_mapper_file_name = self.config.get("hier_name_mapper_file_name")
+        self.verbose = verbose
 
     def load(
         self,
@@ -83,7 +85,8 @@ class ExtractSkills(object):
         self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
         self.labels = self.nlp.get_pipe("ner").labels + ("MULTISKILL",)
 
-        logger.info(f"Loading taxonomy information from {self.taxonomy_path}")
+        if self.verbose:
+            logger.info(f"Loading taxonomy information from {self.taxonomy_path}")
         if self.taxonomy_path == "toy":
             self.taxonomy_skills = load_toy_taxonomy()
         else:
@@ -114,6 +117,7 @@ class ExtractSkills(object):
             skill_id_col=self.taxonomy_info.get("skill_id_col"),
             skill_hier_info_col=self.taxonomy_info.get("skill_hier_info_col"),
             skill_type_col=self.taxonomy_info.get("skill_type_col"),
+            verbose=self.verbose,
         )
 
         if self.taxonomy_path != "toy":
@@ -125,9 +129,10 @@ class ExtractSkills(object):
             )
 
         if taxonomy_embedding_file_name:
-            logger.info(
-                f"Loading taxonomy embeddings from {taxonomy_embedding_file_name}"
-            )
+            if self.verbose:
+                logger.info(
+                    f"Loading taxonomy embeddings from {taxonomy_embedding_file_name}"
+                )
             _ = self.skill_mapper.load_taxonomy_embeddings(
                 taxonomy_embedding_file_name, s3=self.s3
             )
@@ -136,9 +141,10 @@ class ExtractSkills(object):
             self.taxonomy_skills_embeddings_loaded = False
 
         if prev_skill_matches_file_name:
-            logger.info(
-                f"Loading previously found skill mappings from {prev_skill_matches_file_name}"
-            )
+            if self.verbose:
+                logger.info(
+                    f"Loading previously found skill mappings from {prev_skill_matches_file_name}"
+                )
             self.prev_skill_matches = load_ojo_esco_mapper(
                 self.skill_mapper.prev_skill_matches_file_name, s3=self.s3
             )
@@ -186,13 +192,15 @@ class ExtractSkills(object):
 
         skills = {"predictions": {i: s for i, s in enumerate(predicted_skills)}}
         job_skills, skill_hashes = self.skill_mapper.preprocess_job_skills(skills)
-        logger.info(f"Mapping {len(skill_hashes)} skills to the taxonomy")
+        if self.verbose:
+            logger.info(f"Mapping {len(skill_hashes)} skills to the taxonomy")
         if self.prev_skill_matches:
             orig_num = len(skill_hashes)
             skill_hashes = self.skill_mapper.filter_skill_hash(
                 skill_hashes, self.prev_skill_matches
             )
-            logger.info(f"{orig_num - len(skill_hashes)} mappings previously found")
+            if self.verbose:
+                logger.info(f"{orig_num - len(skill_hashes)} mappings previously found")
 
         if not self.taxonomy_skills_embeddings_loaded:
             # If we didn't already load the embeddings, then calculate them
