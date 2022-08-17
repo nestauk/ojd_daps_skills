@@ -76,7 +76,7 @@ from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
     get_most_common_code,
 )
 from ojd_daps_skills.utils.bert_vectorizer import BertVectorizer
-from ojd_daps_skills.utils.text_cleaning import clean_text
+from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
 
 from argparse import ArgumentParser
 from sentence_transformers import SentenceTransformer
@@ -179,7 +179,7 @@ class SkillMapper:
             job_ad_skill_hashes = []
             if ojo_job_id in self.clean_ojo_skills.keys():
                 for clean_skill in self.clean_ojo_skills[ojo_job_id]["clean_skills"]:
-                    skill_hash = hash(clean_skill)
+                    skill_hash = short_hash(clean_skill)
                     self.skill_hashes[skill_hash] = clean_skill
                     job_ad_skill_hashes.append(skill_hash)
                 self.clean_ojo_skills[ojo_job_id]["skill_hashes"] = job_ad_skill_hashes
@@ -271,7 +271,7 @@ class SkillMapper:
         self.skill_hashes_filtered = {
             skill_hash: skill
             for skill_hash, skill in skill_hashes.items()
-            if skill_hash not in self.ojo_esco.keys()
+            if skill_hash not in ojo_esco.keys()
         }
 
         return self.skill_hashes_filtered
@@ -561,7 +561,9 @@ if __name__ == "__main__":
             esco_embeddings_file_name
         )
     else:
-        skill_mapper.embed_taxonomy_skills(taxonomy_skills,)
+        skill_mapper.embed_taxonomy_skills(
+            taxonomy_skills,
+        )
         skill_mapper.save_taxonomy_embeddings(esco_embeddings_file_name)
         taxonomy_embeddings = skill_mapper.load_taxonomy_embeddings(
             esco_embeddings_file_name
