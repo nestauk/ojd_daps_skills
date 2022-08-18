@@ -186,63 +186,73 @@ class ExtractSkills(object):
 
         skills = {"predictions": {i: s for i, s in enumerate(predicted_skills)}}
         job_skills, skill_hashes = self.skill_mapper.preprocess_job_skills(skills)
-        if self.verbose:
-            logger.info(f"Mapping {len(skill_hashes)} skills to the taxonomy")
-        if self.prev_skill_matches:
-            orig_num = len(skill_hashes)
-            skill_hashes = self.skill_mapper.filter_skill_hash(
-                skill_hashes, self.prev_skill_matches
-            )
+        if len(skill_hashes) != 0:
             if self.verbose:
-                logger.info(f"{orig_num - len(skill_hashes)} mappings previously found")
-
-        if not self.taxonomy_skills_embeddings_loaded:
-            # If we didn't already load the embeddings, then calculate them
-            self.skill_mapper.embed_taxonomy_skills(self.taxonomy_skills)
-
-        fully_mapped_skills = self.skill_mapper.map_skills(
-            self.taxonomy_skills,
-            skill_hashes,
-            self.taxonomy_info.get("num_hier_levels"),
-            self.taxonomy_info.get("skill_type_dict"),
-        )
-        skill_matches = self.skill_mapper.final_prediction(
-            fully_mapped_skills,
-            self.taxonomy_info.get("hier_name_mapper"),
-            self.taxonomy_info.get("match_thresholds_dict"),
-            self.taxonomy_info.get("num_hier_levels"),
-        )
-
-        if self.prev_skill_matches:
-            # Append the pre-defined matches with the new matches
-            skill_matches = self.skill_mapper.append_final_predictions(
-                skill_matches, self.prev_skill_matches
-            )
-
-        _, job_skills_matched = self.skill_mapper.link_skill_hash_to_job_id(
-            job_skills, skill_matches
-        )
-
-        job_skills_matched_formatted = []
-        for ix, job_skills_info in job_skills_matched.items():
-            skill_list = list(
-                zip(
-                    job_skills_info["clean_skills"],
-                    [
-                        (j["match_skill"], j["match_id"])
-                        for j in job_skills_info["skill_to_taxonomy"]
-                    ],
+                logger.info(f"Mapping {len(skill_hashes)} skills to the taxonomy")
+            if self.prev_skill_matches:
+                orig_num = len(skill_hashes)
+                skill_hashes = self.skill_mapper.filter_skill_hash(
+                    skill_hashes, self.prev_skill_matches
                 )
-            )
-            experience_list = predicted_skills[ix]["EXPERIENCE"]
+                if self.verbose:
+                    logger.info(
+                        f"{orig_num - len(skill_hashes)} mappings previously found"
+                    )
 
-            job_skills_matched_formatted.append(
-                {
-                    k: v
-                    for k, v in [("SKILL", skill_list), ("EXPERIENCE", experience_list)]
-                    if v
-                }
+            if not self.taxonomy_skills_embeddings_loaded:
+                # If we didn't already load the embeddings, then calculate them
+                self.skill_mapper.embed_taxonomy_skills(self.taxonomy_skills)
+
+            fully_mapped_skills = self.skill_mapper.map_skills(
+                self.taxonomy_skills,
+                skill_hashes,
+                self.taxonomy_info.get("num_hier_levels"),
+                self.taxonomy_info.get("skill_type_dict"),
             )
+            skill_matches = self.skill_mapper.final_prediction(
+                fully_mapped_skills,
+                self.taxonomy_info.get("hier_name_mapper"),
+                self.taxonomy_info.get("match_thresholds_dict"),
+                self.taxonomy_info.get("num_hier_levels"),
+            )
+
+            if self.prev_skill_matches:
+                # Append the pre-defined matches with the new matches
+                skill_matches = self.skill_mapper.append_final_predictions(
+                    skill_matches, self.prev_skill_matches
+                )
+
+            _, job_skills_matched = self.skill_mapper.link_skill_hash_to_job_id(
+                job_skills, skill_matches
+            )
+
+            job_skills_matched_formatted = []
+            for ix, job_skills_info in job_skills_matched.items():
+                skill_list = list(
+                    zip(
+                        job_skills_info["clean_skills"],
+                        [
+                            (j["match_skill"], j["match_id"])
+                            for j in job_skills_info["skill_to_taxonomy"]
+                        ],
+                    )
+                )
+                experience_list = predicted_skills[ix]["EXPERIENCE"]
+
+                job_skills_matched_formatted.append(
+                    {
+                        k: v
+                        for k, v in [
+                            ("SKILL", skill_list),
+                            ("EXPERIENCE", experience_list),
+                        ]
+                        if v
+                    }
+                )
+        else:
+            job_skills_matched_formatted = [
+                {"SKILL": [], "EXPERIENCE": []} for _ in range(len(predicted_skills))
+            ]
 
         return job_skills_matched_formatted
 
