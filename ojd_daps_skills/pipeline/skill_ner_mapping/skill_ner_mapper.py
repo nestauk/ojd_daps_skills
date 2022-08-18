@@ -61,7 +61,6 @@ This might give the result:
 from ojd_daps_skills import config, bucket_name, PROJECT_DIR, logger
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
-    load_s3_data,
     save_to_s3,
     get_s3_data_paths,
     load_data,
