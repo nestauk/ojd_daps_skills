@@ -309,6 +309,10 @@ class SkillMapper:
                 A dictionary of the values of the skill_type_col column which fit into either the skill_types or the hier_types
                 e.g. {'skill_types': ['preferredLabel', 'altLabels'], 'hier_types': ["level_2", "level_3"],}
         """
+
+        if len(skill_hashes_filtered) == 0:
+            logger.error("Trying to map skills using empty dict of skills")
+
         clean_ojo_skill_embeddings = self.bert_model.transform(
             skill_hashes_filtered.values()
         )
@@ -588,7 +592,9 @@ if __name__ == "__main__":
             esco_embeddings_file_name
         )
     else:
-        skill_mapper.embed_taxonomy_skills(taxonomy_skills,)
+        skill_mapper.embed_taxonomy_skills(
+            taxonomy_skills,
+        )
         skill_mapper.save_taxonomy_embeddings(esco_embeddings_file_name)
 
     if ojo_esco_lookup_file_name in embedding_lookup_files:
