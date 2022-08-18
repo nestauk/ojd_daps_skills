@@ -623,7 +623,7 @@ if __name__ == "__main__":
     # )
 
     # Get the final result - one match per OJO skill
-    hier_name_mapper = load_s3_data(S3, bucket_name, hier_name_mapper_file_name)
+    hier_name_mapper = load_file(hier_name_mapper_file_name, s3=True)
 
     final_matches = skill_mapper.final_prediction(
         skills_to_taxonomy, hier_name_mapper, match_thresholds_dict, num_hier_levels
