@@ -616,7 +616,7 @@ if __name__ == "__main__":
     # )
 
     # save_to_s3(
-    #     get_s3_resource(),
+    #     S3,
     #     bucket_name,
     #     skills_to_taxonomy,
     #     os.path.join(config["ojo_skills_ner_mapping_dir"], full_skill_mapper_file_name),
