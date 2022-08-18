@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
+
 """
 Lightcast- specific formating function to get lightcast data in the format needed for skill_ner_mapper.py
 
@@ -12,6 +16,8 @@ hierarchy_levels: If a skill then which hierarchy levels is it in
 To run the script, python lightcast_formatting.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
 
 """
+from ojd_daps_skills.utils.logging import set_global_logging_level
+
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     load_s3_data,
@@ -61,13 +67,24 @@ def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
         lightcast_skills["subcategory"]
     )
 
+    lightcast_skills["hierarchy_levels"] = (
+        lightcast_skills["category_id"].astype(str)
+        + " "
+        + lightcast_skills["subcategory_id"].astype(str)
+    )
+    lightcast_skills.hierarchy_levels = lightcast_skills.hierarchy_levels.str.split(" ")
+
     def add_columns(skills_df, level_type: str):
-        skills_df["hierarchy_levels"] = np.nan
         skills_df["type"] = level_type
+
+        if level_type == "skill":
+            skills_df["hierarchy_levels"] = skills_df["hierarchy_levels"]
+        else:
+            skills_df["hierarchy_levels"] = np.nan
 
         return skills_df
 
-    all_skills = lightcast_skills[["id", "name"]].rename(
+    all_skills = lightcast_skills[["id", "name", "hierarchy_levels"]].rename(
         columns={"name": "description"}
     )
     all_skills = add_columns(all_skills, "skill")
@@ -99,10 +116,17 @@ def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
 
+    # silence boto
+    set_global_logging_level()
+
     s3 = get_s3_resource()
 
     output_file_name = (
         "/escoe_extension/outputs/data/skill_ner_mapping/lightcast_data_formatted.csv"
+    )
+
+    hier_name_mapper_file_name = (
+        "escoe_extension/outputs/data/skill_ner_mapping/lightcast_hier_mapper.json"
     )
 
     parser = ArgumentParser()
@@ -125,4 +149,15 @@ if __name__ == "__main__":
     lightcast_skills = get_lightcast_skills(access_code)
     lightcast_skills_formatted = format_lightcast_skills(lightcast_skills)
 
+    # add the hier_name_mapper_file_name name here
+    hier_name_mapper = (
+        lightcast_skills_formatted[lightcast_skills_formatted["type"] != "skill"][
+            ["id", "description"]
+        ]
+        .dropna()
+        .set_index("id")["description"]
+        .to_dict()
+    )
+
     save_to_s3(s3, bucket_name, lightcast_skills_formatted, output_file_name)
+    save_to_s3(s3, bucket_name, hier_name_mapper, hier_name_mapper_file_name)
