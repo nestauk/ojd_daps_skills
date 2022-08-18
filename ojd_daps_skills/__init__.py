@@ -60,11 +60,9 @@ class CustomFormatter(logging.Formatter):
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 # create console handler with a higher log level
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
 ch.setFormatter(CustomFormatter())
 if logger.hasHandlers():
     logger.handlers.clear()
