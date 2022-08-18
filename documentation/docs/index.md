@@ -1,6 +1,6 @@
-# Welcome to Nesta's ExtractSkills Library
+# Welcome to Nesta's Skills Extractor Library
 
-Welcome to the documentation of Nesta's ExtractSkills library version 1.0.0.
+Welcome to the documentation of Nesta's skills extractor library version 1.0.0.
 
 This page contains information on how to install and use Nesta's skills extraction library. The skills library allows you to extract skills from job advertisments and map then onto a skills taxonomy of choice. The package has been built with the [ESCO skills taxonomy](https://esco.ec.europa.eu/en) in mind.
 

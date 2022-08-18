@@ -1,4 +1,4 @@
-# Skills Extraction Model Card
+# Skills Extractor Model Card
 
 This page contains information for different parts of the skills extraction and mapping pipeline. We detail a high level summary of the pipeline and the pipeline's overall intended use. We then detail different parts of the pipeline.
 
