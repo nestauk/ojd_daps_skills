@@ -53,7 +53,7 @@ Skills extracted should not be used to determine skill demand without expert ste
 
 - The same training data and held out test set was used to evaluate the SVM model. On a held out test set, the SVM model achieved 87% accuracy.
 
-- More details of the evaluation performance across both the NER model and the SVM model can be found within the [evaluation directory of the repo](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/evaluation/20220729_ner_svm_model_evaluation.json). **NOTE: CHECK MODEL EVALUATION JSON IS THE MOST RECENT**
+- More details of the evaluation performance across both the NER model and the SVM model can be found within the [evaluation directory of the repo](https://github.com/nestauk/ojd_daps_skills/blob/dev/ojd_daps_skills/pipeline/evaluation/20220729_ner_svm_model_evaluation.json).
 
 **_Caveats and Reccomendations_**
 
