@@ -12,9 +12,9 @@ job_adverts = [
 ]
 
 
-def test_load_things():
+def test_load():
 
-    es.load_things()
+    es.load()
 
     assert isinstance(es.nlp, spacy.lang.en.English)
     assert es.labels == ("EXPERIENCE", "SKILL", "MULTISKILL")
@@ -28,9 +28,9 @@ def test_load_things():
     )
 
 
-def test_get_ner_skills():
+def test_get_skills():
 
-    predicted_skills = es.get_ner_skills(job_adverts)
+    predicted_skills = es.get_skills(job_adverts)
 
     assert isinstance(job_adverts, str) or isinstance(job_adverts, list)
     len(
@@ -45,7 +45,7 @@ def test_get_ner_skills():
 
 def test_map_skills():
 
-    predicted_skills = es.get_ner_skills(job_adverts)
+    predicted_skills = es.get_skills(job_adverts)
     matched_skills = es.map_skills(predicted_skills)
 
     assert len(job_adverts) == len(matched_skills)
