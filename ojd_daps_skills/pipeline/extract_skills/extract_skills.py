@@ -181,7 +181,7 @@ class ExtractSkills(object):
 
     def map_skills(self, predicted_skills):
         """
-        Map a list of skills to ESCO
+        Maps a list of skills to a skills taxonomy
         """
 
         skills = {"predictions": {i: s for i, s in enumerate(predicted_skills)}}
