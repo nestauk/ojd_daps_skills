@@ -66,7 +66,9 @@ from ojd_daps_skills.getters.data_getters import (
     get_s3_data_paths,
     load_data,
     load_json_dict,
+    load_file,
 )
+
 from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
     get_top_comparisons,
     get_most_common_code,
@@ -145,11 +147,8 @@ class SkillMapper:
 
     def load_job_skills(self, ojo_skills_file_name, s3=True):
         # load job skills here
-        if s3:
-            self.ojo_skills = load_s3_data(S3, bucket_name, ojo_skills_file_name)
 
-        else:
-            self.ojo_skills = load_json_dict(PROJECT_DIR / ojo_skills_file_name)
+        self.ojo_skills = load_file(ojo_skills_file_name, s3=s3)
 
         if self.verbose:
             logger.info("loaded ojo skills")
@@ -194,10 +193,7 @@ class SkillMapper:
 
     def load_taxonomy_skills(self, tax_input_file_name, s3=False):
         # load taxonomy skills
-        if s3:
-            self.taxonomy_skills = load_s3_data(S3, bucket_name, tax_input_file_name)
-        else:
-            self.taxonomy_skills = load_data(PROJECT_DIR / tax_input_file_name)
+        self.taxonomy_skills = load_file(tax_input_file_name, s3=s3)
 
         # Sometimes the hierarchy list is read in as a string rather than a list,
         # so edit this if this happens
@@ -259,16 +255,10 @@ class SkillMapper:
 
     def load_taxonomy_embeddings(self, taxonomy_embedding_file_name, s3=True):
         """Load taxonomy embeddings from s3"""
-        if s3:
-            saved_taxonomy_embeds = load_s3_data(
-                S3, bucket_name, taxonomy_embedding_file_name
-            )
-        else:
-            saved_taxonomy_embeds = load_json_dict(
-                PROJECT_DIR / taxonomy_embedding_file_name
-            )
 
-        self.taxonomy_skills_embeddings_dict = cleaned_taxonomy_embeddings = {
+        saved_taxonomy_embeds = load_file(taxonomy_embedding_file_name, s3=s3)
+
+        self.taxonomy_skills_embeddings_dict = {
             int(embed_indx): np.array(embedding)
             for embed_indx, embedding in saved_taxonomy_embeds.items()
         }
@@ -280,10 +270,8 @@ class SkillMapper:
 
     def load_ojo_esco_mapper(self, ojo_esco_mapper_file_name, s3=True):
         """Load ojo esco mapper from s3"""
-        if s3:
-            self.ojo_esco = load_s3_data(S3, bucket_name, ojo_esco_mapper_file_name)
-        else:
-            self.ojo_esco = load_json_dict(PROJECT_DIR / ojo_esco_mapper_file_name)
+
+        self.ojo_esco = load_file(ojo_esco_mapper_file_name, s3=s3)
 
         if self.verbose:
             logger.info("loaded extracted-skill-to-taxonomy mapper")
