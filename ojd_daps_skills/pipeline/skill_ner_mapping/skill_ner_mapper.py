@@ -63,7 +63,6 @@ from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     save_to_s3,
     get_s3_data_paths,
-    load_data,
     load_file,
 )
 from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
