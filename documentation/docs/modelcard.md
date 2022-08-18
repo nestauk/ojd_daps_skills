@@ -6,7 +6,7 @@ Developed by data scientists in Nesta’s Data Analytics Practice, (last updated
 
 ### Pipeline High level summary
 
-<p><img alt="am-pm-1" src="/img/full_pipeline.jpeg" /></p>
+<p><img alt="full pipeline" src="/img/full_pipeline.jpeg" /></p>
 
 Overall pipeline includes:
 
@@ -30,7 +30,7 @@ Skills extracted should not be used to determine skill demand without expert ste
 
 ### Component Model Card: Extracting Skills
 
-<p><img alt="am-pm-1" src="/img/predicting_entities.jpeg" /></p>
+<p><img alt="predicting entities" src="/img/predicting_entities.jpeg" /></p>
 
 **_Summary_**
 
@@ -58,7 +58,7 @@ Skills extracted should not be used to determine skill demand without expert ste
 
 ### Component Model Card: Skills to Taxonomy Mapping
 
-<p><img alt="am-pm-1" src="/img/matching_to_taxonomy.jpeg" /></p>
+<p><img alt="match to taxonomy" src="/img/matching_to_taxonomy.jpeg" /></p>
 
 **_Summary_**
 
