@@ -5,6 +5,7 @@ clean entity spans too (these functions are in ner_spacy_utils).
 """
 import re
 from toolz import pipe
+from hashlib import md5
 
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import detect_camelcase
 
@@ -42,3 +43,11 @@ def replacements(text):
 def clean_text(text):
 
     return pipe(text, detect_camelcase, replacements)
+
+
+def short_hash(text):
+    """Generate a unique short hash for this string - from ojd_daps"""
+    hx_code = md5(text.encode()).hexdigest()
+    int_code = int(hx_code, 16)
+    short_code = str(int_code)[:16]
+    return int(short_code)

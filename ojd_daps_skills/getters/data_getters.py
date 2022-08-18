@@ -10,6 +10,8 @@ import boto3
 from decimal import Decimal
 import numpy
 
+from ojd_daps_skills import bucket_name, PROJECT_DIR, logger
+
 
 class CustomJsonEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -35,7 +37,7 @@ def load_data(file_name: str, local=True) -> DataFrame:
         if fnmatch(file_name, "*.csv"):
             return pd.read_csv(file_name)
         else:
-            print(f'{file_name} has wrong file extension! Only supports "*.csv"')
+            logger.error(f'{file_name} has wrong file extension! Only supports "*.csv"')
 
 
 def load_json_dict(file_name: str) -> dict:
@@ -50,7 +52,7 @@ def load_json_dict(file_name: str) -> dict:
         with open(file_name, "r") as file:
             return json.load(file)
     else:
-        print(f'{file_name} has wrong file extension! Only supports "*.json"')
+        logger.error(f'{file_name} has wrong file extension! Only supports "*.json"')
 
 
 def save_json_dict(dictionary: dict, file_name: str):
@@ -65,7 +67,7 @@ def save_json_dict(dictionary: dict, file_name: str):
         with open(file_name, "w") as file:
             json.dump(dictionary, file)
     else:
-        print(f'{file_name} has wrong file extension! Only supports "*.json"')
+        logger.error(f'{file_name} has wrong file extension! Only supports "*.json"')
 
 
 def load_txt_lines(file_name: str) -> list:
@@ -96,7 +98,7 @@ def save_to_s3(s3, bucket_name, output_var, output_file_dir):
     else:
         obj.put(Body=json.dumps(output_var, cls=CustomJsonEncoder))
 
-    print(f"Saved to s3://{bucket_name} + {output_file_dir} ...")
+    logger.info(f"Saved to s3://{bucket_name} + {output_file_dir} ...")
 
 
 def load_s3_json(s3, bucket_name, file_name):
@@ -137,7 +139,7 @@ def load_s3_data(s3, bucket_name, file_name):
         file = obj.get()["Body"].read().decode()
         return pickle.loads(file)
     else:
-        print(
+        logger.error(
             'Function not supported for file type other than "*.csv", "*.jsonl.gz", "*.jsonl", or "*.json"'
         )
 
@@ -163,3 +165,16 @@ def get_s3_data_paths(s3, bucket_name, root, file_types=["*.jsonl"]):
             s3_keys.append(key)
 
     return s3_keys
+
+
+def load_file(file_path, s3=True):
+    """
+    Load a file either from the repos s3 bucket or locally
+    """
+    if s3:
+        S3 = get_s3_resource()
+        data = load_s3_data(S3, bucket_name, file_path)
+    else:
+        data = load_json_dict(PROJECT_DIR / file_path)
+
+    return data
