@@ -2,9 +2,9 @@
 
 This directory contains the class to map extracted OJO skill spans to a list of taxonomy skills. It also contains scripts to define a proximity threshold, based on labelled skill matches.
 
-## skill ner mapper
+## SkillMapper
 
-This class maps skill spans to (currently) ESCO skill names based on cosine similarity. It reports on the top 5 skills and skill scores associated to each OJO skill span. The outputs of this class are saved to s3.
+This class maps skill spans to (currently) ESCO skill names based on cosine similarity. If the cosine similarity score is below a specific threshold (0.7 for ESCO and lightcast), the skill name is then matched to higher and higher levels of the taxonomy, based on different thresholds and approaches. The first approach defines the taxonomy levels based on the number of skills where the similarity score is above a threshold. The second approach calculates the cosine distance between the ojo skill and the embedded taxonomy level description and chooses the closest taxonomy level.
 
 `python skill_ner_mapper.py`
 

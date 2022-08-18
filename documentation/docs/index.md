@@ -2,24 +2,25 @@
 
 Welcome to the documentation of Nesta's skills extractor library version 1.0.0.
 
-This page contains information on how to install and use Nesta's skills extraction library. The skills library allows you to extract skills from job advertisments and map then onto a skills taxonomy of choice. The package has been built with the [ESCO skills taxonomy](https://esco.ec.europa.eu/en) in mind.
+This page contains information on how to install and use Nesta's skills extraction library. The skills library allows you to extract skills from job advertisments and map then onto a skills taxonomy of your choice.
 
-If you'd like to learn more about the models used in the library, please refer to the [model card page](http://127.0.0.1:8000/modelcard/).
+If you'd like to learn more about the models used in the library, please refer to the [model card page](https://nestauk.github.io/ojd_daps_skills/modelcard/).
 
 ## Installation
 
-`pip install ojd_daps_skills` #can we change it to extract skills?
+`pip install ojd_daps_skills`
 
 ## Pre-defined configurations
 
-There are currently two configurations available for running the skills extraction algorithm.
+There are currently three configurations available for running the skills extraction algorithm.
 
 1. `extract_skills_toy` - Configuration for a toy taxonomy example, useful for testing.
 2. `extract_skills_esco` - Configuration for extracting skills and matching them to the [ESCO](https://esco.ec.europa.eu/en) skills taxonomy.
+3. `extract_skills_lightcast` - Configuration for extracting skills and matching them to the [lightcast](https://skills.lightcast.io/) skills taxonomy.
 
-These configurations contain all the information about parameter values, and trained model and data locations.
+These configurations contain information about parameter values, trained models and data locations.
 
-## Using ExtractSkills
+## Using Nesta's Skills Extractor library
 
 You can extract skills from job adverts and then map them onto a taxonomy of your choice. In this instance, we map onto a toy taxonomy.
 
@@ -33,7 +34,7 @@ es.load() #load necessary models
 job_adverts = [
     "The job involves communication and maths skills",
     "The job involves excel and presenting skills. You need good excel skills",
-]
+] #toy job advert examples
 
 predicted_skills = es.get_skills(job_adverts) #extract skills from list of job adverts
 
@@ -62,7 +63,7 @@ es.load() #load necessary models
 job_adverts = [
     "The job involves communication and maths skills",
     "The job involves excel and presenting skills. You need good excel skills",
-]
+] #toy job advert examples
 
 job_skills_matched = es.extract_skills(predicted_skills) #match and extract skills to toy taxonomy
 

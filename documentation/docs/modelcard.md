@@ -15,14 +15,14 @@ Overall pipeline includes:
 - embed all skill, split multiskills, multiskill sentences and taxonomy skills using [huggingface’s "sentence-transformers/all-MiniLM-L6-v2"](https://www.google.com/url?q=https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2&sa=D&source=docs&ust=1660824880413352&usg=AOvVaw2dpSwPbxZibtqIcyi7sIIT)
 - map skills (skill, split multiskill and multiskills) onto taxonomy skills at different levels
 
-For further information or feedback please contact Liz Gallagher (elizabeth.gallagher@nesta.org.uk), India Kerle (india.kerle@nesta.org.uk) or Cath Sleeman (cath.sleeman@nesta.org.uk)
+For further information or feedback please contact (Liz Gallagher)[mailto:elizabeth.gallagher@nesta.org.uk], (India Kerle)[india.kerle@nesta.org.uk] or(Cath Sleeman)[mailto:cath.sleeman@nesta.org.uk].
 
 ### Pipeline Intended Use
 
 - Extract skills from online job adverts and match extracted skills to a user’s skill taxonomy of choice, such as the [European Commission’s European Skills, Competences, and Occupations (ESCO)](https://esco.ec.europa.eu/en) or [Lightcast’s Open Skills](https://www.economicmodeling.com/2022/03/08/open-skills-taxonomy/#:~:text=Skills%20Taxonomy%2FOpen%20methodology%3A&text=To%20help%20everyone%20speak%20the,resumes%E2%80%94updated%20every%20two%20weeks.).
 - Intended users include researchers in labour statistics or related government bodies.
 
-### Pipeline Out of Scope Uses and Ethical Considerations
+### Pipeline Out of Scope Uses
 
 Out of scope is extracting and matching skills from job adverts in non-English languages; extracting and matching skills from texts other than job adverts; drawing conclusions on new, unidentified skills.
 
@@ -40,17 +40,20 @@ Skills extracted should not be used to determine skill demand without expert ste
 
 **_Metrics and Evaluation_**
 
-- For the NER model, labelled **X** job adverts for skills, multiskills and experience.
-- As of 11th July 2022, 3400 entities in **X** job adverts from OJO were labelled; 404 (12%) are multiskill, 2603 (77%) are skill, and 393 (12%) are experience entities. 20% of the labelled entities (or 680 entities) were held out as a test set to evaluate the models.
-- A partial metric in the python library nerevaluate (read more here) was used to calculate F1, precision and recall for the NER and SVM classifier on the held-out test set. As of 20220704, the results are as follows:
+- For the NER model, **X** job adverts werre labelled for skills, multiskills and experience.
+- As of 29th July 2022, **X** entities in **X** job adverts from OJO were labelled; **X** are multiskill, **X** are skill, and **393** are experience entities. 20% of the labelled entities were held out as a test set to evaluate the models.
+
+- A partial metric in the python library nerevaluate (read more here) was used to calculate F1, precision and recall for the NER and SVM classifier on the held-out test set. As of **MOST RECENT DATE**, the results are as follows:
 
 | Entity     | F1    | Precision | Recall |
 | ---------- | ----- | --------- | ------ |
 | Skill      | 0.543 | 0.715     | 0.437  |
 | Experience | 0.385 | 0.467     | 0.328  |
-| All        | 0.524 | 0.684     | 0.425  |
+| All        | 0.524 | 0.577     | 0.512  |
 
-- For the SVM model, X, Y, Z.
+- The same training data and held out test set was used to evaluate the SVM model. On a held out test set, the SVM model achieved 87% accuracy.
+
+- More details of the evaluation performance across both the NER model and the SVM model can be found within the [evaluation directory of the repo](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/evaluation/20220729_ner_svm_model_evaluation.json). **NOTE: CHECK MODEL EVALUATION JSON IS THE MOST RECENT**
 
 **_Caveats and Reccomendations_**
 
@@ -89,7 +92,7 @@ A configuration file will contain the relevant thresholds per taxonomy. These th
 
 **_Caveats and Reccomendations_**
 
-This step does poorly when:
+This step does less well when:
 
 - the extracted skill is a metaphor: i.e. 'understand the bigger picture' gets matched to 'take pictures'
 - the extracted skill is an acronym: i.e. 'drafting ORSAs' gets matched to 'fine arts'
