@@ -71,7 +71,7 @@ class ExtractSkills(object):
         hier_name_mapper_file_name=None,
     ):
         """
-        Try to load as much as a one off as we can
+        Loads necessary datasets, JobNER skills extraction class and SkillMapper skill mapper class
         """
 
         if (not taxonomy_embedding_file_name) and (self.taxonomy_embedding_file_name):
