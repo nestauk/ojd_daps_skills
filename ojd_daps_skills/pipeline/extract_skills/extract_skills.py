@@ -22,10 +22,6 @@ class ExtractSkills(object):
     ----------
     config_path (str): the config path for a default setting
     s3 (bool): whether you want to load/save data from this repos s3 bucket (True, needs access) or locally (False)
-    # ner_model_path (str): the path to the trained NER model (either s3 or local)
-    # clean_job_ads (bool): whether you want to clean the job advert text before extracting skills (True) or not (False)
-    # min_multiskill_length (int): the maximum entity length for which a multiskill entity will be split into skills
-    # taxonomy_path (str): The filepath to the formatted taxonomy, can also set to "toy" to use a toy taxonomy
     ----------
     Methods
     ----------
