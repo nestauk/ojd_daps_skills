@@ -32,14 +32,14 @@ def test_get_skills():
 
     predicted_skills = es.get_skills(job_adverts)
 
-    assert isinstance(job_adverts, str) or isinstance(job_adverts, list)
-    len(
+    # The keys are the labels for every job prediction
+    assert all(
         [
-            i
-            for i in predicted_skills
-            if list(i.keys()) == ["EXPERIENCE", "SKILL", "MULTISKILL"]
+            len(set(p.keys()).intersection(set(es.labels))) == len(es.labels)
+            for p in predicted_skills
         ]
-    ) == len(predicted_skills)
+    )
+    assert isinstance(predicted_skills[0]["SKILL"], list)
     assert len(predicted_skills) == len(job_adverts)
 
 
@@ -49,23 +49,16 @@ def test_map_skills():
     matched_skills = es.map_skills(predicted_skills)
 
     assert len(job_adverts) == len(matched_skills)
-    assert len([i for i in matched_skills if isinstance(i, dict)]) == len(
-        matched_skills
-    )
+    assert all([isinstance(i, dict) for i in matched_skills])
     test_skills = list(
         itertools.chain(
             *[[skill[1][0] for skill in skills["SKILL"]] for skills in matched_skills]
         )
     )
-
-    test_skills_not_in_taxonomy = []
-    for test_skill in list(set(test_skills)):
-        if test_skill not in list(es.taxonomy_skills["cleaned skills"]):
-            test_skills_not_in_taxonomy.append(test_skill)
-
     assert (
-        test_skills_not_in_taxonomy == []
-    ), f"extracted '{test_skills_not_in_taxonomy}' skill not in taxonomy"
+        set(test_skills).difference(set(es.taxonomy_info["hier_name_mapper"].values()))
+        == set()
+    )
 
 
 def test_extract_skills():
