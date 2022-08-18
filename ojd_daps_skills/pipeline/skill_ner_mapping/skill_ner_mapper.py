@@ -68,7 +68,7 @@ from ojd_daps_skills.getters.data_getters import (
     load_json_dict,
     load_file,
 )
-
+from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import split_multiskill
 from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
     get_top_comparisons,
     get_most_common_code,
@@ -136,6 +136,7 @@ class SkillMapper:
         skill_hier_info_col=None,
         skill_type_col="type",
         verbose=False,
+        min_length=75,
     ):
         self.taxonomy = taxonomy
         self.skill_name_col = skill_name_col
@@ -143,6 +144,7 @@ class SkillMapper:
         self.skill_hier_info_col = skill_hier_info_col
         self.skill_type_col = skill_type_col
         self.verbose = verbose
+        self.min_length = min_length
         self.bert_model = BertVectorizer(verbose=self.verbose).fit()
 
     def load_job_skills(self, ojo_skills_file_name, s3=True):
@@ -167,10 +169,22 @@ class SkillMapper:
         self.skill_hashes = dict()
 
         for ojo_job_id in self.ojo_job_ids:
-            ojo_job_skills = (
-                ojo_skills["predictions"][ojo_job_id]["SKILL"]
-                + ojo_skills["predictions"][ojo_job_id]["MULTISKILL"]
-            )
+            ojo_job_skills = ojo_skills["predictions"][ojo_job_id]["SKILL"]
+            # deal with multiskills here
+            ojo_job_multiskills = ojo_skills["predictions"][ojo_job_id]["MULTISKILL"]
+            split_multiskills = []
+            nonsplit_multiskills = []
+            if ojo_job_multiskills:
+                for ojo_job_multiskill in ojo_job_multiskills:
+                    split_list = split_multiskill(ojo_job_multiskill, min_length=75)
+                    if split_list:
+                        for skill_entity in split_list:
+                            split_multiskills.append(skill_entity)
+                    else:
+                        nonsplit_multiskills.append(ojo_job_multiskill)
+                ojo_job_skills.extend(split_multiskills)
+                ojo_job_skills.extend(nonsplit_multiskills)
+
             if ojo_job_skills != []:
                 self.clean_ojo_skills[ojo_job_id] = {
                     "clean_skills": list(
