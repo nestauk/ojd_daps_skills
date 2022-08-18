@@ -68,13 +68,11 @@ from ojd_daps_skills.getters.data_getters import (
     load_json_dict,
     load_file,
 )
-from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import split_multiskill
 from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper_utils import (
     get_top_comparisons,
     get_most_common_code,
 )
 from ojd_daps_skills.utils.bert_vectorizer import BertVectorizer
-from ojd_daps_skills.utils.text_cleaning import clean_text
 from ojd_daps_skills.utils.logging import set_global_logging_level
 from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
 
@@ -136,15 +134,15 @@ class SkillMapper:
         skill_hier_info_col=None,
         skill_type_col="type",
         verbose=False,
-        min_length=75,
     ):
         self.taxonomy = taxonomy
         self.skill_name_col = skill_name_col
         self.skill_id_col = skill_id_col
         self.skill_hier_info_col = skill_hier_info_col
         self.skill_type_col = skill_type_col
+        if not verbose:
+     logger.setLevel(logging.WARN) 
         self.verbose = verbose
-        self.min_length = min_length
         self.bert_model = BertVectorizer(verbose=self.verbose).fit()
 
     def load_job_skills(self, ojo_skills_file_name, s3=True):
@@ -172,23 +170,12 @@ class SkillMapper:
             ojo_job_skills = ojo_skills["predictions"][ojo_job_id]["SKILL"]
             # deal with multiskills here
             ojo_job_multiskills = ojo_skills["predictions"][ojo_job_id]["MULTISKILL"]
-            split_multiskills = []
-            nonsplit_multiskills = []
-            if ojo_job_multiskills:
-                for ojo_job_multiskill in ojo_job_multiskills:
-                    split_list = split_multiskill(ojo_job_multiskill, min_length=75)
-                    if split_list:
-                        for skill_entity in split_list:
-                            split_multiskills.append(skill_entity)
-                    else:
-                        nonsplit_multiskills.append(ojo_job_multiskill)
-                ojo_job_skills.extend(split_multiskills)
-                ojo_job_skills.extend(nonsplit_multiskills)
+            all_ojo_job_skills = ojo_job_skills + ojo_job_multiskills
 
-            if ojo_job_skills != []:
+            if all_ojo_job_skills != []:
                 self.clean_ojo_skills[ojo_job_id] = {
                     "clean_skills": list(
-                        set([clean_text(skill) for skill in ojo_job_skills])
+                        set([clean_text(skill) for skill in all_ojo_job_skills])
                     )
                 }
             # create hashes of clean skills

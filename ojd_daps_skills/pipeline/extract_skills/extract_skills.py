@@ -87,7 +87,7 @@ class ExtractSkills(object):
 
         if self.verbose:
             logger.info(f"Loading taxonomy information from {self.taxonomy_path}")
-        if self.taxonomy_path == "toy":
+        if self.taxonomy_name == "toy":
             self.taxonomy_skills = load_toy_taxonomy()
         else:
             if hier_name_mapper_file_name:
