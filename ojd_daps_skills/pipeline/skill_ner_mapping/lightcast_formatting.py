@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
-
 """
 Lightcast- specific formating function to get lightcast data in the format needed for skill_ner_mapper.py
 
@@ -18,6 +14,7 @@ To run the script, python lightcast_formatting.py --client-id CLIENT_ID --client
 """
 from ojd_daps_skills.utils.logging import set_global_logging_level
 
+
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     load_s3_data,
@@ -32,6 +29,7 @@ import requests
 import numpy as np
 
 
+# %%
 def get_lightcast_skills(access_code: str) -> pd.DataFrame:
     """Call lightcast API to return Open Skills taxonomy.
 
@@ -56,6 +54,7 @@ def get_lightcast_skills(access_code: str) -> pd.DataFrame:
         return response
 
 
+# %%
 def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
     """Format lightcast skills taxonomy into format needed for
     skill_ner_mapper.py."""
@@ -111,8 +110,7 @@ def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
 
     return pd.concat([all_skills, category_skills, subcategory_skills]).reset_index(
         drop=True
-    )
-
+    ).dropna()
 
 if __name__ == "__main__":
 

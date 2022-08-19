@@ -215,7 +215,7 @@ class SkillMapper:
     def preprocess_taxonomy_skills(self, taxonomy_skills):
         # preprocess taxonomy skills
         taxonomy_skills["cleaned skills"] = (
-            taxonomy_skills[self.skill_name_col].astype(str).apply(clean_text)
+            taxonomy_skills[self.skill_name_col].apply(clean_text)
         )
 
         taxonomy_skills.replace({np.nan: None}).reset_index(inplace=True, drop=True)

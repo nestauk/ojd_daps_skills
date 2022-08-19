@@ -33,8 +33,7 @@ def get_most_common_code(split_possible_codes, lev_n):
     will output ('S1', 0.75) [i.e. 'S1' is 75% of the level 0 codes]
     """
 
-    if any(isinstance(el, str) for el in split_possible_codes):
-        split_possible_codes = [split_possible_codes]
+    split_possible_codes = [el if isinstance(el, list) else [el] for el in split_possible_codes]
 
     lev_codes = [w[lev_n] for w in split_possible_codes if w[lev_n]]
     if lev_codes:
