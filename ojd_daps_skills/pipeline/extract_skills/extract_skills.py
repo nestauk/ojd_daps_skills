@@ -136,7 +136,7 @@ class ExtractSkills(object):
             self.taxonomy_skills_embeddings_loaded = True
         else:
             self.taxonomy_skills_embeddings_loaded = False
-
+        
         if prev_skill_matches_file_name:
             logger.info(
                 f"Loading previously found skill mappings from {prev_skill_matches_file_name}"

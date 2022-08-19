@@ -191,7 +191,8 @@ class SkillMapper:
     def load_taxonomy_skills(self, tax_input_file_name, s3=False):
         # load taxonomy skills
         self.taxonomy_skills = load_file(tax_input_file_name, s3=s3)
-
+        self.taxonomy_skills = self.taxonomy_skills[self.taxonomy_skills[self.skill_name_col].notna()].reset_index(drop=True)
+        
         # Sometimes the hierarchy list is read in as a string rather than a list,
         # so edit this if this happens
         def clean_string_list(string_list):
@@ -214,6 +215,7 @@ class SkillMapper:
 
     def preprocess_taxonomy_skills(self, taxonomy_skills):
         # preprocess taxonomy skills
+
         taxonomy_skills["cleaned skills"] = taxonomy_skills[self.skill_name_col].apply(
             clean_text
         )
@@ -225,7 +227,7 @@ class SkillMapper:
         return taxonomy_skills
 
     def embed_taxonomy_skills(self, taxonomy_skills):
-        """embed and save clean taxonomy skills"""
+        """embed clean taxonomy skills"""
 
         self.taxonomy_skills_embeddings = self.bert_model.transform(
             taxonomy_skills["cleaned skills"].to_list()
