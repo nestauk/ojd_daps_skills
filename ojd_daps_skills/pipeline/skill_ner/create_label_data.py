@@ -15,9 +15,6 @@ from ojd_daps_skills.getters.data_getters import (
 )
 from ojd_daps_skills import bucket_name, config, logger
 
-import spacy
-from tqdm import tqdm
-
 from datetime import datetime as date
 import json
 import os
