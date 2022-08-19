@@ -1,7 +1,7 @@
 from sentence_transformers import SentenceTransformer
 import time
-from ojd_daps_skills.utils.logging import set_global_logging_level
 from ojd_daps_skills import logger
+import logging
 
 
 class BertVectorizer:
@@ -15,14 +15,16 @@ class BertVectorizer:
         bert_model_name="sentence-transformers/all-MiniLM-L6-v2",
         multi_process=True,
         batch_size=32,
-        quiet=set_global_logging_level(),
         verbose=True,
     ):
         self.bert_model_name = bert_model_name
         self.multi_process = multi_process
         self.batch_size = batch_size
-        self.quiet = quiet
         self.verbose = verbose
+        if self.verbose:
+            logger.setLevel(logging.INFO)
+        else:
+            logger.setLevel(logging.ERROR)
 
     def fit(self, *_):
         self.bert_model = SentenceTransformer(self.bert_model_name)
@@ -30,12 +32,10 @@ class BertVectorizer:
         return self
 
     def transform(self, texts):
-        if self.verbose:
-            logger.info(f"Getting embeddings for {len(texts)} texts ...")
+        logger.info(f"Getting embeddings for {len(texts)} texts ...")
         t0 = time.time()
         if self.multi_process:
-            if self.verbose:
-                logger.info(".. with multiprocessing")
+            logger.info(".. with multiprocessing")
             pool = self.bert_model.start_multi_process_pool()
             self.embedded_x = self.bert_model.encode_multi_process(
                 texts, pool, batch_size=self.batch_size
@@ -43,6 +43,5 @@ class BertVectorizer:
             self.bert_model.stop_multi_process_pool(pool)
         else:
             self.embedded_x = self.bert_model.encode(texts, show_progress_bar=True)
-        if self.verbose:
-            logger.info(f"Took {time.time() - t0} seconds")
+        logger.info(f"Took {time.time() - t0} seconds")
         return self.embedded_x
