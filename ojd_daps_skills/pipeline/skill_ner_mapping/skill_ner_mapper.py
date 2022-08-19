@@ -173,6 +173,7 @@ class SkillMapper:
                         set([clean_text(skill) for skill in all_ojo_job_skills])
                     )
                 }
+
             # create hashes of clean skills
             job_ad_skill_hashes = []
             if ojo_job_id in self.clean_ojo_skills.keys():
@@ -309,6 +310,10 @@ class SkillMapper:
                 A dictionary of the values of the skill_type_col column which fit into either the skill_types or the hier_types
                 e.g. {'skill_types': ['preferredLabel', 'altLabels'], 'hier_types': ["level_2", "level_3"],}
         """
+
+        if len(skill_hashes_filtered) == 0:
+            logger.error("Trying to map skills using empty dict of skills")
+
         clean_ojo_skill_embeddings = self.bert_model.transform(
             skill_hashes_filtered.values()
         )
