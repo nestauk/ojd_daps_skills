@@ -11,9 +11,12 @@ Much more about these steps can be found in [this report](outputs/reports/skills
 
 This package is split into the three pipeline steps:
 
-1. [skill_ner](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner)
-2. [skill_ner_mapping](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping)
-3. [evaluation](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/evaluation)
+- [skill_ner](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner)
+- [skill_ner_mapping](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping)
+- [evaluation](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/evaluation)
+
+![](outputs/reports/figures/overview.png)
+![](outputs/reports/figures/overview_example.png)
 
 ## Installation
 
