@@ -227,32 +227,39 @@ class ExtractSkills(object):
             )
 
             job_skills_matched_formatted = []
-            for ix, job_skills_info in job_skills_matched.items():
-                skill_list = list(
-                    zip(
-                        job_skills_info["clean_skills"],
-                        [
-                            (j["match_skill"], j["match_id"])
-                            for j in job_skills_info["skill_to_taxonomy"]
-                        ],
+            for ix, _ in skills["predictions"].items():
+                # Go through input dict, try to find matches, but
+                # if there were no skills then this job key won't be in
+                # job_skills_matched.
+                job_skills_info = job_skills_matched.get(ix)
+                if job_skills_info:
+                    skill_list = list(
+                        zip(
+                            job_skills_info["clean_skills"],
+                            [
+                                (j["match_skill"], j["match_id"])
+                                for j in job_skills_info["skill_to_taxonomy"]
+                            ],
+                        )
                     )
-                )
-                experience_list = predicted_skills[ix]["EXPERIENCE"]
+                    experience_list = predicted_skills[ix]["EXPERIENCE"]
 
-                job_skills_matched_formatted.append(
-                    {
-                        k: v
-                        for k, v in [
-                            ("SKILL", skill_list),
-                            ("EXPERIENCE", experience_list),
-                        ]
-                        if v
-                    }
-                )
+                    job_skills_matched_formatted.append(
+                        {
+                            k: v
+                            for k, v in [
+                                ("SKILL", skill_list),
+                                ("EXPERIENCE", experience_list),
+                            ]
+                            if v
+                        }
+                    )
+                else:
+                    # This means we keep the number of job adverts in the input list
+                    # the same as the number in the output list
+                    job_skills_matched_formatted.append({})
         else:
-            job_skills_matched_formatted = [
-                {"SKILL": [], "EXPERIENCE": []} for _ in range(len(predicted_skills))
-            ]
+            job_skills_matched_formatted = [{} for _ in range(len(predicted_skills))]
 
         return job_skills_matched_formatted
 

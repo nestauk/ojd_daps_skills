@@ -13,7 +13,7 @@ from ojd_daps_skills.getters.data_getters import (
     save_to_s3,
     load_json_dict,
 )
-from ojd_daps_skills import bucket_name
+from ojd_daps_skills import bucket_name, logger
 
 S3 = get_s3_resource()
 

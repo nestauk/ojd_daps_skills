@@ -173,6 +173,7 @@ class SkillMapper:
                         set([clean_text(skill) for skill in all_ojo_job_skills])
                     )
                 }
+
             # create hashes of clean skills
             job_ad_skill_hashes = []
             if ojo_job_id in self.clean_ojo_skills.keys():

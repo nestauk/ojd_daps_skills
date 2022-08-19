@@ -70,6 +70,6 @@ def test_extract_skills():
 
 
 def test_map_no_skills():
-    job_adverts = ["nothing", "cat"]
+    job_adverts = ["nothing", "we want excel skills"]
     extract_matched_skills = es.extract_skills(job_adverts)
     assert len(job_adverts) == len(extract_matched_skills)
