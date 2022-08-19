@@ -28,8 +28,9 @@ pip install ojd_daps_skills
 
 There are two configurations available for running the skills extraction algorithm.
 
-1. "extract_skills_toy" - Configuration for a toy taxonomy example, useful for testing.
-2. "extract_skills_esco" - Configuration for extracting skills and matching them to the [ESCO](https://esco.ec.europa.eu/en) skills taxonomy.
+1. [extract_skills_toy](ojd_daps_skills/config/extract_skills_toy.yaml) - Configuration for a toy taxonomy example, useful for testing.
+2. [extract_skills_esco](ojd_daps_skills/config/extract_skills_esco.yaml) - Configuration for extracting skills and matching them to the [ESCO](https://esco.ec.europa.eu/en) skills taxonomy.
+3. [extract_skills_lightcast](ojd_daps_skills/config/extract_skills_lightcast.yaml) - Configuration for extracting skills and matching them to the [Lightcast](https://skills.emsidata.com/) skills taxonomy.
 
 These configurations contain all the information about parameter values, and trained model and data locations.
 
@@ -43,17 +44,17 @@ es = ExtractSkills(config_name="extract_skills_toy", s3=True)
 es.load()
 
 job_adverts = [
-    "The job involves communication and maths skills",
-    "The job involves excel and presenting skills. You need good excel skills",
-]
+        "You will need to have good communication and mathematics skills. You will have experience in the IT sector.",
+        "You will need to have good excel and presenting skills. You need good excel software skills",
+    ]
 
 predicted_skills = es.get_skills(job_adverts)
 job_skills_matched = es.map_skills(predicted_skills)
 
 predicted_skills
->>> [{'EXPERIENCE': [], 'SKILL': ['maths skills'], 'MULTISKILL': []}, {'EXPERIENCE': [], 'SKILL': ['presenting skills', 'excel skills'], 'MULTISKILL': []}]
+>>> [{'EXPERIENCE': ['experience in the IT sector'], 'SKILL': ['communication', 'mathematics'], 'MULTISKILL': []}, {'EXPERIENCE': [], 'SKILL': ['excel', 'presenting skills', 'excel software'], 'MULTISKILL': []}]
 job_skills_matched
->>> [{'SKILL': [('maths skills', ('communicate with others', 'S1.1'))]}, {'SKILL': [('presenting skills', ('communicate with others', 'S1.1')), ('excel skills', ('computational skills', 'K2.1'))]}]
+>>> [{'SKILL': [('mathematics', ('working with computers', 'S5')), ('communication', ('use communication techniques', 'cdef'))], 'EXPERIENCE': ['experience in the IT sector']}, {'SKILL': [('excel', ('use spreadsheets software', 'abcd')), ('excel software', ('use spreadsheets software', 'abcd')), ('presenting skills', ('communication, collaboration and creativity', 'S1'))]}]
 
 ```
 
@@ -68,6 +69,10 @@ How to download the relevant files locally:
 - taxonomy_path : "escoe_extension/outputs/data/skill_ner_mapping/esco_data_formatted.csv"
 - (optional) taxonomy_embedding_file_name : "escoe_extension/outputs/data/skill_ner_mapping/esco_embeddings.json"
 - (optional) prev_skill_matches_file_name : "escoe_extension/outputs/data/skill_ner_mapping/ojo_esco_lookup.json"
+
+## User-defined configurations
+
+For guidance about matching skills to a different taxonomy see [here](ojd_daps_skills/pipeline/extract_skills/README.md).
 
 ## Testing
 
