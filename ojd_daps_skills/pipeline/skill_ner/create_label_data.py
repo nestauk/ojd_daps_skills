@@ -39,7 +39,7 @@ if __name__ == "__main__":
         # If there are any description texts with '\n' in this will
         # mess the sentence separation up in the output step,
         # so just make sure they are all removed.
-        texts.append(job_info["description"].replace("\n", " "))
+        texts.append(job_info["description"].replace("\n", "."))
         index_metadata[line_index] = job_id
         line_index += 1
         if line_index == 400:
