@@ -101,7 +101,7 @@ def test_map_skills():
     # Check match is correct
     assert (
         final_match_dict[skill_hashes_rev[ojo_skill_text]]["match_skill"]
-        == "communicate with others"
+        == "communication, collaboration and creativity"
     )
 
     # Check some basic features

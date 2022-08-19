@@ -283,8 +283,8 @@ if __name__ == "__main__":
     es.load()
 
     job_adverts = [
-        "The job involves communication and maths skills. You should have ambitious skills.",
-        "The job involves excel and presenting skills. You need good excel skills",
+        "You will need to have good communication and mathematics skills. You will have experience in the IT sector.",
+        "You will need to have good excel and presenting skills. You need good excel software skills",
     ]
 
     # 2 steps
