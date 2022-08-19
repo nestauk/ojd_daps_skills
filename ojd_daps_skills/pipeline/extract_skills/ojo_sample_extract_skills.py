@@ -3,6 +3,7 @@ Use the ExtractSkills function to extract and map skills for our sample of OJO j
 """
 import os
 from itertools import islice
+from datetime import datetime as date
 
 from tqdm import tqdm
 
@@ -82,11 +83,17 @@ if __name__ == "__main__":
             extract_skills_ojo_job_ads(batch_job_adverts, es, train_job_ids)
         )
 
-    # Save!
+    date_stamp = str(date.today().date()).replace("-", "")
+    save_to_s3(
+        S3,
+        bucket_name,
+        ojo_extracted_skills,
+        f"escoe_extension/outputs/data/extract_skills/{date_stamp}_ojo_sample_skills_extracted.json",
+    )
 
     # all 5000 at once:
     #  Took 144.59014081954956 seconds (bert_vectorizer.py:47)
     # didn't wait until the mapping finished but at least 15 mins
 
     # batch size =10 -> iterations were 9.3, 7.9, 8.17 secs
-    # batch size=500 -> 110 secs each
+    # batch size=500 -> 125 secs each
