@@ -214,8 +214,8 @@ class SkillMapper:
 
     def preprocess_taxonomy_skills(self, taxonomy_skills):
         # preprocess taxonomy skills
-        taxonomy_skills["cleaned skills"] = taxonomy_skills[self.skill_name_col].apply(
-            clean_text
+        taxonomy_skills["cleaned skills"] = (
+            taxonomy_skills[self.skill_name_col].apply(clean_text)
         )
 
         taxonomy_skills.replace({np.nan: None}).reset_index(inplace=True, drop=True)
@@ -588,7 +588,9 @@ if __name__ == "__main__":
             esco_embeddings_file_name
         )
     else:
-        skill_mapper.embed_taxonomy_skills(taxonomy_skills,)
+        skill_mapper.embed_taxonomy_skills(
+            taxonomy_skills,
+        )
         skill_mapper.save_taxonomy_embeddings(esco_embeddings_file_name)
 
     if ojo_esco_lookup_file_name in embedding_lookup_files:
