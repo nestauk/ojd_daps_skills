@@ -61,15 +61,7 @@ def test_map_skills():
     )
 
 
-def test_extract_skills():
-
-    extract_matched_skills = es.extract_skills(job_adverts)
-
-    assert len(extract_matched_skills) == len(job_adverts)
-    assert isinstance(extract_matched_skills, list)
-
-
 def test_map_no_skills():
-    job_adverts = ["nothing", "we want excel skills"]
+    job_adverts = ["nothing", "we want excel skills", "we want communication skills"]
     extract_matched_skills = es.extract_skills(job_adverts)
     assert len(job_adverts) == len(extract_matched_skills)
