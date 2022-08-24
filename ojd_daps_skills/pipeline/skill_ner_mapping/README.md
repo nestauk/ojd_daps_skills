@@ -1,10 +1,10 @@
 # SkillMapper
 
-This directory contains the class to map extracted OJO skill spans to a list of taxonomy skills. It also contains scripts to define a proximity threshold, based on labelled skill matches.
+This directory contains the class to map extracted skill spans to a list of taxonomy skills. It also contains scripts to define a proximity threshold, based on labelled skill matches.
 
 ## skill ner mapper
 
-This class maps skill spans to (currently) ESCO skill names based on cosine similarity. It reports on the top 5 skills and skill scores associated to each OJO skill span. The outputs of this class are saved to s3.
+This class maps skill spans to skill names from an inputted taxonomy based on cosine similarity. The outputs of this class are saved to s3.
 
 `python skill_ner_mapper.py`
 

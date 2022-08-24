@@ -48,6 +48,8 @@ During the training of the NER model we also train a very basic SVM classifier t
 
 Thus, when we predict the entities for a job advert, any skill entities predicted are also classified as being a SKILL (single skill) or MULTISKILL.
 
+![](figures/predict_flow.png)
+
 ### Experiments
 
 When `Convert multiskill?` is True, the model doesn't differentiate between "multiskill" and "skill" entities. This is the default.
@@ -140,3 +142,5 @@ We also analysed the semantic spaces of the different sets of entities. From the
 ## Evaluation - comparison to other taxonomies
 
 ## Matching to other taxonomies
+
+![](figures/match_flow.png)

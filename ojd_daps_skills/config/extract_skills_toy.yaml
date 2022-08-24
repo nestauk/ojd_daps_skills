@@ -8,10 +8,7 @@ prev_skill_matches_file_name: ""
 hier_name_mapper_file_name: ""
 num_hier_levels: 2
 skill_type_dict:
-  {
-    "skill_types": ["preferredLabel", "altLabels"],
-    "hier_types": ["level_2", "level_3"],
-  }
+  { "skill_types": ["skill"], "hier_types": ["skill_group_2", "skill_group_3"] }
 match_thresholds_dict:
   {
     "skill_match_thresh": 0.7,
@@ -20,12 +17,19 @@ match_thresholds_dict:
   }
 hier_name_mapper:
   {
-    "K2": "computer",
-    "K2.1": "computational skills",
-    "S1": "communicate",
-    "S1.1": "communicate with others",
-    "S1.2": "communication skills",
+    "S1": "communication, collaboration and creativity",
+    "S1.0": "communication, collaboration and creativity",
+    "S1.0.0": "communication, collaboration and creativity",
+    "S1.2.1": "mathematics",
+    "S1.4": "presenting information",
+    "S1.4.3": "presenting information in legal proceedings",
+    "S5": "working with computers",
+    "S5.6": "using digital tools for collaboration, content creation and problem solving",
+    "S5.6.1": "using digital tools for collaboration and productivity",
+    "S5.5": "accessing and analysing digital data",
+    "S5.5.2": "managing and analysing digital data",
   }
+
 skill_name_col: "description"
 skill_id_col: "id"
 skill_hier_info_col: "hierarchy_levels"
