@@ -540,7 +540,7 @@ def parse_arguments(parser):
         "--save_s3",
         help="Save the model to S3",
         action="store_true",
-        default=False,
+        default=True,
     )
     return parser.parse_args()
 
