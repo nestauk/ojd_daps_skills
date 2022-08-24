@@ -26,7 +26,7 @@ pip install ojd_daps_skills
 
 ## Pre-defined configurations
 
-There are two configurations available for running the skills extraction algorithm.
+There are three configurations available for running the skills extraction algorithm.
 
 1. [extract_skills_toy](ojd_daps_skills/config/extract_skills_toy.yaml) - Configuration for a toy taxonomy example, useful for testing.
 2. [extract_skills_esco](ojd_daps_skills/config/extract_skills_esco.yaml) - Configuration for extracting skills and matching them to the [ESCO](https://esco.ec.europa.eu/en) skills taxonomy.
