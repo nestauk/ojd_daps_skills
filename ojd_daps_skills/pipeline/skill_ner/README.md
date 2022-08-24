@@ -86,7 +86,7 @@ Using the labelled data, we can fine-tune a Spacy model to extract skill entitie
 The model can be trained by running:
 
 ```
-python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_data_s3_folder "escoe_extension/outputs/skill_span_labels/" --label_metadata_filename "escoe_extension/outputs/data/skill_ner/label_chunks/20220624_0_sample_labelling_metadata.json" --convert_multiskill --train_prop 0.8 --drop_out 0.3 --num_its 50
+python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_date_filename "escoe_extension/outputs/labelled_job_adverts/combined_labels_20220824.json" --convert_multiskill --train_prop 0.8 --drop_out 0.3 --num_its 50
 ```
 
 This will save out the model in a time stamped folder, e.g. `outputs/models/ner_model/20220629/`, it also saves out the evaluation results and some general information about the model training in the file `outputs/models/ner_model/20220629/train_details.json`.
