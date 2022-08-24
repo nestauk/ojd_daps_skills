@@ -16,7 +16,7 @@ If you'd like to match skills extracted from job adverts to a different taxonomy
 
 You will see the `type` column contains skills and skill groups. This is because we try to match to individual skills, but if this isn't possible we then try to match to a skill group in the taxonomy (if given).
 
-For rows which correspond to individual skills (rather than skill groups) the `hierarchy_levels` column values show all the parts of the taxonomy where this skill is situated. It is helpful to link these codes to names, so you may also want to create a taxonomy name mapper file for this data, e.g. `{"S1.2.1": "mathematics"}`. For rows which correspond to skill groups (rather than individual skills) the `hierarchy_levels` column will be blank since the hierarchy information is contained in the `id`.
+For rows which correspond to individual skills (rather than skill groups) the `hierarchy_levels` column values show all the parts of the taxonomy where this skill is situated. It is helpful to link these codes to names, so you may also want to create a taxonomy name mapper file for this data, e.g. `{"S1.2.1": "mathematics"}`. For rows which correspond to skill groups (rather than individual skills) the `hierarchy_levels` column will be blank since the hierarchy information is contained in the `id`. The contents of `hierarchy_levels` need to be a list of lists, or a list of strings, but not a combination of both.
 
 The number of levels in the taxonomy will correspond to the length of the lists in the `hierarchy_levels` column.
 
