@@ -4,7 +4,8 @@ This script contains the class needed to train, predict, load, and save and NER 
 A model can be trained by running this script:
 
 python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py
-    --labelled_date_filename "escoe_extension/outputs/labelled_job_adverts/combined_labels_20220824.json"
+    --labelled_data_s3_folder "escoe_extension/outputs/skill_span_labels/"
+    --label_metadata_filename "escoe_extension/outputs/data/skill_ner/label_chunks/20220624_0_sample_labelling_metadata.json"
     --convert_multiskill
     --train_prop 0.8
     --drop_out 0.3
@@ -62,8 +63,10 @@ class JobNER(object):
     ----------
     BUCKET_NAME : str
         The bucket name where you will store data and the model.
-    labelled_date_filename : str
-        The S3 file where the labelled data is.
+    S3_FOLDER : str
+        The S3 folder where the labelled data is.
+    label_metadata_filename : str
+        The S3 location where the metadata for the labelled data sample is.
     convert_multiskill : bool
         Where you want to convert all MULTISKILL spans to SKILL (True) or not (False)
         for the training of the NER model
@@ -103,12 +106,14 @@ class JobNER(object):
     def __init__(
         self,
         BUCKET_NAME="open-jobs-lake",
-        labelled_date_filename="escoe_extension/outputs/labelled_job_adverts/combined_labels_20220824.json",
+        S3_FOLDER="escoe_extension/outputs/skill_span_labels/",
+        label_metadata_filename="escoe_extension/outputs/data/skill_ner/label_chunks/20220624_0_sample_labelling_metadata.json",
         convert_multiskill=True,
         train_prop=0.8,
     ):
         self.BUCKET_NAME = BUCKET_NAME
-        self.labelled_date_filename = labelled_date_filename
+        self.S3_FOLDER = S3_FOLDER
+        self.label_metadata_filename = label_metadata_filename
         self.convert_multiskill = convert_multiskill
         self.train_prop = train_prop
 
@@ -135,8 +140,8 @@ class JobNER(object):
             The list of all labels given to entities
         """
 
-        text = job_advert_labels["text"]
-        ent_tags = job_advert_labels["labels"]
+        text = job_advert_labels["task"]["data"]["text"]
+        ent_tags = job_advert_labels["result"]
 
         ent_list = []
         for ent_tag in ent_tags:
@@ -166,31 +171,69 @@ class JobNER(object):
 
             The job adverts and the entities within them in a format suitable for Spacy
             training, i.e. a list of tuples
-            [(text, {"entities": [(0,4,"SKILL"),...]}, {"job_ad_id": 'as34d'}),...]
+            [(text, {"entities": [(0,4,"SKILL"),...]}, {"task_id": 1,"job_ad_id": 'as34d',"label_id": 150}),...]
         """
 
         s3 = get_s3_resource()
-        job_advert_labels = load_s3_json(
-            s3, self.BUCKET_NAME, self.labelled_date_filename
+        file_names = get_s3_data_paths(s3, self.BUCKET_NAME, self.S3_FOLDER, "*")
+        file_names.remove(self.S3_FOLDER)
+
+        # Find the label ID of job adverts we want to include
+        label_meta = []
+        for file_name in file_names:
+            job_advert_labels = load_s3_json(s3, self.BUCKET_NAME, file_name)
+            label_meta.append(
+                {
+                    "created_username": job_advert_labels["created_username"],
+                    "id": job_advert_labels["id"],
+                    "task_ids": job_advert_labels["task"]["id"],
+                    "updated_at": job_advert_labels["updated_at"],
+                    "task_is_labeled": job_advert_labels["task"]["is_labeled"],
+                    "was_cancelled": job_advert_labels["was_cancelled"],
+                }
+            )
+        label_meta = pd.DataFrame(label_meta)
+
+        self.sorted_df = label_meta.sort_values(by=["updated_at"], ascending=False)
+        self.sorted_df = self.sorted_df[~self.sorted_df["was_cancelled"]]
+        self.sorted_df.drop_duplicates(subset=["task_ids"], keep="first", inplace=True)
+        self.keep_label_ids = self.sorted_df["id"].tolist()
+        print(f"We will be using data from {len(self.keep_label_ids)} job adverts")
+
+        # Link the task ID to the actual job adverts ID using the metadata dictionary
+        label_job_id_dict = load_s3_data(
+            s3, self.BUCKET_NAME, self.label_metadata_filename
         )
-        print(f"We will be using data from {len(job_advert_labels)} job adverts")
-        self.seen_job_ids = {k: {} for k in job_advert_labels.keys()}
+        label_job_id_dict = {int(k): v for k, v in label_job_id_dict.items()}
+        self.sorted_df["job_id"] = self.sorted_df["task_ids"].map(label_job_id_dict)
+        # Keep a record of the job adverts the model has seen
+        self.seen_job_ids = (
+            self.sorted_df[["job_id", "task_ids"]]
+            .set_index("task_ids")
+            .to_dict(orient="index")
+        )
 
         data = []
         self.all_labels = set()
-        for job_ad_id, label_data in job_advert_labels.items():
-            text, ent_list, self.all_labels = self.process_data(
-                label_data, self.all_labels
-            )
-            data.append(
-                (
-                    text,
-                    {"entities": ent_list},
-                    {
-                        "job_ad_id": job_ad_id,
-                    },
+        for file_name in file_names:
+            job_advert_labels = load_s3_json(s3, self.BUCKET_NAME, file_name)
+            if job_advert_labels["id"] in self.keep_label_ids:
+                text, ent_list, self.all_labels = self.process_data(
+                    job_advert_labels, self.all_labels
                 )
-            )
+                data.append(
+                    (
+                        text,
+                        {"entities": ent_list},
+                        {
+                            "task_id": job_advert_labels["task"]["id"],
+                            "job_ad_id": self.seen_job_ids[
+                                job_advert_labels["task"]["id"]
+                            ],
+                            "label_id": job_advert_labels["id"],
+                        },
+                    )
+                )
 
         return data
 
@@ -209,9 +252,9 @@ class JobNER(object):
         test_data = data[train_n:]
 
         for _, _, d in train_data:
-            self.seen_job_ids[d["job_ad_id"]]["train/test"] = "train"
+            self.seen_job_ids[d["task_id"]]["train/test"] = "train"
         for _, _, d in test_data:
-            self.seen_job_ids[d["job_ad_id"]]["train/test"] = "test"
+            self.seen_job_ids[d["task_id"]]["train/test"] = "test"
 
         return train_data, test_data
 
@@ -286,15 +329,7 @@ class JobNER(object):
         self.ms_classifier_train_evaluation = self.ms_classifier.score(X_train, y_train)
         self.ms_classifier_test_evaluation = self.ms_classifier.score(X_test, y_test)
 
-    def train(
-        self,
-        train_data,
-        test_data,
-        print_losses=True,
-        drop_out=0.1,
-        num_its=30,
-        learn_rate=0.001,
-    ):
+    def train(self, train_data, test_data, print_losses=True, drop_out=0.3, num_its=30):
         """
         Train a Spacy model for the NER task
         See https://www.machinelearningplus.com/nlp/training-custom-ner-model-in-spacy/
@@ -304,7 +339,7 @@ class JobNER(object):
         ----------
         train_data : list
             A list of tuples for each job advert in the training set, e.g.
-            [(text, {"entities": [(0,4,"SKILL"),...]}, {"job_ad_id": ...}),...]
+            [(text, {"entities": [(0,4,"SKILL"),...]}, {"task_id": ...}),...]
             only the first two elements of the tuples are needed
         print_losses : bool
             Print the losses as you train (can be useful in experimentation to check you have converged)
@@ -312,8 +347,6 @@ class JobNER(object):
             Drop out rate for the training
         num_its : int
             Number of iterations to train the model
-        learn_rate : float
-            Learning rate for the training
 
         Returns
         ------
@@ -332,7 +365,6 @@ class JobNER(object):
         self.test_num_ents = sum([len(t[1]["entities"]) for t in test_data])
         self.drop_out = drop_out
         self.num_its = num_its
-        self.learn_rate = learn_rate
         # List of pipes you want to train
         pipe_exceptions = ["ner"]
         # List of pipes which should remain unaffected in training
@@ -340,16 +372,12 @@ class JobNER(object):
             pipe for pipe in self.nlp.pipe_names if pipe not in pipe_exceptions
         ]
 
-        self.optimizer.learn_rate = self.learn_rate
-
         # Begin training by disabling other pipeline components
-        self.all_losses = []
         with self.nlp.disable_pipes(*other_pipes):
             sizes = compounding(1.0, 4.0, 1.001)
             # Training for num_its iterations
             for itn in tqdm(range(num_its)):
                 # shuffle examples before training
-                random.seed(itn)
                 random.shuffle(train_data)
                 # batch up the examples using spaCy's minibatch
                 batches = minibatch(train_data, size=sizes)
@@ -364,7 +392,6 @@ class JobNER(object):
                         self.nlp.update(
                             [example], sgd=self.optimizer, losses=losses, drop=drop_out
                         )
-                self.all_losses.append(losses["ner"])
                 if print_losses:
                     print(losses)
 
@@ -464,7 +491,7 @@ class JobNER(object):
         model_details_dict.update(
             {
                 "BUCKET_NAME": self.BUCKET_NAME,
-                "labelled_date_filename": self.labelled_date_filename,
+                "S3_FOLDER": self.S3_FOLDER,
                 "convert_multiskill": self.convert_multiskill,
                 "train_prop": self.train_prop,
                 "labels": list(self.all_labels),
@@ -473,11 +500,9 @@ class JobNER(object):
                 "test_num_ents": self.test_num_ents,
                 "drop_out": self.drop_out,
                 "num_its": self.num_its,
-                "learn_rate": self.learn_rate,
                 "ms_classifier_train_evaluation": self.ms_classifier_train_evaluation,
                 "ms_classifier_test_evaluation": self.ms_classifier_test_evaluation,
                 "seen_job_ids": self.seen_job_ids,
-                "losses": self.all_losses,
             }
         )
         save_json_dict(
@@ -511,16 +536,20 @@ class JobNER(object):
 def parse_arguments(parser):
 
     parser.add_argument(
-        "--labelled_date_filename",
+        "--labelled_data_s3_folder",
         help="The S3 location of the labelled job adverts",
-        default="escoe_extension/outputs/labelled_job_adverts/combined_labels_20220824.json",
+        default="escoe_extension/outputs/skill_span_labels/",
     )
-
+    parser.add_argument(
+        "--label_metadata_filename",
+        help="The S3 path to labelling metadata for the job adverts that were labelled",
+        default="escoe_extension/outputs/data/skill_ner/label_chunks/20220624_0_sample_labelling_metadata.json",
+    )
     parser.add_argument(
         "--convert_multiskill",
         help="Convert the MULTISKILL labels to SKILL labels",
         action="store_true",
-        default=True,
+        default=False,
     )
     parser.add_argument(
         "--train_prop",
@@ -528,25 +557,15 @@ def parse_arguments(parser):
         default=0.8,
     )
     parser.add_argument(
-        "--drop_out",
-        help="The drop out rate for the model",
-        default=0.1,
+        "--drop_out", help="The drop out rate for the model", default=0.3,
     )
     parser.add_argument(
         "--num_its",
         help="The number of iterations in the training process",
-        default=100,
+        default=50,
     )
     parser.add_argument(
-        "--learn_rate",
-        help="The learning rate for the model",
-        default=0.001,
-    )
-    parser.add_argument(
-        "--save_s3",
-        help="Save the model to S3",
-        action="store_true",
-        default=False,
+        "--save_s3", help="Save the model to S3", action="store_true", default=False,
     )
     return parser.parse_args()
 
@@ -558,11 +577,10 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     args = parse_arguments(parser)
 
-    print(f"multiskill arg: {args.convert_multiskill}")
-
     job_ner = JobNER(
         BUCKET_NAME=bucket_name,
-        labelled_date_filename=args.labelled_date_filename,
+        S3_FOLDER=args.labelled_data_s3_folder,
+        label_metadata_filename=args.label_metadata_filename,
         convert_multiskill=args.convert_multiskill,
         train_prop=float(args.train_prop),
     )
@@ -576,7 +594,6 @@ if __name__ == "__main__":
         print_losses=True,
         drop_out=float(args.drop_out),
         num_its=int(args.num_its),
-        learn_rate=float(args.learn_rate),
     )
 
     from datetime import datetime as date
