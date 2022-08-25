@@ -291,7 +291,7 @@ class JobNER(object):
         train_data,
         test_data,
         print_losses=True,
-        drop_out=0.3,
+        drop_out=0.1,
         num_its=30,
         learn_rate=0.001,
     ):
@@ -332,6 +332,7 @@ class JobNER(object):
         self.test_num_ents = sum([len(t[1]["entities"]) for t in test_data])
         self.drop_out = drop_out
         self.num_its = num_its
+        self.learn_rate = learn_rate
         # List of pipes you want to train
         pipe_exceptions = ["ner"]
         # List of pipes which should remain unaffected in training
@@ -339,7 +340,7 @@ class JobNER(object):
             pipe for pipe in self.nlp.pipe_names if pipe not in pipe_exceptions
         ]
 
-        self.optimizer.learn_rate = learn_rate
+        self.optimizer.learn_rate = self.learn_rate
 
         # Begin training by disabling other pipeline components
         self.all_losses = []
@@ -348,6 +349,7 @@ class JobNER(object):
             # Training for num_its iterations
             for itn in tqdm(range(num_its)):
                 # shuffle examples before training
+                random.seed(itn)
                 random.shuffle(train_data)
                 # batch up the examples using spaCy's minibatch
                 batches = minibatch(train_data, size=sizes)
@@ -462,7 +464,7 @@ class JobNER(object):
         model_details_dict.update(
             {
                 "BUCKET_NAME": self.BUCKET_NAME,
-                "S3_FOLDER": self.S3_FOLDER,
+                "labelled_date_filename": self.labelled_date_filename,
                 "convert_multiskill": self.convert_multiskill,
                 "train_prop": self.train_prop,
                 "labels": list(self.all_labels),
@@ -471,9 +473,11 @@ class JobNER(object):
                 "test_num_ents": self.test_num_ents,
                 "drop_out": self.drop_out,
                 "num_its": self.num_its,
+                "learn_rate": self.learn_rate,
                 "ms_classifier_train_evaluation": self.ms_classifier_train_evaluation,
                 "ms_classifier_test_evaluation": self.ms_classifier_test_evaluation,
                 "seen_job_ids": self.seen_job_ids,
+                "losses": self.all_losses,
             }
         )
         save_json_dict(
@@ -516,7 +520,7 @@ def parse_arguments(parser):
         "--convert_multiskill",
         help="Convert the MULTISKILL labels to SKILL labels",
         action="store_true",
-        default=False,
+        default=True,
     )
     parser.add_argument(
         "--train_prop",
@@ -524,12 +528,14 @@ def parse_arguments(parser):
         default=0.8,
     )
     parser.add_argument(
-        "--drop_out", help="The drop out rate for the model", default=0.3,
+        "--drop_out",
+        help="The drop out rate for the model",
+        default=0.1,
     )
     parser.add_argument(
         "--num_its",
         help="The number of iterations in the training process",
-        default=50,
+        default=100,
     )
     parser.add_argument(
         "--learn_rate",
@@ -540,7 +546,7 @@ def parse_arguments(parser):
         "--save_s3",
         help="Save the model to S3",
         action="store_true",
-        default=True,
+        default=False,
     )
     return parser.parse_args()
 
@@ -551,6 +557,8 @@ if __name__ == "__main__":
 
     parser = ArgumentParser()
     args = parse_arguments(parser)
+
+    print(f"multiskill arg: {args.convert_multiskill}")
 
     job_ner = JobNER(
         BUCKET_NAME=bucket_name,
