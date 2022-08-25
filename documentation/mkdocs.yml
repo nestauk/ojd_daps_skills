@@ -1,0 +1,7 @@
+site_name: Skills Extractor
+site_url: https://example.com/
+nav:
+  - Home: index.md
+  - Model Card: modelcard.md
+theme:
+  name: simplex
