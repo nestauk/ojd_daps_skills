@@ -1,69 +1,53 @@
 import pytest
+import yaml
+import os
 
 import pandas as pd
 import numpy as np
 
 from ojd_daps_skills.pipeline.skill_ner_mapping.skill_ner_mapper import SkillMapper
+from ojd_daps_skills import PROJECT_DIR
+from ojd_daps_skills.pipeline.extract_skills.extract_skills_utils import (
+    load_toy_taxonomy,
+)
+
+config_path = os.path.join(
+    PROJECT_DIR, "ojd_daps_skills/config/extract_skills_toy.yaml"
+)
+
+with open(config_path, "r") as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
 
 skill_mapper = SkillMapper(
-    skill_name_col="description",
-    skill_id_col="id",
-    skill_hier_info_col="hierarchy_levels",
-    skill_type_col="type",
+    skill_name_col=config["skill_name_col"],
+    skill_id_col=config["skill_id_col"],
+    skill_hier_info_col=config["skill_hier_info_col"],
+    skill_type_col=config["skill_type_col"],
 )
 
-num_hier_levels = 2
-skill_type_dict = {
-    "skill_types": ["preferredLabel", "altLabels"],
-    "hier_types": ["level_2", "level_3"],
-}
+taxonomy_skills = load_toy_taxonomy()
 
-match_thresholds_dict = {
-    "skill_match_thresh": 0.7,
-    "top_tax_skills": {1: 0.5, 2: 0.5, 3: 0.5},
-    "max_share": {1: 0, 2: 0.2, 3: 0.2},
-}
+num_hier_levels = config["num_hier_levels"]
+skill_type_dict = config["skill_type_dict"]
+hier_name_mapper = config["hier_name_mapper"]
 
-taxonomy_skills = pd.DataFrame(
-    {
-        "type": [
-            "preferredLabel",
-            "preferredLabel",
-            "altLabels",
-            "level_2",
-            "level_2",
-            "level_3",
-            "level_3",
-        ],
-        "description": [
-            "microsoft excel",
-            "communicate effectively",
-            "communicate",
-            "databases",
-            "computational",
-            "communications",
-            "excel database",
-        ],
-        "id": ["p1", "p2", "a1", "l21", "l22", "l31", "l32"],
-        "hierarchy_levels": [
-            [["K2", "K2.1"]],
-            [["S1", "S1.1"]],
-            [["S1", "S1.2"]],
-            np.nan,
-            np.nan,
-            np.nan,
-            np.nan,
-        ],
-    }
-)
+match_thresholds_dict = config["match_thresholds_dict"]
 
 taxonomy_skills["cleaned skills"] = taxonomy_skills["description"]
 
 ojo_skills = {
     "predictions": {
-        "a123": {"SKILL": ["communication skills", "microsoft excel"]},
-        "b234": {"SKILL": ["excel skills", "communication skills"]},
-        "c345": {"SKILL": ["filing"]},
+        "a123": {
+            "SKILL": ["communication skills", "microsoft excel"],
+            "MULTISKILL": [],
+            "EXPERIENCE": [],
+        },
+        "b234": {
+            "SKILL": ["excel skills", "communication skills"],
+            "MULTISKILL": ["verbal and presentation skills"],
+            "EXPERIENCE": [],
+        },
+        "c345": {"SKILL": ["filing"], "MULTISKILL": [], "EXPERIENCE": []},
     }
 }
 
@@ -72,7 +56,13 @@ def test_preprocess_job_skills():
     clean_ojo_skills, skill_hashes = skill_mapper.preprocess_job_skills(ojo_skills)
     assert len(ojo_skills["predictions"]) == len(clean_ojo_skills)
     assert len(
-        set([m for v in ojo_skills["predictions"].values() for m in v["SKILL"]])
+        set(
+            [
+                m
+                for v in ojo_skills["predictions"].values()
+                for m in v["SKILL"] + v["MULTISKILL"]
+            ]
+        )
     ) == len(skill_hashes)
 
 
@@ -83,20 +73,12 @@ def test_map_skills():
     # ojo_esco_predefined = {-8387769020912651234: "p3"}
     # skill_hashes = skill_mapper.filter_skill_hash(skill_hashes, ojo_esco_predefined)
 
-    skill_mapper.embed_taxonomy_skills(taxonomy_skills, "notneeded", save=False)
+    skill_mapper.embed_taxonomy_skills(taxonomy_skills)
     skills_to_taxonomy = skill_mapper.map_skills(
         taxonomy_skills, skill_hashes, num_hier_levels, skill_type_dict
     )
 
     assert len(skills_to_taxonomy) == len(skill_hashes)
-
-    hier_name_mapper = {
-        "K2": "computer",
-        "K2.1": "computational skills",
-        "S1": "communicate",
-        "S1.1": "communicate with others",
-        "S1.2": "communication skills",
-    }
 
     final_match = skill_mapper.final_prediction(
         skills_to_taxonomy,
@@ -119,7 +101,7 @@ def test_map_skills():
     # Check match is correct
     assert (
         final_match_dict[skill_hashes_rev[ojo_skill_text]]["match_skill"]
-        == "communicate with others"
+        == "communication, collaboration and creativity"
     )
 
     # Check some basic features

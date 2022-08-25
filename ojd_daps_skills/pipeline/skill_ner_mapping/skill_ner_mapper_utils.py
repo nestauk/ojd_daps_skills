@@ -9,7 +9,6 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 def get_top_comparisons(ojo_embs, taxonomy_embs, match_sim_thresh=0.5):
     """
     Get the cosine similarities between two embedding matrices and
@@ -32,6 +31,9 @@ def get_most_common_code(split_possible_codes, lev_n):
     lev_n = 0
     will output ('S1', 0.75) [i.e. 'S1' is 75% of the level 0 codes]
     """
+    if any([isinstance(el, str) for el in split_possible_codes]):
+        split_possible_codes = [split_possible_codes]
+
     lev_codes = [w[lev_n] for w in split_possible_codes if w[lev_n]]
     if lev_codes:
         lev_code, lev_num = Counter(lev_codes).most_common(1)[0]

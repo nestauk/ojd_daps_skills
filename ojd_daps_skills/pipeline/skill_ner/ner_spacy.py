@@ -51,11 +51,9 @@ from ojd_daps_skills.getters.data_getters import (
     get_s3_data_paths,
     save_json_dict,
 )
-from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import (
-    clean_entities_text,
-)
+from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import clean_entities_text
 from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import MultiskillClassifier
-from ojd_daps_skills import bucket_name
+from ojd_daps_skills import bucket_name, logger
 
 
 class JobNER(object):
@@ -521,7 +519,7 @@ class JobNER(object):
             cmd = f"aws s3 sync s3://{self.BUCKET_NAME}/escoe_extension/{model_folder} {model_folder}"
             os.system(cmd)
         else:
-            print("Loading the model from a local location")
+            logger.info("Loading the model from a local location")
 
         try:
             self.nlp = spacy.load(model_folder)
@@ -529,7 +527,7 @@ class JobNER(object):
                 open(os.path.join(model_folder, "ms_classifier.pkl"), "rb")
             )
         except OSError:
-            print(
+            logger.error(
                 "Model not found locally - you may need to download it from S3 (set s3_download to True)"
             )
         return self.nlp
@@ -559,9 +557,7 @@ def parse_arguments(parser):
         default=0.8,
     )
     parser.add_argument(
-        "--drop_out",
-        help="The drop out rate for the model",
-        default=0.3,
+        "--drop_out", help="The drop out rate for the model", default=0.3,
     )
     parser.add_argument(
         "--num_its",
@@ -569,10 +565,7 @@ def parse_arguments(parser):
         default=50,
     )
     parser.add_argument(
-        "--save_s3",
-        help="Save the model to S3",
-        action="store_true",
-        default=False,
+        "--save_s3", help="Save the model to S3", action="store_true", default=False,
     )
     return parser.parse_args()
 
