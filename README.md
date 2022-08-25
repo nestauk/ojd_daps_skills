@@ -44,7 +44,7 @@ es = ExtractSkills(config_name="extract_skills_toy", s3=True)
 es.load()
 
 job_adverts = [
-        "You will need to have good communication and mathematics skills. You will have experience in the IT sector.",
+        "You will need to have good communication and excellent mathematics skills. You will have experience in the IT sector.",
         "You will need to have good excel and presenting skills. You need good excel software skills",
     ]
 
@@ -52,10 +52,9 @@ predicted_skills = es.get_skills(job_adverts)
 job_skills_matched = es.map_skills(predicted_skills)
 
 predicted_skills
->>> [{'EXPERIENCE': ['experience in the IT sector'], 'SKILL': ['communication', 'mathematics'], 'MULTISKILL': []}, {'EXPERIENCE': [], 'SKILL': ['excel', 'presenting skills', 'excel software'], 'MULTISKILL': []}]
+>>> [{'EXPERIENCE': ['experience in the IT sector'], 'SKILL': ['communication', 'excellent mathematics skills'], 'MULTISKILL': []}, {'EXPERIENCE': [], 'SKILL': ['excel', 'presenting', 'excel software skills'], 'MULTISKILL': []}]
 job_skills_matched
->>> [{'SKILL': [('mathematics', ('working with computers', 'S5')), ('communication', ('use communication techniques', 'cdef'))], 'EXPERIENCE': ['experience in the IT sector']}, {'SKILL': [('excel', ('use spreadsheets software', 'abcd')), ('excel software', ('use spreadsheets software', 'abcd')), ('presenting skills', ('communication, collaboration and creativity', 'S1'))]}]
-
+>>> [{'SKILL': [('communication', ('use communication techniques', 'cdef')), ('excellent mathematics skills', ('working with computers', 'S5'))], 'EXPERIENCE': ['experience in the IT sector']}, {'SKILL': [('excel software skills', ('use spreadsheets software', 'abcd')), ('excel', ('use spreadsheets software', 'abcd')), ('presenting', ('communication, collaboration and creativity', 'S1'))]}]
 ```
 
 If you don't have access to the Nesta S3 bucket for this repo then you will need to set s3=False, and make sure to have relevant files downloaded locally.
@@ -64,7 +63,7 @@ TOD0:
 
 How to download the relevant files locally:
 
-- ner_model_path: "outputs/models/ner_model/20220729/"
+- ner_model_path: "outputs/models/ner_model/20220825/"
 - hier_name_mapper_file_name: "escoe_extension/outputs/data/skill_ner_mapping/esco_hier_mapper.json"
 - taxonomy_path : "escoe_extension/outputs/data/skill_ner_mapping/esco_data_formatted.csv"
 - (optional) taxonomy_embedding_file_name : "escoe_extension/outputs/data/skill_ner_mapping/esco_embeddings.json"

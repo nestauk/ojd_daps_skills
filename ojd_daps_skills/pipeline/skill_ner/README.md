@@ -109,13 +109,13 @@ This model can be used by running:
 >>> from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
 >>> job_ner = JobNER()
 >>> nlp = job_ner.load_model('outputs/models/ner_model/20220825/', s3_download=True)
->>> text = "The job involves communication and maths skills"
+>>> text = "We want someone with good communication and maths skills"
 >>> pred_ents = job_ner.predict(text)
 >>> pred_ents
-[{'label': 'SKILL', 'start': 17, 'end': 30}, {'label': 'SKILL', 'start': 35, 'end': 47}]
+[{'label': 'SKILL', 'start': 21, 'end': 39}, {'label': 'SKILL', 'start': 44, 'end': 56}]
 >>> for ent in pred_ents:
 >>>     print(text[ent['start']:ent['end']])
-communication
+good communication
 maths skills
 ```
 
