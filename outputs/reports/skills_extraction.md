@@ -105,6 +105,22 @@ More in-depth metrics for `20220714`:
 
 \* For model `20220714` we relabelled the MULTISKILL labels in the dataset - we were trying to see whether some of them should actually be single skills, or could be separated into single skills rather than (as we found) labelling a large span as a multiskill. This process increased our number of labelled skill entities (from 2603 to 2887) and decreased the number of multiskill entities (from 404 to 218), resulting in a net increase in entities labelled (from 3400 to 3498).
 
+### Parameter tuning
+
+For model `20220825` onwards we changed our hyperparameters after some additional experimentation revealed improvements could be made. This experimentation was on a dataset of 375 job adverts in total.
+
+We varied the learning rate and the drop out rate randomly and then looked at the loss after 30 iterations. For this we found that low drop out and learning rates gave lower losses, and we were confirmed in thinking that by 50 iterations the reduction in loss will have stabilised (since after 30 iterations it appears to).
+
+Our experimentation lead us to choose a learning rate of 0.001 and drop out rate of 0.1.
+
+![](../../ojd_daps_skills/analysis/outputs/training_losses_sweep.png)
+
+![](../../ojd_daps_skills/analysis/outputs/last_loss_sweep.png)
+
+We found that the test metric result didn't have much influence from these parameters.
+
+![](../../ojd_daps_skills/analysis/outputs/model_metrics_10its.png)
+
 ### Error analysis
 
 Using our hold-out test set of 45 job adverts we were able to do some error analysis. The following results are from the `20220704` model.

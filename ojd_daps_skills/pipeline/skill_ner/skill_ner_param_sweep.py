@@ -26,7 +26,7 @@ data = job_ner.load_data()
 train_data, test_data = job_ner.get_test_train(data)
 
 
-def train_model(drop_out, learn_rate):
+def train_model(drop_out, learn_rate, num_its):
     job_ner.prepare_model()
     nlp = job_ner.train(
         train_data,
@@ -36,30 +36,34 @@ def train_model(drop_out, learn_rate):
         num_its=int(num_its),
         learn_rate=learn_rate,
     )
-    return job_ner.all_losses
+    eval_results = job_ner.evaluate(test_data)
+    return job_ner.all_losses, eval_results
 
 
-num_its = 30
+num_its = 10
 num_experiments = 20
 
 date_stamp = str(date.today().date()).replace("-", "")
-file_name = f"outputs/data/skill_ner/parameter_experiments/results_{num_experiments}_{date_stamp}.json"
+file_name = f"outputs/data/skill_ner/parameter_experiments/results_{num_experiments}_{date_stamp}_eval.json"
+
 s3_file_name = f"escoe_extension/{file_name}"
 
 experiments = []
 if os.path.exists(file_name):
     os.remove(file_name)
 for i in tqdm(range(num_experiments)):
-    random.seed(i)
-    drop_out = random.uniform(0.1, 0.3)
-    learn_rate = random.uniform(0.001, 0.01)
+    random.seed(10 * i)
+    drop_out = random.uniform(0.08, 0.2)
+    learn_rate = random.uniform(0.0009, 0.005)
     result = {"drop_out": drop_out, "learn_rate": learn_rate}
-    losses = train_model(drop_out, learn_rate)
+    losses, eval_results = train_model(drop_out, learn_rate, num_its)
     result["losses"] = losses
+    result["eval_results"] = eval_results
     experiments.append(result)
     with open(file_name, "a") as file:
         file.write(str(result))
         file.write("\n")
+
 
 save_to_s3(
     s3,

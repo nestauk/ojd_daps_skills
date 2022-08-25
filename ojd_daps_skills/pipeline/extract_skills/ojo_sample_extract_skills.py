@@ -65,11 +65,7 @@ if __name__ == "__main__":
     )
     seen_job_ids_dict = model_train_info["seen_job_ids"]
     train_job_ids = set(
-        [
-            v["job_id"]
-            for k, v in seen_job_ids_dict.items()
-            if v["train/test"] == "train"
-        ]
+        [k for k, v in seen_job_ids_dict.items() if v["train/test"] == "train"]
     )
     job_adverts = load_s3_data(S3, bucket_name, job_adverts_filename)
 
