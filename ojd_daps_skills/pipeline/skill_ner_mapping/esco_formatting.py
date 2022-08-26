@@ -214,6 +214,9 @@ if __name__ == "__main__":
         "escoe_extension/inputs/data/esco/transversalSkillsCollection_en.csv"
     )
     skill_groups_file_name = "escoe_extension/inputs/data/esco/skillGroups_en.csv"
+    transversal_name_mapper_file_name = (
+        "escoe_extension/inputs/data/esco/esco_transversal_mapper.json"
+    )
 
     lev_2_name = "Level 2 preferred term"
     lev_3_name = "Level 3 preferred term"
@@ -223,13 +226,35 @@ if __name__ == "__main__":
     skills_concept_mapper = load_s3_data(s3, bucket_name, skill_file_name)
     trans_skills_concept_mapper = load_s3_data(s3, bucket_name, transskill_file_name)
     knowledge_skills = load_s3_data(s3, bucket_name, skill_groups_file_name)
+    transversal_name_mapper = load_s3_data(
+        s3, bucket_name, transversal_name_mapper_file_name
+    )
 
-    # Create a name mapper with the data which will be useful in later pipeline steps
+    # The knowledge skills contains skill group IDs, we don't need these replicating, so remove
+    skill_lev_codes = set(
+        [i for i in esco_hierarchy["Level 3 code"] if pd.notnull(i)]
+        + [i for i in esco_hierarchy["Level 2 code"] if pd.notnull(i)]
+        + [i for i in esco_hierarchy["Level 1 code"] if pd.notnull(i)]
+    )
+
+    knowledge_skills["id"] = knowledge_skills["conceptUri"].apply(
+        lambda x: x.split("/")[-1]
+    )
+    knowledge_skills = knowledge_skills[
+        ~knowledge_skills["id"].apply(lambda x: any([s in x for s in skill_lev_codes]))
+    ]
+
+    # The knowledge skills are made up of skills and knowledge groups, separate out
+    knowledge_groups = knowledge_skills[knowledge_skills["id"].apply(len) < 10]
+    knowledge_individ_skills = knowledge_skills[knowledge_skills["id"].apply(len) >= 10]
+
+    # Create a name mapper with the data which will be useful in later pipeline steps (both knowledge group and individual)
     esco_mapper = get_esco_hier_mapper(esco_hierarchy, knowledge_skills)
+    esco_mapper.update(transversal_name_mapper)
     save_to_s3(s3, bucket_name, esco_mapper, output_mapper_file_name)
 
-    # Concatenate the skills and the knowledge skills
-    esco_skills = pd.concat([esco_skills, knowledge_skills])
+    # Concatenate the skills and the knowledge individual skills
+    esco_skills = pd.concat([esco_skills, knowledge_individ_skills])
 
     # Get hierarchy codes for skills and clean
     concept_mapper = concepturi_2_tax(
@@ -280,6 +305,32 @@ if __name__ == "__main__":
     print(f"{len(pref_label_skills)} remaining preferred labels")
     print(f"{len(alt_label_skills)} remaining alternate labels")
 
+    knowledge_groups = knowledge_groups[knowledge_groups["id"].apply(len) > 1]
+    knowledge_groups["id"] = knowledge_groups["id"].apply(lambda x: "K" + x)
+    # knowledge level 1 e.g. '08', level 2 e.g. '081', level 3 e.g. '0819'
+    level_2_know = knowledge_groups[knowledge_groups["id"].apply(len) == 4][
+        ["preferredLabel", "id"]
+    ]
+    level_2_know["type"] = ["level_2"] * len(level_2_know)
+    level_2_know.rename(columns={"preferredLabel": "description"}, inplace=True)
+    level_2_know = level_2_know[["description", "id", "type"]]
+
+    level_3_know = knowledge_groups[knowledge_groups["id"].apply(len) == 5][
+        ["preferredLabel", "id"]
+    ]
+    level_3_know["type"] = ["level_3"] * len(level_3_know)
+    level_3_know.rename(columns={"preferredLabel": "description"}, inplace=True)
+    level_3_know = level_3_know[["description", "id", "type"]]
+
+    # The transversal name mapper also has some level 2 groups which weren't included from other sources
+    level_2_trans = []
+    for code, trans_name in transversal_name_mapper.items():
+        if len(code) > 2:
+            level_2_trans.append(
+                {"description": trans_name, "id": code, "type": "level_2"}
+            )
+    level_2_trans = pd.DataFrame(level_2_trans)
+
     # Get level 2 and 3 hierarchy information separately
     lev_2_skills = (
         esco_hierarchy[[lev_2_name, "Level 2 code"]].dropna().drop_duplicates()
@@ -288,6 +339,9 @@ if __name__ == "__main__":
     lev_2_skills.rename(
         columns={lev_2_name: "description", "Level 2 code": "id"},
         inplace=True,
+    )
+    lev_2_skills = pd.concat([lev_2_skills, level_2_know, level_2_trans]).reset_index(
+        drop=True
     )
 
     lev_3_skills = (
@@ -298,6 +352,7 @@ if __name__ == "__main__":
         columns={lev_3_name: "description", "Level 3 code": "id"},
         inplace=True,
     )
+    lev_3_skills = pd.concat([lev_3_skills, level_3_know]).reset_index(drop=True)
 
     # Merge altogether and save
     esco_data = pd.concat(
