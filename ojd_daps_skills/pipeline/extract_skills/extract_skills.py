@@ -216,6 +216,7 @@ class ExtractSkills(object):
             skill_dict["EXPERIENCE"] = []
 
             extracted_skills.append(skill_dict)
+        logger.info(f"reformatted list of skills to map to '{self.taxonomy}' taxonomy")
 
         return extracted_skills
 
