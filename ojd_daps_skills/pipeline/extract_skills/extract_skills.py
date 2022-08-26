@@ -15,6 +15,7 @@ import yaml
 import os
 import logging
 import pickle
+from typing import List
 
 from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import MultiskillClassifier
 
@@ -173,18 +174,31 @@ class ExtractSkills(object):
         else:
             self.prev_skill_matches = None
 
-    def format_skills(self, skills):
+    def format_skills(self, skills: List[str]) -> List[dict]:
         """
-        If list of skills, format skills to map onto onto taxonomy 
+        If input is list of skills strings, format list to map to taxonomy
         """
 
         if isinstance(skills, str):
             skills = [skills]
 
-        ms_classifier = pickle.load(open(self.ner_model_path + "ms_classifier.pkl"))
+        if self.s3:
+            ms_classifier = pickle.load(
+                open(self.ner_model_path + "ms_classifier.pkl", "rb")
+            )
+        else:
+            ms_classifier = pickle.load(
+                open(
+                    str(PROJECT_DIR)
+                    + "/escoe_extension/"
+                    + self.config["ner_model_path"]
+                    + "ms_classifier.pkl",
+                    "rb",
+                )
+            )
 
         extracted_skills = []
-        for skill in skill:
+        for skill in skills:
             skill_dict = {}
             if ms_classifier.predict(skill) == 1:
                 split_list = split_multiskill(
