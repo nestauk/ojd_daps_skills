@@ -54,7 +54,7 @@ from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import (
     clean_entities_text,
 )
 from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import MultiskillClassifier
-from ojd_daps_skills import bucket_name
+from ojd_daps_skills import bucket_name, logger, PROJECT_DIR
 
 
 class JobNER(object):
@@ -175,7 +175,7 @@ class JobNER(object):
         job_advert_labels = load_s3_json(
             s3, self.BUCKET_NAME, self.labelled_date_filename
         )
-        print(f"We will be using data from {len(job_advert_labels)} job adverts")
+        logger.info(f"We will be using data from {len(job_advert_labels)} job adverts")
         self.seen_job_ids = {k: {} for k in job_advert_labels.keys()}
 
         data = []
@@ -368,7 +368,7 @@ class JobNER(object):
                         )
                 self.all_losses.append(losses["ner"])
                 if print_losses:
-                    print(losses)
+                    logger.info(losses)
 
         return self.nlp
 
@@ -450,6 +450,8 @@ class JobNER(object):
 
     def save_model(self, output_folder, save_s3=False):
 
+        output_folder = os.path.join(str(PROJECT_DIR), output_folder)
+
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
@@ -497,7 +499,7 @@ class JobNER(object):
             cmd = f"aws s3 sync s3://{self.BUCKET_NAME}/escoe_extension/{model_folder} {model_folder}"
             os.system(cmd)
         else:
-            print("Loading the model from a local location")
+            logger.info("Loading the model from a local location")
 
         try:
             self.nlp = spacy.load(model_folder)
@@ -505,7 +507,7 @@ class JobNER(object):
                 open(os.path.join(model_folder, "ms_classifier.pkl"), "rb")
             )
         except OSError:
-            print(
+            logger.info(
                 "Model not found locally - you may need to download it from S3 (set s3_download to True)"
             )
         return self.nlp
@@ -561,7 +563,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     args = parse_arguments(parser)
 
-    print(f"multiskill arg: {args.convert_multiskill}")
+    logger.info(f"multiskill arg: {args.convert_multiskill}")
 
     job_ner = JobNER(
         BUCKET_NAME=bucket_name,

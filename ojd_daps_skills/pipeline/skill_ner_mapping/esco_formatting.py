@@ -18,7 +18,7 @@ from ojd_daps_skills.getters.data_getters import (
     load_s3_data,
     save_to_s3,
 )
-from ojd_daps_skills import bucket_name
+from ojd_daps_skills import bucket_name, logger
 
 import re
 from collections import defaultdict
@@ -277,10 +277,10 @@ if __name__ == "__main__":
     alt_label_skills["type"] = ["altLabels"] * len(alt_label_skills)
     alt_label_skills.rename(columns={"altLabels": "description"}, inplace=True)
 
-    print(
+    logger.info(
         f"Removing {sum(pd.isnull(pref_label_skills['hierarchy_levels']))} out of {len(pref_label_skills)} preferred label skills weren't mapped"
     )
-    print(
+    logger.info(
         f"Removing {sum(pd.isnull(alt_label_skills['hierarchy_levels']))} out of {len(alt_label_skills)} alternative label skills weren't mapped"
     )
 
@@ -302,8 +302,8 @@ if __name__ == "__main__":
     alt_label_skills = alt_label_skills[
         pd.notnull(alt_label_skills["hierarchy_levels"])
     ]
-    print(f"{len(pref_label_skills)} remaining preferred labels")
-    print(f"{len(alt_label_skills)} remaining alternate labels")
+    logger.info(f"{len(pref_label_skills)} remaining preferred labels")
+    logger.info(f"{len(alt_label_skills)} remaining alternate labels")
 
     knowledge_groups = knowledge_groups[knowledge_groups["id"].apply(len) > 1]
     knowledge_groups["id"] = knowledge_groups["id"].apply(lambda x: "K" + x)
@@ -360,3 +360,4 @@ if __name__ == "__main__":
     )
     esco_data = esco_data[pd.notnull(esco_data["description"])].reset_index(drop=True)
     save_to_s3(s3, bucket_name, esco_data, output_file_name)
+    save_to_s3(s3, "open-jobs-indicators", esco_data, output_file_name)
