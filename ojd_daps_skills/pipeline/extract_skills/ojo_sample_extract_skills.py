@@ -4,6 +4,7 @@ Use the ExtractSkills function to extract and map skills for our sample of OJO j
 import os
 from itertools import islice
 from datetime import datetime as date
+from collections import Counter
 
 from tqdm import tqdm
 
@@ -56,7 +57,7 @@ def extract_skills_ojo_job_ads(job_adverts, es, train_job_ids):
 
 if __name__ == "__main__":
 
-    update_lookup_sample = True
+    update_lookup_sample = False
 
     job_adverts_filename = "escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json"
 
