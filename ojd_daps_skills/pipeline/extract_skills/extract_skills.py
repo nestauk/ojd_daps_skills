@@ -14,6 +14,9 @@ from ojd_daps_skills import logger, PROJECT_DIR
 import yaml
 import os
 import logging
+import pickle
+
+from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import MultiskillClassifier
 
 
 class ExtractSkills(object):
@@ -22,7 +25,7 @@ class ExtractSkills(object):
     Attributes
     ----------
     config_path (str): the config path for a default setting
-    s3 (bool): whether you want to load/save data from this repos s3 bucket (True, needs access) or locally (False)
+    s3 (bool): whether you want to load/save data from this repos from s3 bucket (True, needs access) or locally (False)
     ----------
     Methods
     ----------
@@ -30,6 +33,9 @@ class ExtractSkills(object):
         loads all the neccessary data and models for this class
     get_skills(job_adverts)
         For an inputted list of job adverts, or a single job advert text, predict skill/experience entities
+    format_skills(skills)
+        If input is list of skills, format list to be the output of get_skills - a list of dict to map
+        each entity onto a skill/skill group from a taxonomy
     map_skills(predicted_skills)
         For a list of predicted skills (the output of get_skills - a list of dicts), map each entity
         onto a skill/skill group from a taxonomy
@@ -50,6 +56,15 @@ class ExtractSkills(object):
             logger.setLevel(logging.INFO)
         else:
             logger.setLevel(logging.ERROR)
+        if self.s3:
+            pass
+        else:
+            if os.path.exists(str(PROJECT_DIR) + "/escoe_extension"):
+                logger.info("data and embeddings already downloaded locally.")
+            else:
+                cmd = f"aws s3 sync s3://open-jobs-indicators/escoe_extension {str(PROJECT_DIR) + '/escoe_extension'}"
+                os.system(cmd)
+                logger.info("downloaded data and embeddings locally.")
 
         self.ner_model_path = self.config["ner_model_path"]
         self.taxonomy_name = self.config["taxonomy_name"]
@@ -82,7 +97,15 @@ class ExtractSkills(object):
             hier_name_mapper_file_name = self.hier_name_mapper_file_name
 
         self.job_ner = JobNER()
-        self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
+
+        if self.s3:
+            self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
+        else:
+            self.nlp = self.job_ner.load_model(
+                str(PROJECT_DIR) + "/escoe_extension/" + self.config["ner_model_path"],
+                s3_download=self.s3,
+            )
+
         self.labels = self.nlp.get_pipe("ner").labels + ("MULTISKILL",)
 
         logger.info(f"Loading '{self.taxonomy_name}' taxonomy information")
@@ -90,7 +113,9 @@ class ExtractSkills(object):
             self.taxonomy_skills = load_toy_taxonomy()
         else:
             if hier_name_mapper_file_name:
-                self.hier_name_mapper = load_file(hier_name_mapper_file_name, s3=True)
+                self.hier_name_mapper = load_file(
+                    hier_name_mapper_file_name, s3=self.s3
+                )
             else:
                 self.hier_name_mapper = {}
             self.config["hier_name_mapper"] = self.hier_name_mapper
@@ -136,7 +161,7 @@ class ExtractSkills(object):
             self.taxonomy_skills_embeddings_loaded = True
         else:
             self.taxonomy_skills_embeddings_loaded = False
-        
+
         if prev_skill_matches_file_name:
             logger.info(
                 f"Loading previously found skill mappings from {prev_skill_matches_file_name}"
@@ -147,6 +172,38 @@ class ExtractSkills(object):
             # self.prev_skill_matches = {1654958883999821: {'ojo_skill': 'maths skills', 'match_skill': 'communicate with others', 'match_score': 0.3333333333333333, 'match_type': 'most_common_level_1', 'match_id': 'S1.1'}}
         else:
             self.prev_skill_matches = None
+
+    def format_skills(self, skills):
+        """
+        If list of skills, format skills to map onto onto taxonomy 
+        """
+
+        if isinstance(skills, str):
+            skills = [skills]
+
+        ms_classifier = pickle.load(open(self.ner_model_path + "ms_classifier.pkl"))
+
+        extracted_skills = []
+        for skill in skill:
+            skill_dict = {}
+            if ms_classifier.predict(skill) == 1:
+                split_list = split_multiskill(
+                    skill, min_length=self.min_multiskill_length
+                )
+                if split_list:
+                    for split_entity in split_list:
+                        skill_dict["SKILL"] = [split_entity]
+                else:
+                    skill_dict["SKILL"] = [skill]
+            else:
+                skill_dict["SKILL"] = [skill]
+
+            skill_dict["MULTISKILL"] = []
+            skill_dict["EXPERIENCE"] = []
+
+            extracted_skills.append(skill_dict)
+
+        return extracted_skills
 
     def get_skills(self, job_adverts):
         """
