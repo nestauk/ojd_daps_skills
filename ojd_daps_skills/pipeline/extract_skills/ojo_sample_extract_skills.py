@@ -56,9 +56,14 @@ def extract_skills_ojo_job_ads(job_adverts, es, train_job_ids):
 
 if __name__ == "__main__":
 
+    update_lookup_sample = True
+
     job_adverts_filename = "escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json"
 
     es = ExtractSkills(config_name="extract_skills_esco", s3=True)
+
+    if update_lookup_sample:
+        es.prev_skill_matches_file_name = ""
 
     model_train_info = load_json_dict(
         os.path.join(es.config["ner_model_path"], "train_details.json")
@@ -86,6 +91,29 @@ if __name__ == "__main__":
         ojo_extracted_skills,
         f"escoe_extension/outputs/data/extract_skills/{date_stamp}_ojo_sample_skills_extracted.json",
     )
+
+    if update_lookup_sample:
+        # Save out some common skill matches for future use
+        skill_mapper = es.skill_mapper
+
+        common_skill_hash = set(
+            [
+                i
+                for i, v in Counter(
+                    [h["ojo_job_skill_hash"] for h in es.skill_matches]
+                ).most_common(100)
+            ]
+        )
+        sample_skill_hash_to_esco = {}
+        for fm in es.skill_matches:
+            skill_hash = fm["ojo_job_skill_hash"]
+            if skill_hash in common_skill_hash:
+                sample_skill_hash_to_esco[skill_hash] = fm
+
+        skill_mapper.save_ojo_esco_mapper(
+            "escoe_extension/outputs/data/skill_ner_mapping/ojo_esco_lookup_sample.json",
+            sample_skill_hash_to_esco,
+        )
 
     # all 5000 at once:
     #  Took 144.59014081954956 seconds (bert_vectorizer.py:47)

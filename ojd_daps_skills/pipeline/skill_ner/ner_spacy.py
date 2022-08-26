@@ -393,9 +393,10 @@ class JobNER(object):
                 # Apply the classifier to see whether it's likely to be a multiskill
                 if self.ms_classifier.predict(ent.text)[0] == 1:
                     ent.label_ = "MULTISKILL"
-            pred_ents.append(
-                {"label": ent.label_, "start": ent.start_char, "end": ent.end_char}
-            )
+            if (len(ent.text) > 1) | (ent.text == "R") | (ent.text == "C"):
+                pred_ents.append(
+                    {"label": ent.label_, "start": ent.start_char, "end": ent.end_char}
+                )
         return pred_ents
 
     def display_prediction(self, job_text):

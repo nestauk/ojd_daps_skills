@@ -136,7 +136,7 @@ class ExtractSkills(object):
             self.taxonomy_skills_embeddings_loaded = True
         else:
             self.taxonomy_skills_embeddings_loaded = False
-        
+
         if prev_skill_matches_file_name:
             logger.info(
                 f"Loading previously found skill mappings from {prev_skill_matches_file_name}"
@@ -209,7 +209,7 @@ class ExtractSkills(object):
                 self.taxonomy_info.get("num_hier_levels"),
                 self.taxonomy_info.get("skill_type_dict"),
             )
-            skill_matches = self.skill_mapper.final_prediction(
+            self.skill_matches = self.skill_mapper.final_prediction(
                 fully_mapped_skills,
                 self.taxonomy_info.get("hier_name_mapper"),
                 self.taxonomy_info.get("match_thresholds_dict"),
@@ -218,12 +218,12 @@ class ExtractSkills(object):
 
             if self.prev_skill_matches:
                 # Append the pre-defined matches with the new matches
-                skill_matches = self.skill_mapper.append_final_predictions(
-                    skill_matches, self.prev_skill_matches
+                self.skill_matches = self.skill_mapper.append_final_predictions(
+                    self.skill_matches, self.prev_skill_matches
                 )
 
             _, job_skills_matched = self.skill_mapper.link_skill_hash_to_job_id(
-                job_skills, skill_matches
+                job_skills, self.skill_matches
             )
 
             job_skills_matched_formatted = []
