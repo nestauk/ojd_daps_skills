@@ -2,7 +2,7 @@
 This script contains the class needed to train a simple classifier to predict whether a skill entity is a skill (1) or not a skill (0)
 """
 import random
-from sklearn import LogisticRegression
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 import numpy as np
@@ -26,7 +26,7 @@ class SpanClassifier:
             logger.setLevel(logging.ERROR)
 
     """
-    Train a classifier to predict whether a skill entity is a skill or not 
+    Train a classifier to predict whether a skill entity is a skill or not
     """
 
     def transform(self, entity_list):
@@ -110,7 +110,7 @@ class SpanClassifier:
             os.makedirs(output_folder)
 
         pickle.dump(
-            self.skill_classifier,
+            self.lg,
             open(os.path.join(output_folder, "skill_nonskill_classifier.pkl"), "wb"),
         )
 
@@ -125,7 +125,7 @@ class SpanClassifier:
 if __name__ == "__main__":
 
     skill_nonskill_labels = load_file(
-        "escoe_extension/outputs/data/skill_nonskill_labels/skill_nonskill_labels.csv"
+        "escoe_extension/outputs/skill_nonskill_labels/skill_nonskill_labels.csv"
     )
 
     skill_ent_list = [
@@ -154,6 +154,7 @@ if __name__ == "__main__":
         indices_train,
         indices_test,
     ) = skill_classifier.split_training_data(X, y, indices, test_size=0.1)
+
     skill_classifier.fit(X_train, y_train)
 
     from datetime import datetime as date
@@ -163,7 +164,7 @@ if __name__ == "__main__":
 
     # save to both public and private buckets
     skill_classifier.save_model(
-        X_test, y_test, output_folder, "open-jobs-lake", save_s3=True
+        X_test, y_test, output_folder, bucket_name, save_s3=True
     )
     skill_classifier.save_model(
         X_test, y_test, output_folder, "open-jobs-indicators", save_s3=True
