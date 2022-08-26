@@ -115,7 +115,7 @@ class SpanClassifier:
 
         if save_s3:
             # Sync this to S3
-            cmd = f"aws s3 sync {output_folder} s3://{bucket_name}/escoe_extension/{output_folder}"
+            cmd = f"aws s3 sync {output_folder} s3://{bucket_name}/{output_folder}"
             os.system(cmd)
 
 
