@@ -58,15 +58,24 @@ Our evaluation scores use the [nervaluate](https://pypi.org/project/nervaluate/)
 
 A summary of the experiments with training the model is below.
 
-| Date (model name) | Base model     | Training size   | Evaluation size | Number of iterations | Drop out rate | Convert multiskill? | Other info                                                                                       | Skill F1 | Experience F1 | All F1 | Multiskill test score |
-| ----------------- | -------------- | --------------- | --------------- | -------------------- | ------------- | ------------------- | ------------------------------------------------------------------------------------------------ | -------- | ------------- | ------ | --------------------- |
-| 20220729\*        | blank en       | 196 (2850 ents) | 49 (636 ents)   | 50                   | 0.3           | True                | More data, padding in cleaning but do fix_entity_annotations after fix_all_formatting to sort it | 0.57     | 0.44          | 0.54   | 0.87                  |
-| 20220729_nopad    | blank en       | 196             | 49              | 50                   | 0.3           | True                | No padding in cleaning, more data                                                                | 0.52     | 0.33          | 0.45   | 0.87                  |
-| 20220714          | blank en       | 182             | 46              | 50                   | 0.3           | True                | Camel case cleaned, multiskill classifier added and labelled data cleaned                        | 0.55     | 0.42          | 0.54   | 0.85                  |
-| 20220705          | en_core_web_sm | 182             | 45              | 50                   | 0.3           | True                | Camel case cleaned                                                                               | 0.52     | 0.48          | 0.52   |                       |
-| 20220704          | blank en       | 182             | 45              | 50                   | 0.3           | True                | Camel case cleaned                                                                               | 0.54     | 0.39          | 0.52   |                       |
-| 20220630          | blank en       | 180             | 45              | 50                   | 0.3           | True                |                                                                                                  | 0.49     | 0.39          | 0.48   |                       |
-| 20220629          | blank en       | 156             | 39              | 50                   | 0.3           | True                |                                                                                                  | 0.52     | 0.45          | 0.51   |                       |
+| Date (model name) | Base model     | Training size   | Evaluation size | Number of iterations | Drop out rate | Learning rate | Convert multiskill? | Other info                                                                                       | Skill F1 | Experience F1 | All F1 | Multiskill test score |
+| ----------------- | -------------- | --------------- | --------------- | -------------------- | ------------- | ------------- | ------------------- | ------------------------------------------------------------------------------------------------ | -------- | ------------- | ------ | --------------------- |
+| 20220825          | blank en       | 300 (4508 ents) | 75 (1133 ents)  | 100                  | 0.1           | 0.001         | True                | Changed hyperparams, more data                                                                   | 0.59     | 0.51          | 0.56   | 0.91                  |
+| 20220729\*        | blank en       | 196 (2850 ents) | 49 (636 ents)   | 50                   | 0.3           | 0.001         | True                | More data, padding in cleaning but do fix_entity_annotations after fix_all_formatting to sort it | 0.57     | 0.44          | 0.54   | 0.87                  |
+| 20220729_nopad    | blank en       | 196             | 49              | 50                   | 0.3           | 0.001         | True                | No padding in cleaning, more data                                                                | 0.52     | 0.33          | 0.45   | 0.87                  |
+| 20220714          | blank en       | 182             | 46              | 50                   | 0.3           | 0.001         | True                | Camel case cleaned, multiskill classifier added and labelled data cleaned                        | 0.55     | 0.42          | 0.54   | 0.85                  |
+| 20220705          | en_core_web_sm | 182             | 45              | 50                   | 0.3           | 0.001         | True                | Camel case cleaned                                                                               | 0.52     | 0.48          | 0.52   |                       |
+| 20220704          | blank en       | 182             | 45              | 50                   | 0.3           | 0.001         | True                | Camel case cleaned                                                                               | 0.54     | 0.39          | 0.52   |                       |
+| 20220630          | blank en       | 180             | 45              | 50                   | 0.3           | 0.001         | True                |                                                                                                  | 0.49     | 0.39          | 0.48   |                       |
+| 20220629          | blank en       | 156             | 39              | 50                   | 0.3           | 0.001         | True                |                                                                                                  | 0.52     | 0.45          | 0.51   |                       |
+
+More in-depth metrics for `20220825`:
+
+| Entity     | F1    | Precision | Recall |
+| ---------- | ----- | --------- | ------ |
+| Skill      | 0.586 | 0.679     | 0.515  |
+| Experience | 0.507 | 0.648     | 0.416  |
+| All        | 0.563 | 0.644     | 0.501  |
 
 More in-depth metrics for `20220729`:
 
@@ -104,6 +113,22 @@ More in-depth metrics for `20220714`:
 | All        | 0.540 | 0.608     | 0.486  |
 
 \* For model `20220714` we relabelled the MULTISKILL labels in the dataset - we were trying to see whether some of them should actually be single skills, or could be separated into single skills rather than (as we found) labelling a large span as a multiskill. This process increased our number of labelled skill entities (from 2603 to 2887) and decreased the number of multiskill entities (from 404 to 218), resulting in a net increase in entities labelled (from 3400 to 3498).
+
+### Parameter tuning
+
+For model `20220825` onwards we changed our hyperparameters after some additional experimentation revealed improvements could be made. This experimentation was on a dataset of 375 job adverts in total.
+
+We varied the learning rate and the drop out rate randomly and then looked at the loss after 30 iterations. For this we found that low drop out and learning rates gave lower losses, and we were confirmed in thinking that by 50 iterations the reduction in loss will have stabilised (since after 30 iterations it appears to).
+
+Our experimentation lead us to choose a learning rate of 0.001 and drop out rate of 0.1.
+
+![](../../ojd_daps_skills/analysis/outputs/training_losses_sweep.png)
+
+![](../../ojd_daps_skills/analysis/outputs/last_loss_sweep.png)
+
+We found that the test metric result didn't have much influence from these parameters.
+
+![](../../ojd_daps_skills/analysis/outputs/model_metrics_10its.png)
 
 ### Error analysis
 

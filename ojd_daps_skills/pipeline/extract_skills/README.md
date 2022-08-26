@@ -32,7 +32,7 @@ skill_type_dict:
     "skill_types": [A list of the values of the 'type' column which code skills],
     "hier_types": [A list of the values of the 'type' column which code skill groups, these need to be in order from least to most granular],
   }
-ner_model_path: "outputs/models/ner_model/20220729/"
+ner_model_path: "outputs/models/ner_model/20220825/"
 clean_job_ads: True
 min_multiskill_length: 75
 match_thresholds_dict:

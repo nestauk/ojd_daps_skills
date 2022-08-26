@@ -1,4 +1,4 @@
-ner_model_path: "outputs/models/ner_model/20220729/"
+ner_model_path: "outputs/models/ner_model/20220825/"
 taxonomy_name: "lightcast"
 taxonomy_path: "escoe_extension/outputs/data/skill_ner_mapping/lightcast_data_formatted.csv"
 clean_job_ads: True

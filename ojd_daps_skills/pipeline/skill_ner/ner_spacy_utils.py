@@ -34,6 +34,13 @@ exception_camelcases = [
     "GitLab",
     "DevOps",
     "QuickBooks",
+    "TypeScript",
+    "XenDesktop",
+    "DevSecOps",
+    "CircleCi",
+    "LeDeR",
+    "CeMap",
+    "MavenAutomation",
 ]
 
 # Any trailing chars that match these are removed
