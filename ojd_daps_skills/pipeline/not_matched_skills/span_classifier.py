@@ -4,7 +4,7 @@ This script contains the class needed to train a simple classifier to predict wh
 import random
 from sklearn import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import classification_report
 import numpy as np
 import pandas as pd
 
@@ -13,11 +13,17 @@ from ojd_daps_skills import logger, bucket_name
 from ojd_daps_skills.getters.data_getters import load_file, save_json_dict
 import pickle
 import os
+import logging
 
 
 class SpanClassifier:
-    def __init__(self, bert_model=BertVectorizer().fit()):
+    def __init__(self, bert_model=BertVectorizer().fit(), verbose=True):
         self.bert_model = bert_model
+        self.verbose = verbose
+        if self.verbose:
+            logger.setLevel(logging.INFO)
+        else:
+            logger.setLevel(logging.ERROR)
 
     """
     Train a classifier to predict whether a skill entity is a skill or not 
@@ -92,10 +98,7 @@ class SpanClassifier:
 
     def evaluate(self, X, y):
         y_pred = self.predict(X)
-        return (
-            classification_report(y, y_pred, output_dict=True),
-            accuracy_score(y, y_pred),
-        )
+        return classification_report(y, y_pred, output_dict=True)
 
     def save_model(
         self, X_test, y_test, output_folder, bucket_name=bucket_name, save_s3=False
