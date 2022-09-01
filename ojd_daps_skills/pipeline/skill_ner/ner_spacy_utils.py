@@ -18,7 +18,7 @@ import difflib
 from toolz import pipe
 
 # Pattern for fixing a missing space between enumerations, for split_sentences()
-compiled_missing_space_pattern = re.compile("([a-z])([A-Z])([a-z])")
+compiled_missing_space_pattern = re.compile("([a-z])([A-Z])")
 # Characters outside these rules will be padded, for pad_punctuation()
 compiled_nonalphabet_nonnumeric_pattern = re.compile(r"([^a-zA-Z0-9] )")
 
@@ -41,6 +41,19 @@ exception_camelcases = [
     "LeDeR",
     "CeMap",
     "MavenAutomation",
+    "SaaS",
+    "iOS",
+    "MySQL",
+    "MongoDB",
+    "NoSQL",
+    "GraphQL",
+    "VoIP",
+    "PhD",
+    "HyperV",
+    "PaaS",
+    "ArgoCD",
+    "WinCC",
+    "AutoCAD",
 ]
 
 # Any trailing chars that match these are removed
@@ -142,9 +155,9 @@ def detect_camelcase(text):
 
     Reference: https://stackoverflow.com/questions/1097901/regular-expression-split-string-by-capital-letter-but-ignore-tla
     """
-    text = compiled_missing_space_pattern.sub(r"\1. \2\3", text)
+    text = compiled_missing_space_pattern.sub(r"\1. \2", text)
     for exception in exception_camelcases:
-        exception_cleaned = compiled_missing_space_pattern.sub(r"\1. \2\3", exception)
+        exception_cleaned = compiled_missing_space_pattern.sub(r"\1. \2", exception)
         if exception_cleaned in text:
             text = text.replace(exception_cleaned, exception)
 
