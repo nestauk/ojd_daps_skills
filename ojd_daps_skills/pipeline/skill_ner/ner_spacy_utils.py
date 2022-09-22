@@ -142,7 +142,7 @@ def detect_camelcase(text):
 
     Reference: https://stackoverflow.com/questions/1097901/regular-expression-split-string-by-capital-letter-but-ignore-tla
     """
-    text = compiled_missing_space_pattern.sub(r"\1. \2\3", text)
+    text = compiled_missing_space_pattern.sub(r"\1. \2\3", str(text))
     for exception in exception_camelcases:
         exception_cleaned = compiled_missing_space_pattern.sub(r"\1. \2\3", exception)
         if exception_cleaned in text:

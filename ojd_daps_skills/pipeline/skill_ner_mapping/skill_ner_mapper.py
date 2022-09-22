@@ -163,9 +163,15 @@ class SkillMapper:
         self.skill_hashes = dict()
 
         for ojo_job_id in self.ojo_job_ids:
-            ojo_job_skills = ojo_skills["predictions"][ojo_job_id]["SKILL"]
+            try:
+                ojo_job_skills = ojo_skills["predictions"][ojo_job_id]["SKILL"]
+            except:
+                ojo_job_skills = []
             # deal with multiskills here
-            ojo_job_multiskills = ojo_skills["predictions"][ojo_job_id]["MULTISKILL"]
+            try:
+                ojo_job_multiskills = ojo_skills["predictions"][ojo_job_id]["MULTISKILL"]
+            except:
+                ojo_job_multiskills = []
             all_ojo_job_skills = ojo_job_skills + ojo_job_multiskills
 
             if all_ojo_job_skills != []:
@@ -268,7 +274,7 @@ class SkillMapper:
 
         self.ojo_esco = load_file(ojo_esco_mapper_file_name, s3=s3)
 
-        logger.info(f":oaded extracted-skill-to-{self.taxonomy} mapper")
+        logger.info(f"Loaded extracted-skill-to-{self.taxonomy} mapper")
 
         return self.ojo_esco
 
