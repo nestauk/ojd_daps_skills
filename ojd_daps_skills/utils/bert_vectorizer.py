@@ -13,7 +13,7 @@ class BertVectorizer:
     def __init__(
         self,
         bert_model_name="sentence-transformers/all-MiniLM-L6-v2",
-        multi_process=True,
+        multi_process=False,
         batch_size=32,
         verbose=True,
     ):
