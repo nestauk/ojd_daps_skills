@@ -316,7 +316,7 @@ class SkillMapper:
             logger.error("Trying to map skills using empty dict of skills")
 
         clean_ojo_skill_embeddings = self.bert_model.transform(
-            skill_hashes_filtered.values()
+            list(skill_hashes_filtered.values())
         )
         # Find the closest matches to skills information
         skill_types = skill_type_dict.get("skill_types", [])
