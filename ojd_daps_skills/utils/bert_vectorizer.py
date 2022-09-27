@@ -32,6 +32,6 @@ class BertVectorizer:
     def transform(self, texts):
         logger.info(f"Getting embeddings for {len(texts)} texts ...")
         t0 = time.time()
-        sel.embedded_x = self.bert_model.encode(texts, batch_size=self.batch_size)
+        self.embedded_x = self.bert_model.encode(texts, batch_size=self.batch_size)
         logger.info(f"Took {time.time() - t0} seconds")
         return self.embedded_x
