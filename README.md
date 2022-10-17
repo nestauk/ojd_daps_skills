@@ -54,7 +54,15 @@ job_skills_matched = es.map_skills(predicted_skills)
 predicted_skills
 >>> [{'EXPERIENCE': ['experience in the IT sector'], 'SKILL': ['communication', 'excellent mathematics skills'], 'MULTISKILL': []}, {'EXPERIENCE': [], 'SKILL': ['excel', 'presenting', 'excel software skills'], 'MULTISKILL': []}]
 job_skills_matched
->>> [{'SKILL': [('communication', ('use communication techniques', 'cdef')), ('excellent mathematics skills', ('working with computers', 'S5'))], 'EXPERIENCE': ['experience in the IT sector']}, {'SKILL': [('excel software skills', ('use spreadsheets software', 'abcd')), ('excel', ('use spreadsheets software', 'abcd')), ('presenting', ('communication, collaboration and creativity', 'S1'))]}]
+>>> [{'SKILL': [
+  ('communication', ('communication', '15d76317-c71a-4fa2-aadc-2ecc34e627b7')),
+  ('excellent mathematics skills', ('practice mathematics', 'db77825e-0f3e-47d0-abdb-356794484272'))],
+  'EXPERIENCE': [
+  'experience in the IT sector']},
+ {'SKILL': [
+  ('excel software skills', ('use spreadsheets software', '1973c966-f236-40c9-b2d4-5d71a89019be')),
+  ('excel', ('use spreadsheets', 'db77825e-0f3e-47d0-abdb-356794484272')),
+  ('presenting', ('presenting exhibition', 'c45848bc-33c6-45fa-b791-bc5b06c21b87'))]}]
 ```
 
 If you don't have access to the Nesta S3 bucket for this repo then you will need to set s3=False, and make sure to have relevant files downloaded locally.
