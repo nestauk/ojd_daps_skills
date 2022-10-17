@@ -41,10 +41,7 @@ The train results on 395 spans were:
 
     nonskill       0.87      0.83      0.85       195
        skill       0.84      0.88      0.86       200
-
     accuracy                           0.85       395
-   macro avg       0.85      0.85      0.85       395
-weighted avg       0.85      0.85      0.85       395
 
 The test results on 99 spans were:
 
@@ -52,7 +49,4 @@ The test results on 99 spans were:
 
     nonskill       0.88      0.71      0.79        52
        skill       0.74      0.89      0.81        47
-
     accuracy                           0.80        99
-   macro avg       0.81      0.80      0.80        99
-weighted avg       0.81      0.80      0.80        99
