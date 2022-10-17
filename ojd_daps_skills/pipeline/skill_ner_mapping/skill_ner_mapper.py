@@ -191,8 +191,10 @@ class SkillMapper:
     def load_taxonomy_skills(self, tax_input_file_name, s3=False):
         # load taxonomy skills
         self.taxonomy_skills = load_file(tax_input_file_name, s3=s3)
-        self.taxonomy_skills = self.taxonomy_skills[self.taxonomy_skills[self.skill_name_col].notna()].reset_index(drop=True)
-        
+        self.taxonomy_skills = self.taxonomy_skills[
+            self.taxonomy_skills[self.skill_name_col].notna()
+        ].reset_index(drop=True)
+
         # Sometimes the hierarchy list is read in as a string rather than a list,
         # so edit this if this happens
         def clean_string_list(string_list):
@@ -268,7 +270,7 @@ class SkillMapper:
 
         self.ojo_esco = load_file(ojo_esco_mapper_file_name, s3=s3)
 
-        logger.info(f":oaded extracted-skill-to-{self.taxonomy} mapper")
+        logger.info(f"loaded extracted-skill-to-{self.taxonomy} mapper")
 
         return self.ojo_esco
 
