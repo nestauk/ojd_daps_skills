@@ -27,13 +27,13 @@ Examples of extracted skills include:
  'checking stock records',
  'cleaning in warehouses offices',
  'coaching Business Leaders']
-```
+ ```
 
-Span classifier - `2022.10.17`
+ ## Span classifier - `2022.10.17`
 
-test_size = `0.2`
-shuffle=`True`
-random_state=`45`
+ test_size = `0.2`
+ shuffle=`True`
+ random_state=`42`
 
 The train results on 395 spans were:
 
@@ -43,9 +43,8 @@ The train results on 395 spans were:
        skill       0.84      0.88      0.86       200
 
     accuracy                           0.85       395
-
-macro avg 0.85 0.85 0.85 395
-weighted avg 0.85 0.85 0.85 395
+   macro avg       0.85      0.85      0.85       395
+weighted avg       0.85      0.85      0.85       395
 
 The test results on 99 spans were:
 
@@ -55,6 +54,5 @@ The test results on 99 spans were:
        skill       0.74      0.89      0.81        47
 
     accuracy                           0.80        99
-
-macro avg 0.81 0.80 0.80 99
-weighted avg 0.81 0.80 0.80 99
+   macro avg       0.81      0.80      0.80        99
+weighted avg       0.81      0.80      0.80        99
