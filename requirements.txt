@@ -15,3 +15,7 @@ scikit-learn==0.23.2
 spacy==3.4.0
 jupyter
 nervaluate
+altair
+selenium==4.2.0
+altair_saver
+webdriver-manager
