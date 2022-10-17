@@ -128,12 +128,14 @@ if __name__ == "__main__":
     client_id = args.client_id
     client_secret = args.client_secret
 
-    s3 = get_s3_resource()
-
     access_code = get_emsi_access_token(client_id, client_secret)
     lightcast_skills = get_lightcast_skills(access_code)
     lightcast_skills_formatted = format_lightcast_skills(lightcast_skills)
-    lightcast_skills_formatted = lightcast_skills_formatted[lightcast_skills_formatted.description.notna()]
+    
+    #drop NULL categories 
+    lightcast_skills_formatted = (lightcast_skills_formatted
+    .query('description.notna()')
+    .query('description != "NULL"'))
     # add the hier_name_mapper_file_name name here
     hier_name_mapper = (
         lightcast_skills_formatted[lightcast_skills_formatted["type"] != "skill"][
