@@ -2,6 +2,26 @@
 
 `extract_skills.py` combines the prediction of skills using code from [skill_ner](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner) with the mapping of skills to a taxonomy using code from [skill_ner_mapping](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping).
 
+## Public access to relevant models and embeddings
+
+The ExtractSkills class relies on the aws cli tool to download relevant models and embeddings required to extract and map skill spans from a given job advert(s). If you do not have the aws cli tool downloaded, you can simply download all the files `open-jobs-indicators/escoe_extension/outputs` using [aws's front end via our public access bucket.](https://s3.console.aws.amazon.com/s3/buckets/open-jobs-indicators?region=eu-west-1&prefix=escoe_extension/&showversions=false) These files will need to be downloaded to a folder called `escoe_extension` in your project directory.
+
+## Mapping a list of skills
+
+If you would like to map an existing list of skills to a taxonomy rather than extract skills from free job advert text, you can do so by:
+
+`
+es = ExtractSkills(config_name="extract_skills_esco", s3=True)
+es.load()
+
+skill_list = ['communication and writing', 'numerical skills', 'collaboration']
+
+#re-format list of skills for mapping
+skill_list_reformatted = es.format_skills(skill_list)
+#then map reformatted list of skills to taxonomy - in this example, esco
+mapped_skills = es.map_skills(skill_list_reformatted)
+`
+
 ## Matching skills to a new taxonomy
 
 If you'd like to match skills extracted from job adverts to a different taxonomy than our pre-defined ones you can do so by creating a new config.yaml file and loading it in `ExtractSkills(config_name="new_config_name")`. You should also process the taxonomy in the following format and save it as a '.json' file. This should have the following format.

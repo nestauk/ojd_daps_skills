@@ -270,7 +270,7 @@ class SkillMapper:
 
         self.ojo_esco = load_file(ojo_esco_mapper_file_name, s3=s3)
 
-        logger.info(f":oaded extracted-skill-to-{self.taxonomy} mapper")
+        logger.info(f"loaded extracted-skill-to-{self.taxonomy} mapper")
 
         return self.ojo_esco
 
