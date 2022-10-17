@@ -72,9 +72,13 @@ def save_json_dict(dictionary: dict, file_name: str):
 
 def load_txt_lines(file_name: str) -> list:
     txt_list = []
-    with open(file_name) as file:
-        for line in file:
-            txt_list.append(line.rstrip())
+    if fnmatch(file_name, "*.txt"):
+        with open(file_name) as file:
+            for line in file:
+                txt_list.append(line.rstrip())
+    else:
+        logger.error(f'{file_name} has wrong file extension! Only supports "*.txt"')
+
     return txt_list
 
 
@@ -88,7 +92,7 @@ def save_to_s3(s3, bucket_name, output_var, output_file_dir):
     obj = s3.Object(bucket_name, output_file_dir)
 
     if fnmatch(output_file_dir, "*.csv"):
-        output_var.to_csv("s3://" + bucket_name + '/' + output_file_dir, index=False)
+        output_var.to_csv("s3://" + bucket_name + "/" + output_file_dir, index=False)
     elif fnmatch(output_file_dir, "*.pkl") or fnmatch(output_file_dir, "*.pickle"):
         obj.put(Body=pickle.dumps(output_var))
     elif fnmatch(output_file_dir, "*.gz"):
@@ -134,7 +138,7 @@ def load_s3_data(s3, bucket_name, file_name):
         file = obj.get()["Body"].read().decode()
         return json.loads(file)
     elif fnmatch(file_name, "*.csv"):
-        return pd.read_csv("s3://" + bucket_name + '/' + file_name)
+        return pd.read_csv("s3://" + bucket_name + "/" + file_name)
     elif fnmatch(file_name, "*.pkl") or fnmatch(file_name, "*.pickle"):
         file = obj.get()["Body"].read().decode()
         return pickle.loads(file)
@@ -175,6 +179,11 @@ def load_file(file_path, s3=True):
         S3 = get_s3_resource()
         data = load_s3_data(S3, bucket_name, file_path)
     else:
-        data = load_json_dict(PROJECT_DIR / file_path)
+        if fnmatch(file_path, "*.json"):
+            data = load_json_dict(str(PROJECT_DIR) + "/" + file_path)
+        if fnmatch(file_path, "*.csv"):
+            data = load_data(str(PROJECT_DIR) + "/" + file_path)
+        if fnmatch(file_path, "*.txt"):
+            data = load_txt_lines(str(PROJECT_DIR) + "/" + file_path)
 
     return data
