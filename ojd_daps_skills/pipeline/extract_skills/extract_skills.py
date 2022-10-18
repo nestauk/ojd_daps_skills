@@ -182,43 +182,30 @@ class ExtractSkills(object):
         if isinstance(skills, str):
             skills = [skills]
 
-        if self.s3:
-            ms_classifier = pickle.load(
-                open(self.ner_model_path + "ms_classifier.pkl", "rb")
-            )
-        else:
-            ms_classifier = pickle.load(
-                open(
-                    str(PROJECT_DIR)
-                    + "/escoe_extension/"
-                    + self.config["ner_model_path"]
-                    + "ms_classifier.pkl",
-                    "rb",
-                )
-            )
+        ms_classifier = self.job_ner.ms_classifier
 
-        extracted_skills = []
+        all_split_skills = []
+        multiskills = []
         for skill in skills:
-            skill_dict = {}
             if ms_classifier.predict(skill) == 1:
                 split_list = split_multiskill(
                     skill, min_length=self.min_multiskill_length
                 )
                 if split_list:
-                    for split_entity in split_list:
-                        skill_dict["SKILL"] = [split_entity]
+                    all_split_skills.extend(split_list)
                 else:
-                    skill_dict["SKILL"] = [skill]
+                    multiskills.append(skill)
             else:
-                skill_dict["SKILL"] = [skill]
+                all_split_skills.append(skill)
 
-            skill_dict["MULTISKILL"] = []
-            skill_dict["EXPERIENCE"] = []
+        skill_dict = {}
+        skill_dict["SKILL"] = all_split_skills
+        skill_dict["MULTISKILL"] = multiskills
+        skill_dict["EXPERIENCE"] = []
 
-            extracted_skills.append(skill_dict)
         logger.info(f"reformatted list of skills to map to '{self.taxonomy}' taxonomy")
 
-        return extracted_skills
+        return [skill_dict]
 
     def get_skills(self, job_adverts):
         """
@@ -281,7 +268,7 @@ class ExtractSkills(object):
                 self.taxonomy_info.get("num_hier_levels"),
                 self.taxonomy_info.get("skill_type_dict"),
             )
-            skill_matches = self.skill_mapper.final_prediction(
+            self.skill_matches = self.skill_mapper.final_prediction(
                 fully_mapped_skills,
                 self.taxonomy_info.get("hier_name_mapper"),
                 self.taxonomy_info.get("match_thresholds_dict"),
@@ -290,12 +277,12 @@ class ExtractSkills(object):
 
             if self.prev_skill_matches:
                 # Append the pre-defined matches with the new matches
-                skill_matches = self.skill_mapper.append_final_predictions(
-                    skill_matches, self.prev_skill_matches
+                self.skill_matches = self.skill_mapper.append_final_predictions(
+                    self.skill_matches, self.prev_skill_matches
                 )
 
             _, job_skills_matched = self.skill_mapper.link_skill_hash_to_job_id(
-                job_skills, skill_matches
+                job_skills, self.skill_matches
             )
 
             job_skills_matched_formatted = []

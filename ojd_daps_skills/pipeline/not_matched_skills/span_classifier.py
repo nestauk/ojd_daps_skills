@@ -1,6 +1,9 @@
 """
 This script contains the class needed to train a simple classifier to predict whether a skill entity is a skill (1) or not a skill (0)
 """
+import sys
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
+
 import random
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -65,7 +68,7 @@ class SpanClassifier:
 
         return X, y, indices
 
-    def split_training_data(self, X, y, indices, test_size=0.2):
+    def split_training_data(self, X, y, indices, random_state, test_size=0.2):
         """Split the input data into a train-test split"""
         (
             X_train,
@@ -74,7 +77,7 @@ class SpanClassifier:
             y_test,
             indices_train,
             indices_test,
-        ) = train_test_split(X, y, indices, test_size=test_size, shuffle=True)
+        ) = train_test_split(X, y, indices, test_size=test_size, shuffle=True, random_state=random_state)
         logger.info(f"the train set size is {len(y_train)}")
         logger.info(f"the test set size is {len(y_test)}")
 
@@ -153,7 +156,7 @@ if __name__ == "__main__":
         y_test,
         indices_train,
         indices_test,
-    ) = skill_classifier.split_training_data(X, y, indices, test_size=0.1)
+    ) = skill_classifier.split_training_data(X, y, indices, test_size=0.2, random_state=45)
 
     skill_classifier.fit(X_train, y_train)
 
