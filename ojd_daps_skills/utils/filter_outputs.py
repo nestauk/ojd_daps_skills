@@ -8,12 +8,11 @@ import pandas as pd
 from ojd_daps_skills.getters.data_getters import (
     save_to_s3,
     get_s3_resource,
-    get_s3_data_paths,
-    load_s3_json,
     load_s3_data,
     load_file,
 )
 from ojd_daps_skills import bucket_name
+import ast
 
 s3 = get_s3_resource()
 
@@ -72,9 +71,33 @@ save_to_s3(
 skills_file_name = "ojd_daps_skills/utils/job_ad_to_skills.json"  # Needed to be downloaded from S3 and saved locally since its so big
 skills_data = load_file(skills_file_name, s3=False)
 skills_data_sample = [s for s in skills_data if int(s["job_id"]) in raw_job_adverts_ids]
+
+job_skills_clean = []
+for all_skills in skills_data_sample:
+    all_clean_skills = []
+    if "SKILL" in all_skills["skills"].keys():
+        for skill in all_skills["skills"]["SKILL"]:
+            try:
+                clean_skill = ast.literal_eval(skill[0])
+            except SyntaxError:
+                skill_code = skill[0].rsplit("(", 1)
+                extracted_skill = skill_code[0].replace("(", "")
+
+                esco_skill_info = skill_code[1].rsplit(",", 1)
+                mapped_skill = esco_skill_info[0]
+                mapped_skill_code = esco_skill_info[1].replace("))", "")
+                clean_skill = tuple([extracted_skill.replace("'", "")]) + (
+                    (mapped_skill, mapped_skill_code),
+                )
+            all_clean_skills.append(clean_skill)
+    all_skills["skills"]["SKILL"] = all_clean_skills
+    job_skills_clean.append(
+        {"job_id": all_skills["job_id"], "skills": all_skills["skills"]}
+    )
+
 save_to_s3(
     s3,
     bucket_name,
-    skills_data_sample,
+    job_skills_clean,
     "escoe_extension/outputs/data/model_application_data/job_ad_to_skills_sample.json",
 )
