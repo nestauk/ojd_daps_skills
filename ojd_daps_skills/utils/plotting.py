@@ -21,7 +21,7 @@ NESTA_COLOURS = [
     "#A59BEE",
     "#F6A4B7",
     "#D2C9C0",
-    "#FFFFFF",
+    # "#FFFFFF",
     "#000000",
 ]
 
@@ -75,6 +75,9 @@ def configure_plots(
             labelFontSize=fontsize_normal,
             titleFontSize=fontsize_normal,
         )
-        .configure_legend(titleFontSize=fontsize_title, labelFontSize=fontsize_normal,)
+        .configure_legend(
+            titleFontSize=fontsize_title,
+            labelFontSize=fontsize_normal,
+        )
         .configure_view(strokeWidth=0)
     )
