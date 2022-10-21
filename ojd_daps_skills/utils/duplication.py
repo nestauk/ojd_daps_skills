@@ -10,6 +10,9 @@ which are semantically the same).
 
 from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
+from tqdm import tqdm
+
+from ojd_daps_skills import logger
 
 
 def get_date_ranges(start, end, num_units=7, unit_type="days"):
@@ -74,6 +77,21 @@ def create_date_chunks_mapper(first_date, last_date, num_units=7, unit_type="day
     return date_chunk_mapper
 
 
+def check_span(num_units, unit_type):
+
+    warning_message = "This is designed for use with spans < 8 weeks"
+
+    if unit_type == "days":
+        if num_units >= 56:
+            logger.warning(warning_message)
+    elif unit_type == "weeks":
+        if num_units >= 8:
+            logger.warning(warning_message)
+    elif unit_type == "months":
+        if num_units >= 1:
+            logger.warning(warning_message)
+
+
 def get_deduplicated_job_adverts(
     job_adverts,
     duplicates,
@@ -81,13 +99,17 @@ def get_deduplicated_job_adverts(
     unit_type="days",
     id_col="job_id",
     date_col="date",
+    job_loc_col="job_location_raw",
 ):
     """
     Find the job ids of the deduplicated job adverts based on whether they had any
     duplicates found in job stock chunks (date spans).
 
+    Due to the way duplicates are found, this shouldn't be run for chunks over 8 weeks.
+
     Input:
-        job_adverts: pandas DataFrame with job_id and date columns (in the form %Y-%m-%d e.g. '2021-05-31')
+        job_adverts: pandas DataFrame with job_id, date and job_loc_col columns
+            The date column must be in the form %Y-%m-%d e.g. '2021-05-31'
         duplicates: pandas DataFrame with mappings of duplicated job adverts
                 from previously found semantic similarity.
         num_units: time period of chunks, e.g. if num_units=3 and unit_type="days" then this is 3 days
@@ -98,6 +120,8 @@ def get_deduplicated_job_adverts(
             chunk it belong to columns. Duplicates have been removed
         dedupe_job_ids (set): the deduplicated job ids
     """
+
+    check_span(num_units, unit_type)
 
     date_chunk_mapper = create_date_chunks_mapper(
         job_adverts[date_col].min(),
@@ -110,10 +134,14 @@ def get_deduplicated_job_adverts(
 
     # Find the job advert duplicates for each time chunk
     duplicates_per_group = set()
-    for _, grouped_job_adverts in job_adverts.groupby("start_date_chunk"):
+    for _, grouped_job_adverts in tqdm(
+        job_adverts.groupby(["start_date_chunk", job_loc_col])
+    ):
         group_job_ids = set(grouped_job_adverts[id_col].tolist())
         group_duplicates = duplicates[duplicates["first_id"].isin(group_job_ids)]
-        duplicates_per_group.update(set(group_duplicates["second_id"].tolist()))
+        duplicates_per_group.update(
+            group_job_ids.intersection(set(group_duplicates["second_id"].tolist()))
+        )
 
     job_adverts_dedupe = job_adverts[~job_adverts[id_col].isin(duplicates_per_group)]
 
