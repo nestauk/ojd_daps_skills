@@ -69,11 +69,9 @@ def create_date_chunks_mapper(first_date, last_date, num_units=7, unit_type="day
     for start, end in date_ranges_list:
         curr_date = start
         while curr_date < end:
-            date_chunk_mapper[curr_date.strftime("%Y-%m-%d")] = start.strftime(
-                "%Y-%m-%d"
-            )
+            date_chunk_mapper[curr_date.strftime("%Y-%m-%d")] = end.strftime("%Y-%m-%d")
             curr_date += timedelta(days=1)
-        date_chunk_mapper[curr_date.strftime("%Y-%m-%d")] = start.strftime("%Y-%m-%d")
+        date_chunk_mapper[curr_date.strftime("%Y-%m-%d")] = end.strftime("%Y-%m-%d")
     return date_chunk_mapper
 
 
@@ -130,12 +128,12 @@ def get_deduplicated_job_adverts(
         unit_type=unit_type,
     )
 
-    job_adverts["start_date_chunk"] = job_adverts[date_col].map(date_chunk_mapper)
+    job_adverts["end_date_chunk"] = job_adverts[date_col].map(date_chunk_mapper)
 
     # Find the job advert duplicates for each time chunk
     duplicates_per_group = set()
     for _, grouped_job_adverts in tqdm(
-        job_adverts.groupby(["start_date_chunk", job_loc_col])
+        job_adverts.groupby(["end_date_chunk", job_loc_col])
     ):
         group_job_ids = set(grouped_job_adverts[id_col].tolist())
         group_duplicates = duplicates[duplicates["first_id"].isin(group_job_ids)]

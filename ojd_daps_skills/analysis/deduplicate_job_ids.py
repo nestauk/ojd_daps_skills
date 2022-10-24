@@ -109,6 +109,6 @@ if __name__ == "__main__":
     save_to_s3(
         s3,
         bucket_name,
-        raw_job_adverts_dedupe[["job_id", "start_date_chunk"]],
+        raw_job_adverts_dedupe[["job_id", "end_date_chunk"]],
         os.path.join(args.s3_folder, args.output_file_name),
     )
