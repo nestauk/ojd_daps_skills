@@ -62,12 +62,21 @@ if __name__ == "__main__":
         args.s3_folder, args.raw_job_adverts_file_name
     )
     obj = s3.Object(bucket_name, raw_job_adverts_file_name)
-    raw_job_adverts = pd.read_csv(
-        "s3://" + bucket_name + "/" + raw_job_adverts_file_name, header=None
-    )
-    raw_job_adverts.rename(
-        columns={0: "job_id", 1: "date", 2: "job_title", 3: "job_ad"}, inplace=True
-    )
+
+    if "sample" in raw_job_adverts_file_name:
+        raw_job_adverts = pd.read_csv(
+            "s3://" + bucket_name + "/" + raw_job_adverts_file_name, header=None
+        )
+        raw_job_adverts.rename(
+            columns={0: "job_id", 1: "date", 2: "job_title", 3: "job_ad"}, inplace=True
+        )
+    else:
+        raw_job_adverts = pd.read_csv(
+            "s3://" + bucket_name + "/" + raw_job_adverts_file_name
+        )
+        raw_job_adverts.rename(
+            columns={"id": "job_id", "created": "date"}, inplace=True
+        )
 
     # ITL links
     itl_file_name = os.path.join(args.s3_folder, args.itl_file_name)
