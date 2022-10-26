@@ -14,10 +14,7 @@ from ojd_daps_skills import logger, PROJECT_DIR
 import yaml
 import os
 import logging
-import pickle
 from typing import List
-
-from ojd_daps_skills.pipeline.skill_ner.multiskill_utils import MultiskillClassifier
 
 
 class ExtractSkills(object):
@@ -61,11 +58,15 @@ class ExtractSkills(object):
             pass
         else:
             if os.path.exists(str(PROJECT_DIR) + "/escoe_extension"):
-                logger.info("data and embeddings already downloaded locally.")
+                logger.info(
+                    "data, pre-defined mappings and embeddings already downloaded locally."
+                )
             else:
                 cmd = f"aws s3 sync s3://open-jobs-indicators/escoe_extension {str(PROJECT_DIR) + '/escoe_extension'}"
                 os.system(cmd)
-                logger.info("downloaded data and embeddings locally.")
+                logger.info(
+                    "downloaded data, pre-defined mappings and embeddings locally."
+                )
 
         self.ner_model_path = self.config["ner_model_path"]
         self.taxonomy_name = self.config["taxonomy_name"]
@@ -165,7 +166,7 @@ class ExtractSkills(object):
 
         if prev_skill_matches_file_name:
             logger.info(
-                f"Loading previously found skill mappings from {prev_skill_matches_file_name}"
+                f"Loading pre-defined or previously found skill mappings from {prev_skill_matches_file_name}"
             )
             self.prev_skill_matches = self.skill_mapper.load_ojo_esco_mapper(
                 self.prev_skill_matches_file_name, s3=self.s3
