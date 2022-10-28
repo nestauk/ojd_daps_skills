@@ -5,7 +5,7 @@ clean_job_ads: True
 min_multiskill_length: 75
 taxonomy_embedding_file_name: "escoe_extension/outputs/data/skill_ner_mapping/esco_embeddings.json"
 prev_skill_matches_file_name: "escoe_extension/outputs/data/skill_ner_mapping/ojo_esco_lookup_sample.json"
-hard_labelled_skills_file_name: "escoe_extension/outputs/data/skill_ner_mapping/ojo_esco_lookup_sample.json"
+hard_labelled_skills_file_name: "escoe_extension/outputs/data/skill_ner_mapping/hardcoded_ojo_esco_lookup.json"
 hier_name_mapper_file_name: "escoe_extension/outputs/data/skill_ner_mapping/esco_hier_mapper.json"
 num_hier_levels: 4
 skill_type_dict:

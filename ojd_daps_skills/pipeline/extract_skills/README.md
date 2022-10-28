@@ -2,7 +2,7 @@
 
 `extract_skills.py` combines the prediction of skills using code from [skill_ner](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner) with the mapping of skills to a taxonomy using code from [skill_ner_mapping](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping).
 
-If you are mapping to the ESCO skills taxonomy, we have hard coded the top 100 skills from a random sample of 100,000 job adverts in OJO with the most appropriate skills from the taxonomy.   
+If you are mapping to the ESCO skills taxonomy, we have hard coded the top 100 skills from a random sample of 100,000 job adverts in OJO with the most appropriate skills from the taxonomy.
 
 ## Public access to relevant models and embeddings
 

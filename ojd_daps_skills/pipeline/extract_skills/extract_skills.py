@@ -16,7 +16,6 @@ import os
 import logging
 from typing import List
 
-
 class ExtractSkills(object):
     """
     Class to extract skills from job adverts and map them to a skills taxonomy.
@@ -79,12 +78,14 @@ class ExtractSkills(object):
         self.prev_skill_matches_file_name = self.config.get(
             "prev_skill_matches_file_name"
         )
+        self.hard_labelled_skills_file_name = self.config.get("hard_labelled_skills_file_name")
         self.hier_name_mapper_file_name = self.config.get("hier_name_mapper_file_name")
 
     def load(
         self,
         taxonomy_embedding_file_name=None,
         prev_skill_matches_file_name=None,
+        hard_labelled_skills_name=None,
         hier_name_mapper_file_name=None,
     ):
         """
@@ -95,9 +96,11 @@ class ExtractSkills(object):
             taxonomy_embedding_file_name = self.taxonomy_embedding_file_name
         if (not prev_skill_matches_file_name) and (self.prev_skill_matches_file_name):
             prev_skill_matches_file_name = self.prev_skill_matches_file_name
+        if (not hard_labelled_skills_name) and (self.hard_labelled_skills_file_name):
+            hard_labelled_skills_name = self.hard_labelled_skills_file_name
         if (not hier_name_mapper_file_name) and (self.hier_name_mapper_file_name):
             hier_name_mapper_file_name = self.hier_name_mapper_file_name
-
+            
         self.job_ner = JobNER()
 
         if self.s3:
@@ -174,6 +177,17 @@ class ExtractSkills(object):
             # self.prev_skill_matches = {1654958883999821: {'ojo_skill': 'maths skills', 'match_skill': 'communicate with others', 'match_score': 0.3333333333333333, 'match_type': 'most_common_level_1', 'match_id': 'S1.1'}}
         else:
             self.prev_skill_matches = None
+        
+        if hard_labelled_skills_name:
+            logger.info(
+                f"Loading hard coded skill mappings for top skills in {hard_labelled_skills_name}"
+            )
+            self.hard_coded_skills = self.skill_mapper.load_ojo_esco_mapper(
+                self.hard_labelled_skills_file_name, s3=self.s3
+            )
+            # self.hard_coded_skills = {1654958883999821: {'ojo_skill': 'maths skills', 'match_skill': 'communicate with others', 'match_id': 'S1.1'}}
+        else:
+            self.hard_coded_skills = None
 
     def format_skills(self, skills: List[str]) -> List[dict]:
         """
@@ -245,7 +259,6 @@ class ExtractSkills(object):
         """
         Maps a list of skills to a skills taxonomy
         """
-
         skills = {"predictions": {i: s for i, s in enumerate(predicted_skills)}}
         job_skills, skill_hashes = self.skill_mapper.preprocess_job_skills(skills)
         if len(skill_hashes) != 0:
@@ -259,13 +272,22 @@ class ExtractSkills(object):
                 )
                 logger.info(f"{orig_num - len(skill_hashes)} mappings previously found")
 
+            hard_coded_skill_matches = []
+            skills_hashes_to_match = dict()
+            for skill_hash in list(skill_hashes.keys()):
+                hard_coded_skill = self.hard_coded_skills.get(str(skill_hash))
+                if hard_coded_skill:
+                    hard_coded_skill_matches.append(hard_coded_skill)
+                else:
+                    skills_hashes_to_match[skill_hash] = skill_hashes.get(skill_hash)
+
             if not self.taxonomy_skills_embeddings_loaded:
                 # If we didn't already load the embeddings, then calculate them
                 self.skill_mapper.embed_taxonomy_skills(self.taxonomy_skills)
 
             fully_mapped_skills = self.skill_mapper.map_skills(
                 self.taxonomy_skills,
-                skill_hashes,
+                skills_hashes_to_match,
                 self.taxonomy_info.get("num_hier_levels"),
                 self.taxonomy_info.get("skill_type_dict"),
             )
@@ -275,15 +297,20 @@ class ExtractSkills(object):
                 self.taxonomy_info.get("match_thresholds_dict"),
                 self.taxonomy_info.get("num_hier_levels"),
             )
+            #then merge them
+            self.all_skill_matches = self.skill_matches + hard_coded_skill_matches
 
+            # Append the pre-defined matches with the new matches
             if self.prev_skill_matches:
+                prev_matches_not_hard_coded = {prev_match: prev_match_info for prev_match, prev_match_info in self.prev_skill_matches.items() if str(prev_match) not in list(self.hard_coded_skills.keys())}
+                ##something about prev skill matches NOT being in hard_coded matches
                 # Append the pre-defined matches with the new matches
                 self.skill_matches = self.skill_mapper.append_final_predictions(
-                    self.skill_matches, self.prev_skill_matches
+                    self.skill_matches, prev_matches_not_hard_coded
                 )
 
             _, job_skills_matched = self.skill_mapper.link_skill_hash_to_job_id(
-                job_skills, self.skill_matches
+                job_skills, self.all_skill_matches
             )
 
             job_skills_matched_formatted = []
@@ -334,7 +361,6 @@ class ExtractSkills(object):
             return mapped_skills
         else:
             return skills
-
 
 if __name__ == "__main__":
 

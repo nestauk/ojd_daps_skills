@@ -47,5 +47,5 @@ if __name__ == "__main__":
         s3,
         bucket_name,
         hard_coded_skills_dict,
-        "escoe_extension/outputs/data/skill_ner_mapping/ojo_esco_lookup_sample.json",
+        "escoe_extension/outputs/data/skill_ner_mapping/hardcoded_ojo_esco_lookup.json",
     )
