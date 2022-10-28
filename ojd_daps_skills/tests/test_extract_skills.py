@@ -2,6 +2,7 @@ import pytest
 import spacy
 import itertools
 
+from ojd_daps_skills.utils.text_cleaning import short_hash
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 
 es = ExtractSkills()
@@ -65,3 +66,17 @@ def test_map_no_skills():
     job_adverts = ["nothing", "we want excel skills", "we want communication skills"]
     extract_matched_skills = es.extract_skills(job_adverts)
     assert len(job_adverts) == len(extract_matched_skills)
+
+def test_hardcoded_skills():
+    job_adverts = ["you must be ambitious and resilient. You must also be able to use Excel"]
+    extracted_matched_skills = es.extract_skills(job_adverts)
+    #load hard coded matches
+    hard_coded_skills = es.hard_coded_skills
+    #
+    hard_coded_excel = extracted_matched_skills[0]['SKILL'][0]
+    assert hard_coded_excel[1][0] == hard_coded_skills.get(str(short_hash(hard_coded_excel[0])))['match_skill'] 
+    #
+    hard_coded_resilience = extracted_matched_skills[0]['SKILL'][1]
+    assert hard_coded_resilience[1][0] == hard_coded_skills.get(str(short_hash(hard_coded_resilience[0])))['match_skill']
+
+
