@@ -338,16 +338,17 @@ class ExtractSkills(object):
         
         if self.hard_coded_skills: 
             for formatted_skill in job_skills_matched_formatted:
-                extracted_skills = formatted_skill['SKILL']
-                skills_to_hard_code = []
-                for skill in extracted_skills:
-                    skill_hash_str = str(short_hash(skill[0]))
-                    hard_coded_skill = self.hard_coded_skills.get(skill_hash_str)
-                    if hard_coded_skill:
-                        skills_to_hard_code.append((skill[0], (hard_coded_skill['match_skill'], hard_coded_skill['match_id'])))
-                    else:
-                        skills_to_hard_code.append(skill)
-                formatted_skill['SKILL'] = skills_to_hard_code
+                if 'SKILL' in formatted_skill.keys():
+                    extracted_skills = formatted_skill['SKILL']
+                    skills_to_hard_code = []
+                    for skill in extracted_skills:
+                        skill_hash_str = str(short_hash(skill[0]))
+                        hard_coded_skill = self.hard_coded_skills.get(skill_hash_str)
+                        if hard_coded_skill:
+                            skills_to_hard_code.append((skill[0], (hard_coded_skill['match_skill'], hard_coded_skill['match_id'])))
+                        else:
+                            skills_to_hard_code.append(skill)
+                    formatted_skill['SKILL'] = skills_to_hard_code
 
         return job_skills_matched_formatted
 
@@ -362,7 +363,6 @@ class ExtractSkills(object):
             return mapped_skills
         else:
             return skills
-
 if __name__ == "__main__":
 
     es = ExtractSkills(config_name="extract_skills_esco", s3=True)
