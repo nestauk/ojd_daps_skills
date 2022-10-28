@@ -2,6 +2,8 @@
 
 `extract_skills.py` combines the prediction of skills using code from [skill_ner](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner) with the mapping of skills to a taxonomy using code from [skill_ner_mapping](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping).
 
+If you are mapping to the ESCO skills taxonomy, we have hard coded the top 100 skills from a random sample of 100,000 job adverts in OJO with the most appropriate skills from the taxonomy.   
+
 ## Public access to relevant models and embeddings
 
 The ExtractSkills class relies on the aws cli tool to download relevant models and embeddings required to extract and map skill spans from a given job advert(s). If you do not have the aws cli tool downloaded, you can simply download all the files `open-jobs-indicators/escoe_extension/outputs` using [aws's front end via our public access bucket.](https://s3.console.aws.amazon.com/s3/buckets/open-jobs-indicators?region=eu-west-1&prefix=escoe_extension/&showversions=false) These files will need to be downloaded to a folder called `escoe_extension` in your project directory.
