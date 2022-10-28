@@ -19,12 +19,11 @@ if __name__ == "__main__":
         load_s3_data(
             s3,
             bucket_name,
-            "escoe_extension/inputs/data/skill_mappings/hard_coded_skills.csv",
+            "escoe_extension/inputs/data/skill_mappings/hard_labelled_skills.csv",
         )
         .query("~new_label.isna()")
         .assign(ojo_job_skill_hash=lambda df: df.extracted_skill.apply(short_hash))
         .assign(hash_index=lambda df: df.ojo_job_skill_hash)
-        .assign(match_score=1)
         .rename(
             columns={
                 "extracted_skill": "ojo_skill",
@@ -36,8 +35,6 @@ if __name__ == "__main__":
                 "ojo_skill",
                 "ojo_job_skill_hash",
                 "match_skill",
-                "match_score",
-                "match_type",
                 "match_id",
                 "hash_index",
             ]
