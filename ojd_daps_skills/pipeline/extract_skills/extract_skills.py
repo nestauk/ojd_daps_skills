@@ -271,20 +271,25 @@ class ExtractSkills(object):
                     skill_hashes, self.prev_skill_matches
                 )
                 logger.info(f"{orig_num - len(skill_hashes)} mappings previously found")
-
-            hard_coded_skill_matches = []
-            skills_hashes_to_match = dict()
-            for skill_hash in list(skill_hashes.keys()):
-                hard_coded_skill = self.hard_coded_skills.get(str(skill_hash))
-                if hard_coded_skill:
-                    hard_coded_skill_matches.append(hard_coded_skill)
-                else:
-                    skills_hashes_to_match[skill_hash] = skill_hashes.get(skill_hash)
-
+            
             if not self.taxonomy_skills_embeddings_loaded:
                 # If we didn't already load the embeddings, then calculate them
                 self.skill_mapper.embed_taxonomy_skills(self.taxonomy_skills)
 
+            if self.hard_coded_skills:
+                hard_coded_skill_matches = []
+                skills_hashes_to_match = dict()
+                for skill_hash in list(skill_hashes.keys()):
+                    hard_coded_skill = self.hard_coded_skills.get(str(skill_hash))
+                    if hard_coded_skill:
+                        hard_coded_skill_matches.append(hard_coded_skill)
+                    else:
+                        skills_hashes_to_match[skill_hash] = skill_hashes.get(skill_hash)
+                logger.info("hard coded mapped skills found in hard coded mapper")
+            
+            else:
+                skills_hashes_to_match = skill_hashes
+            
             fully_mapped_skills = self.skill_mapper.map_skills(
                 self.taxonomy_skills,
                 skills_hashes_to_match,
@@ -298,8 +303,10 @@ class ExtractSkills(object):
                 self.taxonomy_info.get("num_hier_levels"),
             )
             #then merge them
-            self.all_skill_matches = self.skill_matches + hard_coded_skill_matches
-
+            if self.hard_coded_skills:
+                self.all_skill_matches = self.skill_matches + hard_coded_skill_matches
+            else:
+                self.all_skill_matches = self.skill_matches
             # Append the pre-defined matches with the new matches
             if self.prev_skill_matches:
                 prev_matches_not_hard_coded = {prev_match: prev_match_info for prev_match, prev_match_info in self.prev_skill_matches.items() if str(prev_match) not in list(self.hard_coded_skills.keys())}
