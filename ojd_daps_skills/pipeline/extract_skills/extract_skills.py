@@ -17,6 +17,7 @@ import logging
 from typing import List
 from ojd_daps_skills.utils.text_cleaning import short_hash
 
+
 class ExtractSkills(object):
     """
     Class to extract skills from job adverts and map them to a skills taxonomy.
@@ -79,7 +80,9 @@ class ExtractSkills(object):
         self.prev_skill_matches_file_name = self.config.get(
             "prev_skill_matches_file_name"
         )
-        self.hard_labelled_skills_file_name = self.config.get("hard_labelled_skills_file_name")
+        self.hard_labelled_skills_file_name = self.config.get(
+            "hard_labelled_skills_file_name"
+        )
         self.hier_name_mapper_file_name = self.config.get("hier_name_mapper_file_name")
 
     def load(
@@ -101,7 +104,7 @@ class ExtractSkills(object):
             hard_labelled_skills_name = self.hard_labelled_skills_file_name
         if (not hier_name_mapper_file_name) and (self.hier_name_mapper_file_name):
             hier_name_mapper_file_name = self.hier_name_mapper_file_name
-            
+
         self.job_ner = JobNER()
 
         if self.s3:
@@ -178,7 +181,7 @@ class ExtractSkills(object):
             # self.prev_skill_matches = {1654958883999821: {'ojo_skill': 'maths skills', 'match_skill': 'communicate with others', 'match_score': 0.3333333333333333, 'match_type': 'most_common_level_1', 'match_id': 'S1.1'}}
         else:
             self.prev_skill_matches = None
-        
+
         if hard_labelled_skills_name:
             logger.info(
                 f"Loading hard coded skill mappings for top skills in {hard_labelled_skills_name}"
@@ -219,7 +222,9 @@ class ExtractSkills(object):
         skill_dict["MULTISKILL"] = multiskills
         skill_dict["EXPERIENCE"] = []
 
-        logger.info(f"reformatted list of skills to map to '{self.taxonomy}' taxonomy")
+        logger.info(
+            f"reformatted list of skills to map to '{self.taxonomy_name}' taxonomy"
+        )
 
         return [skill_dict]
 
@@ -335,20 +340,28 @@ class ExtractSkills(object):
                     job_skills_matched_formatted.append({})
         else:
             job_skills_matched_formatted = [{} for _ in range(len(predicted_skills))]
-        
-        if self.hard_coded_skills: 
+
+        if self.hard_coded_skills:
             for formatted_skill in job_skills_matched_formatted:
-                if 'SKILL' in formatted_skill.keys():
-                    extracted_skills = formatted_skill['SKILL']
+                if "SKILL" in formatted_skill.keys():
+                    extracted_skills = formatted_skill["SKILL"]
                     skills_to_hard_code = []
                     for skill in extracted_skills:
                         skill_hash_str = str(short_hash(skill[0]))
                         hard_coded_skill = self.hard_coded_skills.get(skill_hash_str)
                         if hard_coded_skill:
-                            skills_to_hard_code.append((skill[0], (hard_coded_skill['match_skill'], hard_coded_skill['match_id'])))
+                            skills_to_hard_code.append(
+                                (
+                                    skill[0],
+                                    (
+                                        hard_coded_skill["match_skill"],
+                                        hard_coded_skill["match_id"],
+                                    ),
+                                )
+                            )
                         else:
                             skills_to_hard_code.append(skill)
-                    formatted_skill['SKILL'] = skills_to_hard_code
+                    formatted_skill["SKILL"] = skills_to_hard_code
 
         return job_skills_matched_formatted
 
@@ -363,6 +376,8 @@ class ExtractSkills(object):
             return mapped_skills
         else:
             return skills
+
+
 if __name__ == "__main__":
 
     es = ExtractSkills(config_name="extract_skills_esco", s3=True)

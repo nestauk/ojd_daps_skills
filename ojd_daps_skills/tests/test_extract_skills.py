@@ -67,16 +67,36 @@ def test_map_no_skills():
     extract_matched_skills = es.extract_skills(job_adverts)
     assert len(job_adverts) == len(extract_matched_skills)
 
-def test_hardcoded_skills():
-    job_adverts = ["you must be ambitious and resilient. You must also be able to use Excel"]
-    extracted_matched_skills = es.extract_skills(job_adverts)
-    #load hard coded matches
+
+def test_hardcoded_mapping():
+    """
+    The mapped results using the algorithm should be the same as the hardcoded results
+    """
     hard_coded_skills = es.hard_coded_skills
-    #
-    hard_coded_excel = extracted_matched_skills[0]['SKILL'][0]
-    assert hard_coded_excel[1][0] == hard_coded_skills.get(str(short_hash(hard_coded_excel[0])))['match_skill'] 
-    #
-    hard_coded_resilience = extracted_matched_skills[0]['SKILL'][1]
-    assert hard_coded_resilience[1][0] == hard_coded_skills.get(str(short_hash(hard_coded_resilience[0])))['match_skill']
+    hardcoded_matches = {
+        h["ojo_skill"]: (h["match_skill"], h["match_id"])
+        for h in hard_coded_skills.values()
+    }
 
+    mapped_skills = es.map_skills(
+        [
+            {"SKILL": [skill], "MULTISKILL": [], "EXPERIENCE": []}
+            for skill in hardcoded_matches.keys()
+        ]
+    )
 
+    assert type(hard_coded_skills) == dict
+    assert type(mapped_skills) == list
+    assert len(mapped_skills) == len(hard_coded_skills)
+
+    correct_matches = []
+    for mapped_skill in mapped_skills:
+        skill = mapped_skill["SKILL"][0][0]
+        mapped_result = mapped_skill["SKILL"][0][1]
+        hardcoded_result = hardcoded_matches[skill]
+        correct_matches.append(mapped_result == hardcoded_result)
+
+    assert all(correct_matches)
+
+    first_skill = mapped_skills[0]["SKILL"][0][0]
+    assert type(hardcoded_matches[first_skill][0]) == str
