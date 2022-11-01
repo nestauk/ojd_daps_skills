@@ -5,6 +5,7 @@ clean_job_ads: True
 min_multiskill_length: 75
 taxonomy_embedding_file_name: ""
 prev_skill_matches_file_name: ""
+hard_labelled_skills_file_name: ""
 hier_name_mapper_file_name: "escoe_extension/outputs/data/skill_ner_mapping/lightcast_hier_mapper.json"
 num_hier_levels: 2
 skill_type_dict:
