@@ -43,4 +43,6 @@ All the analysis is done in Jupyter notebooks.
 
 ### OJO data overview
 
+The notebook `ojo_data_summary.ipynb` gives some high level stats about the OJO data, e.g. how many job adverts there are over time, the mean number of skills per job advert.
+
 Note: To plot the Altair figures as pngs in the notebook you will need to run them in jupyterlab.
