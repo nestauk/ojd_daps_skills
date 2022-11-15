@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
-
 """
 Lightcast- specific formating function to get lightcast data in the format needed for skill_ner_mapper.py
 
