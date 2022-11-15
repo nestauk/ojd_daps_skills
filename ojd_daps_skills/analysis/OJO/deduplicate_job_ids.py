@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 
 import pandas as pd
 
-from ojd_daps_skills.utils.duplication import get_deduplicated_job_adverts
+from ojd_daps_skills.analysis.OJO.duplication import get_deduplicated_job_adverts
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     load_s3_data,
@@ -32,22 +32,22 @@ def create_argparser():
     )
 
     parser.add_argument(
-        "--raw_job_adverts_file_name", default="raw_job_adverts_sample.csv", type=str
+        "--raw_job_adverts_file_name", default="raw_job_adverts_no_desc.csv", type=str
     )
 
-    parser.add_argument("--itl_file_name", default="job_ad_to_itl_sample.csv", type=str)
+    parser.add_argument("--itl_file_name", default="job_ad_to_itl_v2.csv", type=str)
 
     parser.add_argument(
-        "--duplicates_file_name", default="job_ad_duplicates_sample.csv", type=str
+        "--duplicates_file_name", default="job_ad_duplicates.csv", type=str
     )
 
     parser.add_argument(
-        "--output_file_name", default="deduplicated_job_ids_sample.csv", type=str
+        "--output_file_name", default="deduplicated_job_ids_6_weeks_v2.csv", type=str
     )
 
-    parser.add_argument("--num_units", default=3, type=int)
+    parser.add_argument("--num_units", default=6, type=int)
 
-    parser.add_argument("--unit_type", default="days", type=str)
+    parser.add_argument("--unit_type", default="weeks", type=str)
 
     return parser
 
