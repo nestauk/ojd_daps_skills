@@ -1,0 +1,22 @@
+ner_model_path: "outputs/models/ner_model/20220825/"
+taxonomy_name: "lightcast"
+taxonomy_path: "escoe_extension/outputs/data/skill_ner_mapping/lightcast_data_formatted.csv"
+clean_job_ads: True
+min_multiskill_length: 75
+taxonomy_embedding_file_name: ""
+prev_skill_matches_file_name: ""
+hard_labelled_skills_file_name: ""
+hier_name_mapper_file_name: "escoe_extension/outputs/data/skill_ner_mapping/lightcast_hier_mapper.json"
+num_hier_levels: 2
+skill_type_dict:
+  { "skill_types": ["skill"], "hier_types": ["category", "subcategory"] }
+match_thresholds_dict:
+  {
+    "skill_match_thresh": 0,
+    "top_tax_skills": { 1: 0.5, 2: 0.5, 3: 0.5 },
+    "max_share": { 1: 0, 2: 0.2, 3: 0.2 },
+  }
+skill_name_col: "description"
+skill_id_col: "id"
+skill_hier_info_col: "hierarchy_levels"
+skill_type_col: "type"

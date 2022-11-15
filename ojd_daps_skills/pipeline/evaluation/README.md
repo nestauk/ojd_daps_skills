@@ -41,11 +41,11 @@ By manually reviewing both the lists of OJO and ESCO skill comparisons per occup
 
 - **ESCO skills can be particular.** while the skills extracted from OJO may not always be relevant, there is critisim for ESCO skills themselves. For example, for the occupation 'sustainability manager', ESCO skills include: 'integrate headquarter's guidelines into local operations', 'monitor compliance with licensing agreements' and 'assess groundwater environmental impact'. While we could extract this from some 'sustainability manager' job adverts, it does appear quite specific and perhaps not relevant to _all_ sustainability managers.
 
-### 2. EMSI skills
+### 2. Lightcast skills
 
-To extract EMSI skills from a random sample of 50 OJO job adverts, you need to [first create an account with EMSI]("https://skills.emsidata.com/extraction"). They will send you API credentials that you will need to run the script.
+To extract lightcast skills from a random sample of 50 OJO job adverts, you need to [first create an account with EMSI]("https://skills.emsidata.com/extraction"). They will send you API credentials that you will need to run the script.
 
 With your emailed credentials, to run the script:
-`python emsi_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET`
+`python lightcast_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET`
 
-This will output a saved .json with job ids, job description, extracted v1 OJO skills and ESMI skills. BEWARE: you can only call the API 50 times A MONTH! So running the script will take you out for the whole month.
+This will output a saved .json with job ids, job description, extracted v1 OJO skills and lightcast skills. BEWARE: you can only call the API 50 times A MONTH! So running the script will take you out for the whole month.
