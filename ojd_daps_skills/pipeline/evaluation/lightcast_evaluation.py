@@ -1,9 +1,8 @@
 """
-Script to extract EMSI skills from a random sample of 50 OJO job ads.
+Script to extract lightcast skills from a random sample of 50 OJO job ads.
 
-To run the script, python emsi_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
+To run the script, python lightcast_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
 """
-##################################################################
 import random
 import requests
 import json
@@ -22,7 +21,6 @@ from ojd_daps_skills.getters.data_getters import (
 )
 from datetime import datetime as date
 
-##################################################################
 def get_job_advert_skills(conn, job_ids: list) -> dict:
     """Queries SQL db to return dataframe of job ids and skills.
     Args:
@@ -38,12 +36,12 @@ def get_job_advert_skills(conn, job_ids: list) -> dict:
     return job_skills.groupby("job_id")["preferred_label"].apply(list).to_dict()
 
 
-def get_emsi_access_token(client_id: str, client_secret: str) -> str:
-    """Generates temporary access token needed to query EMSI skills API.
+def get_lightcast_access_token(client_id: str, client_secret: str) -> str:
+    """Generates temporary access token needed to query lightcast skills API.
     
     Inputs:
-        client_id (str): Client ID from generated EMSI skills API credentials.
-        client_secret (str): Client secret from generated EMSI skills API credentials.
+        client_id (str): Client ID from generated lightcast skills API credentials.
+        client_secret (str): Client secret from generated lightcast skills API credentials.
     
     Outputs:
         access_token (str): Access token string valid for 1 hour.
@@ -63,7 +61,7 @@ def get_emsi_access_token(client_id: str, client_secret: str) -> str:
         return response
 
 
-def extract_esmi_skills(
+def extract_lightcast_skills(
     access_token: str, job_advert_text: str, confidence_threshold: int
 ):
     """Extracts ESMI skills for a given english job advert.
@@ -104,10 +102,10 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument(
-        "--client-id", help="EMSI skills API client id",
+        "--client-id", help="lightcast skills API client id",
     )
 
-    parser.add_argument("--client-secret", help="EMSI skills API client secret.")
+    parser.add_argument("--client-secret", help="lightcast skills API client secret.")
 
     args = parser.parse_args()
 
@@ -141,19 +139,19 @@ if __name__ == "__main__":
         if job_id in random.sample(list(ojo_jobs_with_skills.keys()), 50)
     }
 
-    # get EMSI access code
-    access_code = get_emsi_access_token(client_id, client_secret)
+    # get lightcast access code
+    access_code = get_lightcast_access_token(client_id, client_secret)
 
-    # get extracted EMSI skills
-    ojo_esmi_skills = dict()
+    # get extracted lightcast skills
+    ojo_lightcast_skills = dict()
     for job_id, ojo_job_ad_data in ojo_job_ads_50.items():
-        esmi_skills = extract_esmi_skills(
+        esmi_skills = extract_lightcast_skills(
             access_code,
             ojo_job_ad_data["job_ad_text"],
             config["esmi_confidence_threshold"],
         )
         if not isinstance(esmi_skills, requests.models.Response):  # if its not an error
-            ojo_esmi_skills[job_id] = {
+            ojo_lightcast_skills[job_id] = {
                 "job_ad_text": ojo_job_ad_data["job_ad_text"],
                 "ojo_skills": ojo_job_ad_data["ojo_skills"],
                 "esmi_skills": [skill["skill"]["name"] for skill in esmi_skills],
@@ -162,6 +160,6 @@ if __name__ == "__main__":
     save_to_s3(
         get_s3_resource(),
         bucket_name,
-        ojo_esmi_skills,
-        (filename + f"{str(date.today().date()).replace('-', '')}.json"),
+        ojo_lightcast_skills,
+        ("ojo_lightcast_" + f"{str(date.today().date()).replace('-', '')}.json"),
     )
