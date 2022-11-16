@@ -30,6 +30,10 @@ If you don't have access to Nesta's S3 buckets then you will first need to downl
 bash public_download.sh
 ```
 
+this requires having the AWS commandline tools - if you don't have these, you can download a zipped folder of the data by clicking on the following url: https://open-jobs-indicators.s3.eu-west-1.amazonaws.com/escoe_extension/downloaded_files.zip
+
+After downloading and unzipping, it is important that this folder is moved to the project's parent folder - i.e. `ojd_daps_skills/`.
+
 ## Pre-defined configurations
 
 There are three configurations available for running the skills extraction algorithm.

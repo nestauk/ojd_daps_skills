@@ -6,7 +6,7 @@ If you are mapping to the ESCO skills taxonomy, we reviewed the top 100 skills a
 
 ## Public access to relevant models and embeddings
 
-The ExtractSkills class relies on the aws cli tool to download relevant models and embeddings required to extract and map skill spans from a given job advert(s). If you do not have the aws cli tool downloaded, you can simply download all the files `open-jobs-indicators/escoe_extension/outputs` using [aws's front end via our public access bucket.](https://s3.console.aws.amazon.com/s3/buckets/open-jobs-indicators?region=eu-west-1&prefix=escoe_extension/&showversions=false) These files will need to be downloaded to a folder called `escoe_extension` in your project directory.
+If you don't have access to Nesta's AWS S3 bucket then you will need to first download the model and data files locally - see the main README for instructions on how to do this.
 
 ## Mapping a list of skills
 
