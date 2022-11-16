@@ -253,7 +253,7 @@ class ExtractSkills(object):
 
         if isinstance(job_adverts, str):
             job_adverts = [job_adverts]
-        
+
         predicted_skills = []
         for job_advert in job_adverts:
             if self.clean_job_ads:
@@ -277,10 +277,10 @@ class ExtractSkills(object):
                 else:
                     skills[label].append(ent_text)
             predicted_skills.append(skills)
-        
+
         return predicted_skills
 
-    def map_skills(self, predicted_skills: Union[List[str], List[dict]]):
+    def map_skills(self, predicted_skills:List[str]):
         """
         Maps a list of skills to a skills taxonomy
         """
@@ -384,7 +384,9 @@ class ExtractSkills(object):
 
         return job_skills_matched_formatted
 
-    def extract_skills(self, job_adverts_skills: Union[str, List[dict]], format_skills=False):
+    def extract_skills(
+        self, job_adverts_skills: Union[str, List[dict]], format_skills=False
+    ):
         """
         Extract skills using the NER model from:
             1) A single job advert;
@@ -394,10 +396,10 @@ class ExtractSkills(object):
         """
         if format_skills:
             skills = self.format_skills(job_adverts_skills)
-            logger.info(f'formatted {len(job_adverts_skills)} from skills list...')
+            logger.info(f"formatted {len(job_adverts_skills)} from skills list...")
         else:
             skills = self.get_skills(job_adverts_skills)
-        
+
         mapped_skills = self.map_skills(skills)
 
         return mapped_skills
@@ -422,4 +424,4 @@ if __name__ == "__main__":
     # # 1 step - get then extract
     job_skills_matched_one_step = es.extract_skills(job_adverts)
     # # 1 step - format then extract
-    job_skills_list = es.extract_skills(skills_list, format=True)
+    job_skills_list = es.extract_skills(skills_list, format_skills=True)
