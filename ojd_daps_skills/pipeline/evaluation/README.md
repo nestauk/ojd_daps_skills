@@ -43,9 +43,9 @@ By manually reviewing both the lists of OJO and ESCO skill comparisons per occup
 
 ### 2. Lightcast skills
 
-To extract lightcast skills from a random sample of 50 OJO job adverts, you need to [first create an account with EMSI]("https://skills.emsidata.com/extraction"). They will send you API credentials that you will need to run the script.
+To extract Lightcast skills from a random sample of 50 OJO job adverts, you need to [first create an account with Lightcast]("https://skills.lightcast.io/extraction"). They will send you API credentials that you will need to run the script.
 
 With your emailed credentials, to run the script:
-`python lightcast_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET`
+`python ojd_daps_skills/pipeline/evaluation/lightcast_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET`
 
-This will output a saved .json with job ids, job description, extracted v1 OJO skills and lightcast skills. BEWARE: you can only call the API 50 times A MONTH! So running the script will take you out for the whole month.
+This will output a saved .json with job ids, job description, extracted OJO Lightcast skills and Lightcast skills. BEWARE: you can only call the API 50 times A MONTH! So running the script will take you out for the whole month.
