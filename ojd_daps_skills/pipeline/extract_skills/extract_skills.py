@@ -57,41 +57,55 @@ class ExtractSkills(object):
             logger.setLevel(logging.ERROR)
         if self.local:
             self.s3 = False
-            if os.path.exists(str(PROJECT_DIR) + "/escoe_extension"):
-                logger.info(
-                    "data, pre-defined mappings and embeddings already downloaded locally."
-                )
-            else:
-                cmd = f"aws s3 sync s3://open-jobs-indicators/escoe_extension {str(PROJECT_DIR) + '/escoe_extension'}"
-                os.system(cmd)
-                logger.info(
-                    "downloaded data, pre-defined mappings and embeddings locally."
+            self.base_path = "downloaded_files/"
+            if not os.path.exists(self.base_path):
+                logger.warning(
+                    "Neccessary files are not downloaded. First, run 'bash public_download.sh' to download <1GB of neccessary files."
                 )
         else:
+            self.base_path = "escoe_extension/"
             self.s3 = True
             pass
 
         self.taxonomy_name = self.config["taxonomy_name"]
-        self.taxonomy_path = self.config["taxonomy_path"]
+        self.taxonomy_path = os.path.join(self.base_path, self.config["taxonomy_path"])
         self.clean_job_ads = self.config["clean_job_ads"]
         self.min_multiskill_length = self.config["min_multiskill_length"]
         self.taxonomy_embedding_file_name = self.config.get(
             "taxonomy_embedding_file_name"
         )
+        if self.taxonomy_embedding_file_name:
+            self.taxonomy_embedding_file_name = os.path.join(
+                self.base_path, self.taxonomy_embedding_file_name
+            )
         self.prev_skill_matches_file_name = self.config.get(
             "prev_skill_matches_file_name"
         )
+        if self.prev_skill_matches_file_name:
+            self.prev_skill_matches_file_name = os.path.join(
+                self.base_path, self.prev_skill_matches_file_name
+            )
         self.hard_labelled_skills_file_name = self.config.get(
             "hard_labelled_skills_file_name"
         )
+        if self.hard_labelled_skills_file_name:
+            self.hard_labelled_skills_file_name = os.path.join(
+                self.base_path, self.hard_labelled_skills_file_name
+            )
         self.hier_name_mapper_file_name = self.config.get("hier_name_mapper_file_name")
+        if self.hier_name_mapper_file_name:
+            self.hier_name_mapper_file_name = os.path.join(
+                self.base_path, self.hier_name_mapper_file_name
+            )
 
         if self.local:
-            self.ner_model_path = (
-                str(PROJECT_DIR) + "/escoe_extension/" + self.config["ner_model_path"]
+            self.ner_model_path = os.path.join(
+                PROJECT_DIR, self.base_path, self.config["ner_model_path"]
             )
         else:
-            self.ner_model_path = self.config["ner_model_path"]
+            self.ner_model_path = os.path.join(
+                self.base_path, self.config["ner_model_path"]
+            )
 
     def load(
         self,

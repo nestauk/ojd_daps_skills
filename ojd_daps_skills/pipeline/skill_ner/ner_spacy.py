@@ -495,9 +495,16 @@ class JobNER(object):
 
     def load_model(self, model_folder, s3_download=True):
         if s3_download:
-            # Download this model from S3
-            cmd = f"aws s3 sync s3://{self.BUCKET_NAME}/escoe_extension/{model_folder} {model_folder}"
-            os.system(cmd)
+            if "escoe_extension/" in model_folder:
+                s3_folder = model_folder
+                model_folder = model_folder.split("escoe_extension/")[1]
+            else:
+                s3_folder = os.path.join("escoe_extension/", model_folder)
+            # If we havent already downloaded it, do so
+            if not os.path.exists(model_folder):
+                # Download this model from S3
+                cmd = f"aws s3 sync s3://{self.BUCKET_NAME}/{s3_folder} {model_folder}"
+                os.system(cmd)
         else:
             logger.info("Loading the model from a local location")
 
