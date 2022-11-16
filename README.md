@@ -24,6 +24,12 @@ This package is split into the three pipeline steps:
 pip install ojd_daps_skills
 ```
 
+and
+
+```
+python -m spacy download en_core_web_sm
+```
+
 If you don't have access to Nesta's S3 buckets then you will first need to download locally the neccessary models and data files (around 850MB) by running:
 
 ```
