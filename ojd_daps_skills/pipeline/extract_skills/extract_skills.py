@@ -24,7 +24,7 @@ class ExtractSkills(object):
     Attributes
     ----------
     config_path (str): the config path for a default setting
-    s3 (bool): whether you want to load/save data from this repos from s3 bucket (True, needs access) or locally (False)
+    local (bool): whether you want to load data from local files (True) or via Nesta's private s3 bucket (False, needs access)
     ----------
     Methods
     ----------
@@ -42,22 +42,21 @@ class ExtractSkills(object):
         Does both get_skills and extract_skills if map_to_tax=True, otherwise just does get_skills
     """
 
-    def __init__(self, config_name="extract_skills_toy", s3=True, verbose=True):
+    def __init__(self, config_name="extract_skills_toy", local=True, verbose=True):
         # Set variables from the config file
         config_path = os.path.join(
             PROJECT_DIR, "ojd_daps_skills/config/", config_name + ".yaml"
         )
         with open(config_path, "r") as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
-        self.s3 = s3
+        self.local = local
         self.verbose = verbose
         if self.verbose:
             logger.setLevel(logging.INFO)
         else:
             logger.setLevel(logging.ERROR)
-        if self.s3:
-            pass
-        else:
+        if self.local:
+            self.s3 = False
             if os.path.exists(str(PROJECT_DIR) + "/escoe_extension"):
                 logger.info(
                     "data, pre-defined mappings and embeddings already downloaded locally."
@@ -68,8 +67,10 @@ class ExtractSkills(object):
                 logger.info(
                     "downloaded data, pre-defined mappings and embeddings locally."
                 )
+        else:
+            self.s3 = True
+            pass
 
-        self.ner_model_path = self.config["ner_model_path"]
         self.taxonomy_name = self.config["taxonomy_name"]
         self.taxonomy_path = self.config["taxonomy_path"]
         self.clean_job_ads = self.config["clean_job_ads"]
@@ -84,6 +85,13 @@ class ExtractSkills(object):
             "hard_labelled_skills_file_name"
         )
         self.hier_name_mapper_file_name = self.config.get("hier_name_mapper_file_name")
+
+        if self.local:
+            self.ner_model_path = (
+                str(PROJECT_DIR) + "/escoe_extension/" + self.config["ner_model_path"]
+            )
+        else:
+            self.ner_model_path = self.config["ner_model_path"]
 
     def load(
         self,
@@ -107,13 +115,7 @@ class ExtractSkills(object):
 
         self.job_ner = JobNER()
 
-        if self.s3:
-            self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
-        else:
-            self.nlp = self.job_ner.load_model(
-                str(PROJECT_DIR) + "/escoe_extension/" + self.config["ner_model_path"],
-                s3_download=self.s3,
-            )
+        self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
 
         self.labels = self.nlp.get_pipe("ner").labels + ("MULTISKILL",)
 

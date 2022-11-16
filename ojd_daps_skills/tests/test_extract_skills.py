@@ -5,7 +5,7 @@ import itertools
 from ojd_daps_skills.utils.text_cleaning import short_hash
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 
-es = ExtractSkills()
+es = ExtractSkills(local=False)
 
 job_adverts = [
     "The job involves communication and maths skills",

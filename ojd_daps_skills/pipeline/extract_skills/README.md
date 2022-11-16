@@ -13,7 +13,7 @@ The ExtractSkills class relies on the aws cli tool to download relevant models a
 If you would like to map an existing list of skills to a taxonomy rather than extract skills from free job advert text, you can do so by:
 
 `
-es = ExtractSkills(config_name="extract_skills_esco", s3=True)
+es = ExtractSkills(config_name="extract_skills_esco")
 es.load()
 
 skill_list = ['communication and writing', 'numerical skills', 'collaboration']

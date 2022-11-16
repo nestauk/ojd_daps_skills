@@ -24,6 +24,13 @@ This package is split into the three pipeline steps:
 pip install ojd_daps_skills
 ```
 
+If you don't have access to Nesta's S3 buckets then you will first need to download the neccessary models and data files by running:
+
+```
+FILL THIS IN
+
+```
+
 ## Pre-defined configurations
 
 There are three configurations available for running the skills extraction algorithm.
@@ -36,10 +43,14 @@ These configurations contain all the information about parameter values, and tra
 
 ## Basic usage
 
+local=False: For usage by those with access to Nesta's S3 bucket.
+
+local=True (default): For public usage
+
 ```
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 
-es = ExtractSkills(config_name="extract_skills_toy", s3=True)
+es = ExtractSkills(config_name="extract_skills_toy", local=True)
 
 es.load()
 

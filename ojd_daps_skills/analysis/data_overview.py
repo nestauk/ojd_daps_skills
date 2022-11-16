@@ -423,7 +423,7 @@ for i, row in manual_tagged[manual_tagged["match_quality"] == 0].iterrows():
 # %%
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 
-es = ExtractSkills(config_name="extract_skills_esco", s3=True, verbose=False)
+es = ExtractSkills(config_name="extract_skills_esco", local=False, verbose=False)
 es.load()
 
 job_adverts = [
