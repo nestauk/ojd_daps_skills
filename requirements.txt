@@ -20,3 +20,4 @@ selenium==4.2.0
 altair_saver
 webdriver-manager
 s3fs
+boto3
