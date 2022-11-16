@@ -14,7 +14,7 @@ from ojd_daps_skills import logger, PROJECT_DIR
 import yaml
 import os
 import logging
-from typing import List, Tuple
+from typing import List, Union
 from ojd_daps_skills.utils.text_cleaning import short_hash
 
 
@@ -277,12 +277,17 @@ class ExtractSkills(object):
             predicted_skills.append(skills)
         return predicted_skills
 
-    def map_skills(self, predicted_skills):
+    def map_skills(self, predicted_skills: Union[List[str], List[dict]]):
         """
         Maps a list of skills to a skills taxonomy
-        """
 
-        skills = {"predictions": {i: s for i, s in enumerate(predicted_skills)}}
+        If predicted_skills is list of skills, format them to be able to be mapped onto taxonomy. 
+        """
+        if all(isinstance(predicted_skill, str) for predicted_skill in predicted_skills):
+            skills = self.format_skills(predicted_skills)
+        else:
+            skills = {"predictions": {i: s for i, s in enumerate(predicted_skills)}}
+
         job_skills, skill_hashes = self.skill_mapper.preprocess_job_skills(skills)
         if len(skill_hashes) != 0:
             logger.info(
@@ -382,7 +387,7 @@ class ExtractSkills(object):
         return job_skills_matched_formatted
 
     def extract_skills(
-        self, job_adverts_skills: Tuple[str, List[str], List[dict]], format=False
+        self, job_adverts_skills: Union[str, List[dict]]
     ):
         """
         Extract skills using the NER model from:
@@ -391,14 +396,7 @@ class ExtractSkills(object):
             3) A list of skills (can contain multiskills) 
         if format==True then format skills list and also map them to the taxonomy
         """
-        if format:
-            skills = self.format_skills(job_adverts_skills)
-            logger.info(
-                f"formatted list of skills to be mapped onto {self.taxonomy_name}"
-            )
-        else:
-            skills = self.get_skills(job_adverts_skills)
-
+        skills = self.get_skills(job_adverts_skills)
         mapped_skills = self.map_skills(skills)
 
         return mapped_skills
