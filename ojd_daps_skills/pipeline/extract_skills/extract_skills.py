@@ -14,7 +14,7 @@ from ojd_daps_skills import logger, PROJECT_DIR
 import yaml
 import os
 import logging
-from typing import List
+from typing import List, Tuple
 from ojd_daps_skills.utils.text_cleaning import short_hash
 
 
@@ -381,22 +381,32 @@ class ExtractSkills(object):
 
         return job_skills_matched_formatted
 
-    def extract_skills(self, job_adverts, map_to_tax=True):
+    def extract_skills(
+        self, job_adverts_skills: Tuple[str, List[str], List[dict]], format=False
+    ):
         """
-        Extract skills using the NER model from a single or a list of job adverts
-        and if map_to_tax==True then also map them to the taxonomy
+        Extract skills using the NER model from:
+            1) A single job advert;
+            2) A list of job adverts or;
+            3) A list of skills (can contain multiskills) 
+        if format==True then format skills list and also map them to the taxonomy
         """
-        skills = self.get_skills(job_adverts)
-        if map_to_tax:
-            mapped_skills = self.map_skills(skills)
-            return mapped_skills
+        if format:
+            skills = self.format_skills(job_adverts_skills)
+            logger.info(
+                f"formatted list of skills to be mapped onto {self.taxonomy_name}"
+            )
         else:
-            return skills
+            skills = self.get_skills(job_adverts_skills)
+
+        mapped_skills = self.map_skills(skills)
+
+        return mapped_skills
 
 
 if __name__ == "__main__":
 
-    es = ExtractSkills(config_name="extract_skills_esco", s3=True)
+    es = ExtractSkills(config_name="extract_skills_esco", local=True)
 
     es.load()
 
@@ -405,11 +415,12 @@ if __name__ == "__main__":
         "You will need to have good excel and presenting skills. You need good excel software skills",
     ]
 
+    skills_list = ["communication", "excel skills"]
     # 2 steps
     predicted_skills = es.get_skills(job_adverts)
     job_skills_matched = es.map_skills(predicted_skills)
 
-    # # 1 step
-    # job_skills_matched = es.extract_skills(job_adverts, map_to_tax=True)
-    # # 1 step
-    # predicted_skills = es.extract_skills(job_adverts, map_to_tax=False)
+    # # 1 step - get then extract
+    job_skills_matched_one_step = es.extract_skills(job_adverts)
+    # # 1 step - format then extract
+    job_skills_list = es.extract_skills(skills_list, format=True)
