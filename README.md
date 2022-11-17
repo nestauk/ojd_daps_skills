@@ -21,7 +21,7 @@ This package is split into the three pipeline steps:
 ## Installation
 
 ```
-pip install ojd_daps_skills @ git+https://github.com/nestauk/ojd_daps_skills@96_change_s3_param#egg=ojd_daps_skills ## UPDATE TO DEV branch
+pip install ojd_daps_skills@git+https://github.com/nestauk/ojd_daps_skills@96_change_s3_param#egg=ojd_daps_skills ## UPDATE TO DEV branch
 ```
 
 and

@@ -9,6 +9,7 @@ from ojd_daps_skills.pipeline.extract_skills.extract_skills_utils import (
     load_toy_taxonomy,
 )
 from ojd_daps_skills.getters.data_getters import load_file
+from ojd_daps_skills.getters.download_public_data import download
 from ojd_daps_skills import logger, PROJECT_DIR, PUBLIC_DATA_FOLDER_NAME
 
 import yaml
@@ -59,8 +60,8 @@ class ExtractSkills(object):
             logger.setLevel(logging.ERROR)
         if self.local:
             self.s3 = False
-            self.base_path = os.path.join(PROJECT_DIR, PUBLIC_DATA_FOLDER_NAME)
-            if not os.path.exists(self.base_path):
+            self.base_path = PUBLIC_DATA_FOLDER_NAME + "/"
+            if not os.path.exists(os.path.join(PROJECT_DIR, PUBLIC_DATA_FOLDER_NAME)):
                 logger.warning(
                     "Neccessary files are not downloaded. Downloading <1GB of neccessary files."
                 )
