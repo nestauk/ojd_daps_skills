@@ -9,14 +9,14 @@ description: The skill/hierarchy level description text
 type: What column name the skill/hier description is from (category, subcategory)
 hierarchy_levels: If a skill then which hierarchy levels is it in
 
-To run the script, python lightcast_formatting.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
+To run the script, python ojd_daps_skills/pipeline/skill_ner_mapping/lightcast_formatting.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
 """
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     save_to_s3,
 )
 from ojd_daps_skills import bucket_name
-from ojd_daps_skills.pipeline.evaluation.emsi_evaluation import get_emsi_access_token
+from ojd_daps_skills.pipeline.evaluation.lightcast_evaluation import get_lightcast_access_token
 
 import pandas as pd
 from argparse import ArgumentParser
@@ -102,6 +102,18 @@ def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
         drop=True
     )
 
+def remove_null_hierarchy(lightcast_skills_formatted:pd.DataFrame) -> pd.DataFrame:
+    """Remove null parts of the hierarchy."""
+    def remove_null_hierarchy_levels(hierarchy_levels):
+        null_hierarchy_levels = ['0.0', '100.0']
+        if hierarchy_levels is not np.nan:
+            return [i for i in hierarchy_levels if i not in null_hierarchy_levels]
+        else: 
+            return hierarchy_levels
+    lightcast_skills_formatted['hierarchy_levels'] = lightcast_skills_formatted.hierarchy_levels.apply(remove_null_hierarchy_levels)
+    
+    return lightcast_skills_formatted.query('description.notna()').query('description != "NULL"')
+
 if __name__ == "__main__":
 
     s3 = get_s3_resource()
@@ -128,17 +140,14 @@ if __name__ == "__main__":
     client_id = args.client_id
     client_secret = args.client_secret
 
-    access_code = get_emsi_access_token(client_id, client_secret)
+    access_code = get_lightcast_access_token(client_id, client_secret)
     lightcast_skills = get_lightcast_skills(access_code)
     lightcast_skills_formatted = format_lightcast_skills(lightcast_skills)
-    
     #drop NULL categories 
-    lightcast_skills_formatted = (lightcast_skills_formatted
-    .query('description.notna()')
-    .query('description != "NULL"'))
-    # add the hier_name_mapper_file_name name here
+    lightcast_skills_formatted_no_null = remove_null_hierarchy(lightcast_skills_formatted)
+    
     hier_name_mapper = (
-        lightcast_skills_formatted[lightcast_skills_formatted["type"] != "skill"][
+        lightcast_skills_formatted_no_null[lightcast_skills_formatted_no_null["type"] != "skill"][
             ["id", "description"]
         ]
         .dropna()
