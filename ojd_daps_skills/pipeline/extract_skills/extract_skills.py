@@ -111,10 +111,10 @@ class ExtractSkills(object):
 
     def load(
         self,
-        taxonomy_embedding_file_name:Optional[str]=None,
-        prev_skill_matches_file_name:Optional[str]=None,
-        hard_labelled_skills_name:Optional[str]=None,
-        hier_name_mapper_file_name:Optional[str]=None,
+        taxonomy_embedding_file_name: Optional[str] = None,
+        prev_skill_matches_file_name: Optional[str] = None,
+        hard_labelled_skills_name: Optional[str] = None,
+        hier_name_mapper_file_name: Optional[str] = None,
     ):
         """
         Loads necessary datasets, JobNER skills extraction class and SkillMapper skill mapper class
@@ -246,7 +246,7 @@ class ExtractSkills(object):
 
         return [skill_dict]
 
-    def get_skills(self, job_adverts:Union[str, List[str]]):
+    def get_skills(self, job_adverts: Union[str, List[str]]):
         """
         Extract skills using the NER model from a single or a list of job adverts
         """
@@ -287,9 +287,11 @@ class ExtractSkills(object):
         If predicted_skills is a list of skills, format it accordingly to
             be mapped to a skills taxonomy. 
         """
-        if all(isinstance(predicted_skill, str) for predicted_skill in predicted_skills):
+        if all(
+            isinstance(predicted_skill, str) for predicted_skill in predicted_skills
+        ):
             predicted_skills = self.format_skills(predicted_skills)
-            
+
         skills = {"predictions": {i: s for i, s in enumerate(predicted_skills)}}
 
         job_skills, skill_hashes = self.skill_mapper.preprocess_job_skills(skills)
@@ -403,7 +405,9 @@ class ExtractSkills(object):
         """
         if format_skills:
             skills = self.format_skills(job_adverts_skills)
-            logger.info(f"formatted {len(job_adverts_skills)} skill(s) from skills list...")
+            logger.info(
+                f"formatted {len(job_adverts_skills)} skill(s) from skills list..."
+            )
         else:
             skills = self.get_skills(job_adverts_skills)
 
@@ -428,9 +432,8 @@ if __name__ == "__main__":
     predicted_skills = es.get_skills(job_adverts)
     job_skills_matched = es.map_skills(predicted_skills)
 
-    #2 steps, list of skills
-    predicted_skills = es.get_skills(skills_list)
-    job_skills_matched = es.map_skills(predicted_skills)
+    # 1 step, list of skills
+    job_skills_matched = es.map_skills(skills_list)
 
     # # 1 step - get then extract
     job_skills_matched_one_step = es.extract_skills(job_adverts)
