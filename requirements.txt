@@ -22,5 +22,5 @@ selenium==4.2.0
 altair_saver
 webdriver-manager
 s3fs
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.1.0/en_core_web_sm-3.1.0.tar.gz
+boto3
 networkx
