@@ -8,10 +8,6 @@ import pandas as pd
 
 ChartType = alt.vegalite.v4.api.Chart
 
-# Fonts and colours
-FONT = "Averta"  # should be changed depending on what your font is called in your system's font book
-TITLE_FONT = "Averta"  # should be changed depending on what your font is called in your system's font book
-
 NESTA_COLOURS = [
     "#0000FF",
     "#FDB633",
@@ -25,19 +21,19 @@ NESTA_COLOURS = [
     "#A59BEE",
     "#F6A4B7",
     "#D2C9C0",
-    "#FFFFFF",
+    # "#FFFFFF",
     "#000000",
 ]
 
 
-def nestafont():
+def nestafont(font: str = "Averta Demo"):
     """Define Nesta fonts"""
     return {
         "config": {
-            "title": {"font": TITLE_FONT, "anchor": "start"},
-            "axis": {"labelFont": FONT, "titleFont": FONT},
-            "header": {"labelFont": FONT, "titleFont": FONT},
-            "legend": {"labelFont": FONT, "titleFont": FONT},
+            "title": {"font": font, "anchor": "start"},
+            "axis": {"labelFont": font, "titleFont": font},
+            "header": {"labelFont": font, "titleFont": font},
+            "legend": {"labelFont": font, "titleFont": font},
             "range": {
                 "category": NESTA_COLOURS,
                 "ordinal": {
@@ -54,6 +50,7 @@ alt.themes.enable("nestafont")
 
 def configure_plots(
     fig,
+    font: str = "Averta Demo",
     chart_title: str = "",
     chart_subtitle: str = "",
     fontsize_title: int = 16,
@@ -68,7 +65,7 @@ def configure_plots(
                 "text": chart_title,
                 "fontSize": fontsize_title,
                 "subtitle": chart_subtitle,
-                "subtitleFont": FONT,
+                "subtitleFont": font,
                 "subtitleFontSize": fontsize_subtitle,
             },
         )
@@ -78,6 +75,9 @@ def configure_plots(
             labelFontSize=fontsize_normal,
             titleFontSize=fontsize_normal,
         )
-        .configure_legend(titleFontSize=fontsize_title, labelFontSize=fontsize_normal,)
+        .configure_legend(
+            titleFontSize=fontsize_title,
+            labelFontSize=fontsize_normal,
+        )
         .configure_view(strokeWidth=0)
     )
