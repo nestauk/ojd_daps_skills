@@ -287,9 +287,7 @@ class ExtractSkills(object):
         If predicted_skills is a list of skills, format it accordingly to
             be mapped to a skills taxonomy. 
         """
-        if all(
-            isinstance(predicted_skill, str) for predicted_skill in predicted_skills
-        ):
+        if isinstance(predicted_skills[0], str):
             predicted_skills = self.format_skills(predicted_skills)
 
         skills = {"predictions": {i: s for i, s in enumerate(predicted_skills)}}
