@@ -1,12 +1,12 @@
 ner_model_path: "outputs/models/ner_model/20220825/"
 taxonomy_name: "esco"
-taxonomy_path: "escoe_extension/outputs/data/skill_ner_mapping/esco_data_formatted.csv"
+taxonomy_path: "outputs/data/skill_ner_mapping/esco_data_formatted.csv"
 clean_job_ads: True
 min_multiskill_length: 75
-taxonomy_embedding_file_name: "escoe_extension/outputs/data/skill_ner_mapping/esco_embeddings.json"
-prev_skill_matches_file_name: "escoe_extension/outputs/data/skill_ner_mapping/ojo_esco_lookup_sample.json"
-hard_labelled_skills_file_name: "escoe_extension/outputs/data/skill_ner_mapping/hardcoded_ojo_esco_lookup.json"
-hier_name_mapper_file_name: "escoe_extension/outputs/data/skill_ner_mapping/esco_hier_mapper.json"
+taxonomy_embedding_file_name: "outputs/data/skill_ner_mapping/esco_embeddings.json"
+prev_skill_matches_file_name: "outputs/data/skill_ner_mapping/ojo_esco_lookup_sample.json"
+hard_labelled_skills_file_name: "outputs/data/skill_ner_mapping/hardcoded_ojo_esco_lookup.json"
+hier_name_mapper_file_name: "outputs/data/skill_ner_mapping/esco_hier_mapper.json"
 num_hier_levels: 4
 skill_type_dict:
   {

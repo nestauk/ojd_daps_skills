@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     job_adverts_filename = "escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json"
 
-    es = ExtractSkills(config_name="extract_skills_esco", s3=True)
+    es = ExtractSkills(config_name="extract_skills_esco", local=False)
 
     if update_lookup_sample:
         es.prev_skill_matches_file_name = ""

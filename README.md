@@ -24,6 +24,22 @@ This package is split into the three pipeline steps:
 pip install ojd_daps_skills
 ```
 
+and
+
+```
+python -m spacy download en_core_web_sm
+```
+
+If you don't have access to Nesta's S3 buckets then you will first need to download locally the neccessary models and data files (around 850MB) by running:
+
+```
+bash public_download.sh
+```
+
+this requires having the AWS commandline tools - if you don't have these, you can download a zipped folder of the data by clicking on the following url: https://open-jobs-indicators.s3.eu-west-1.amazonaws.com/escoe_extension/downloaded_files.zip
+
+After downloading and unzipping, it is important that this folder is moved to the project's parent folder - i.e. `ojd_daps_skills/`.
+
 ## Pre-defined configurations
 
 There are three configurations available for running the skills extraction algorithm.
@@ -36,10 +52,14 @@ These configurations contain all the information about parameter values, and tra
 
 ## Basic usage
 
+local=False: For usage by those with access to Nesta's S3 bucket.
+
+local=True (default): For public usage
+
 ```
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 
-es = ExtractSkills(config_name="extract_skills_toy", s3=True)
+es = ExtractSkills(config_name="extract_skills_toy", local=True)
 
 es.load()
 
@@ -54,28 +74,8 @@ job_skills_matched = es.map_skills(predicted_skills)
 predicted_skills
 >>> [{'EXPERIENCE': ['experience in the IT sector'], 'SKILL': ['communication', 'excellent mathematics skills'], 'MULTISKILL': []}, {'EXPERIENCE': [], 'SKILL': ['excel', 'presenting', 'excel software skills'], 'MULTISKILL': []}]
 job_skills_matched
->>> [{'SKILL': [
-  ('communication', ('communication', '15d76317-c71a-4fa2-aadc-2ecc34e627b7')),
-  ('excellent mathematics skills', ('practice mathematics', 'db77825e-0f3e-47d0-abdb-356794484272'))],
-  'EXPERIENCE': [
-  'experience in the IT sector']},
- {'SKILL': [
-  ('excel software skills', ('use spreadsheets software', '1973c966-f236-40c9-b2d4-5d71a89019be')),
-  ('excel', ('use spreadsheets', 'db77825e-0f3e-47d0-abdb-356794484272')),
-  ('presenting', ('presenting exhibition', 'c45848bc-33c6-45fa-b791-bc5b06c21b87'))]}]
+>>> [{'SKILL': [('excellent mathematics skills', ('working with computers', 'S5')), ('communication', ('use communication techniques', 'cdef'))], 'EXPERIENCE': ['experience in the IT sector']}, {'SKILL': [('presenting', ('communication, collaboration and creativity', 'S1')), ('excel software skills', ('use spreadsheets software', 'abcd')), ('excel', ('use spreadsheets software', 'abcd'))]}]
 ```
-
-If you don't have access to the Nesta S3 bucket for this repo then you will need to set s3=False, and make sure to have relevant files downloaded locally.
-
-TOD0:
-
-How to download the relevant files locally:
-
-- ner_model_path: "outputs/models/ner_model/20220825/"
-- hier_name_mapper_file_name: "escoe_extension/outputs/data/skill_ner_mapping/esco_hier_mapper.json"
-- taxonomy_path : "escoe_extension/outputs/data/skill_ner_mapping/esco_data_formatted.csv"
-- (optional) taxonomy_embedding_file_name : "escoe_extension/outputs/data/skill_ner_mapping/esco_embeddings.json"
-- (optional) prev_skill_matches_file_name : "escoe_extension/outputs/data/skill_ner_mapping/ojo_esco_lookup.json"
 
 ## User-defined configurations
 

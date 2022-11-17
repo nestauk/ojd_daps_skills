@@ -14,7 +14,7 @@ from ojd_daps_skills import logger, PROJECT_DIR
 import yaml
 import os
 import logging
-from typing import List
+from typing import List, Union, Optional
 from ojd_daps_skills.utils.text_cleaning import short_hash
 
 
@@ -24,73 +24,97 @@ class ExtractSkills(object):
     Attributes
     ----------
     config_path (str): the config path for a default setting
-    s3 (bool): whether you want to load/save data from this repos from s3 bucket (True, needs access) or locally (False)
+    local (bool): whether you want to load data from local files (True) or via Nesta's private s3 bucket (False, needs access)
     ----------
     Methods
     ----------
     load(taxonomy_embedding_file_name, prev_skill_matches_file_name, hier_name_mapper_file_name)
-        loads all the neccessary data and models for this class
+        Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills, 
+        taxonomy embeddings), JobNER skills extraction class and SkillMapper skill mapper class. 
     get_skills(job_adverts)
         For an inputted list of job adverts, or a single job advert text, predict skill/experience entities
     format_skills(skills)
         If input is list of skills, format list to be the output of get_skills - a list of dict to map
         each entity onto a skill/skill group from a taxonomy
     map_skills(predicted_skills)
-        For a list of predicted skills (the output of get_skills - a list of dicts), map each entity
+        For a list of predicted skills (the output of get_skills - a list of dicts) OR a list of skills, map each entity
         onto a skill/skill group from a taxonomy
-    extract_skills(job_adverts, map_to_tax=True)
-        Does both get_skills and extract_skills if map_to_tax=True, otherwise just does get_skills
+    extract_skills(job_adverts, format_skills=False)
+        Does both get_skills and extract_skills. extract_skills can also take as input a list of 
+        skills if format_skills is True
     """
 
-    def __init__(self, config_name="extract_skills_toy", s3=True, verbose=True):
+    def __init__(self, config_name="extract_skills_toy", local=True, verbose=True):
         # Set variables from the config file
         config_path = os.path.join(
             PROJECT_DIR, "ojd_daps_skills/config/", config_name + ".yaml"
         )
         with open(config_path, "r") as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
-        self.s3 = s3
+        self.local = local
         self.verbose = verbose
         if self.verbose:
             logger.setLevel(logging.INFO)
         else:
             logger.setLevel(logging.ERROR)
-        if self.s3:
-            pass
+        if self.local:
+            self.s3 = False
+            self.base_path = "downloaded_files/"
+            if not os.path.exists(self.base_path):
+                logger.warning(
+                    "Neccessary files are not downloaded. First, run 'bash public_download.sh' to download <1GB of neccessary files."
+                )
         else:
-            if os.path.exists(str(PROJECT_DIR) + "/escoe_extension"):
-                logger.info(
-                    "data, pre-defined mappings and embeddings already downloaded locally."
-                )
-            else:
-                cmd = f"aws s3 sync s3://open-jobs-indicators/escoe_extension {str(PROJECT_DIR) + '/escoe_extension'}"
-                os.system(cmd)
-                logger.info(
-                    "downloaded data, pre-defined mappings and embeddings locally."
-                )
+            self.base_path = "escoe_extension/"
+            self.s3 = True
+            pass
 
-        self.ner_model_path = self.config["ner_model_path"]
         self.taxonomy_name = self.config["taxonomy_name"]
-        self.taxonomy_path = self.config["taxonomy_path"]
+        self.taxonomy_path = os.path.join(self.base_path, self.config["taxonomy_path"])
         self.clean_job_ads = self.config["clean_job_ads"]
         self.min_multiskill_length = self.config["min_multiskill_length"]
         self.taxonomy_embedding_file_name = self.config.get(
             "taxonomy_embedding_file_name"
         )
+        if self.taxonomy_embedding_file_name:
+            self.taxonomy_embedding_file_name = os.path.join(
+                self.base_path, self.taxonomy_embedding_file_name
+            )
         self.prev_skill_matches_file_name = self.config.get(
             "prev_skill_matches_file_name"
         )
+        if self.prev_skill_matches_file_name:
+            self.prev_skill_matches_file_name = os.path.join(
+                self.base_path, self.prev_skill_matches_file_name
+            )
         self.hard_labelled_skills_file_name = self.config.get(
             "hard_labelled_skills_file_name"
         )
+        if self.hard_labelled_skills_file_name:
+            self.hard_labelled_skills_file_name = os.path.join(
+                self.base_path, self.hard_labelled_skills_file_name
+            )
         self.hier_name_mapper_file_name = self.config.get("hier_name_mapper_file_name")
+        if self.hier_name_mapper_file_name:
+            self.hier_name_mapper_file_name = os.path.join(
+                self.base_path, self.hier_name_mapper_file_name
+            )
+
+        if self.local:
+            self.ner_model_path = os.path.join(
+                PROJECT_DIR, self.base_path, self.config["ner_model_path"]
+            )
+        else:
+            self.ner_model_path = os.path.join(
+                self.base_path, self.config["ner_model_path"]
+            )
 
     def load(
         self,
-        taxonomy_embedding_file_name=None,
-        prev_skill_matches_file_name=None,
-        hard_labelled_skills_name=None,
-        hier_name_mapper_file_name=None,
+        taxonomy_embedding_file_name: Optional[str] = None,
+        prev_skill_matches_file_name: Optional[str] = None,
+        hard_labelled_skills_name: Optional[str] = None,
+        hier_name_mapper_file_name: Optional[str] = None,
     ):
         """
         Loads necessary datasets, JobNER skills extraction class and SkillMapper skill mapper class
@@ -107,13 +131,7 @@ class ExtractSkills(object):
 
         self.job_ner = JobNER()
 
-        if self.s3:
-            self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
-        else:
-            self.nlp = self.job_ner.load_model(
-                str(PROJECT_DIR) + "/escoe_extension/" + self.config["ner_model_path"],
-                s3_download=self.s3,
-            )
+        self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
 
         self.labels = self.nlp.get_pipe("ner").labels + ("MULTISKILL",)
 
@@ -228,7 +246,7 @@ class ExtractSkills(object):
 
         return [skill_dict]
 
-    def get_skills(self, job_adverts):
+    def get_skills(self, job_adverts: Union[str, List[str]]):
         """
         Extract skills using the NER model from a single or a list of job adverts
         """
@@ -259,14 +277,21 @@ class ExtractSkills(object):
                 else:
                     skills[label].append(ent_text)
             predicted_skills.append(skills)
+
         return predicted_skills
 
-    def map_skills(self, predicted_skills):
+    def map_skills(self, predicted_skills: Union[List[dict], List[str]]):
         """
         Maps a list of skills to a skills taxonomy
+
+        If predicted_skills is a list of skills, format it accordingly to
+            be mapped to a skills taxonomy. 
         """
+        if isinstance(predicted_skills[0], str):
+            predicted_skills = self.format_skills(predicted_skills)
 
         skills = {"predictions": {i: s for i, s in enumerate(predicted_skills)}}
+
         job_skills, skill_hashes = self.skill_mapper.preprocess_job_skills(skills)
         if len(skill_hashes) != 0:
             logger.info(
@@ -365,22 +390,33 @@ class ExtractSkills(object):
 
         return job_skills_matched_formatted
 
-    def extract_skills(self, job_adverts, map_to_tax=True):
+    def extract_skills(
+        self, job_adverts_skills: Union[str, List[str]], format_skills=False
+    ):
         """
-        Extract skills using the NER model from a single or a list of job adverts
-        and if map_to_tax==True then also map them to the taxonomy
+        Extract skills using the NER model from:
+            1) A single job advert;
+            2) A list of job adverts or;
+            3) A list of skills (can contain multiskills) 
+        if you are entering a list of skills, then you need to set `format_skills=True` 
+        in order to map them to a taxonomy
         """
-        skills = self.get_skills(job_adverts)
-        if map_to_tax:
-            mapped_skills = self.map_skills(skills)
-            return mapped_skills
+        if format_skills:
+            skills = self.format_skills(job_adverts_skills)
+            logger.info(
+                f"formatted {len(job_adverts_skills)} skill(s) from skills list..."
+            )
         else:
-            return skills
+            skills = self.get_skills(job_adverts_skills)
+
+        mapped_skills = self.map_skills(skills)
+
+        return mapped_skills
 
 
 if __name__ == "__main__":
 
-    es = ExtractSkills(config_name="extract_skills_esco", s3=True)
+    es = ExtractSkills(config_name="extract_skills_esco", local=True)
 
     es.load()
 
@@ -389,11 +425,15 @@ if __name__ == "__main__":
         "You will need to have good excel and presenting skills. You need good excel software skills",
     ]
 
+    skills_list = ["communication", "excel skills", "dancing", "singing"]
     # 2 steps
     predicted_skills = es.get_skills(job_adverts)
     job_skills_matched = es.map_skills(predicted_skills)
 
-    # # 1 step
-    # job_skills_matched = es.extract_skills(job_adverts, map_to_tax=True)
-    # # 1 step
-    # predicted_skills = es.extract_skills(job_adverts, map_to_tax=False)
+    # 1 step, list of skills
+    job_skills_matched = es.map_skills(skills_list)
+
+    # # 1 step - get then extract
+    job_skills_matched_one_step = es.extract_skills(job_adverts)
+    # # 1 step - format then extract
+    job_skills_list = es.extract_skills(skills_list, format_skills=True)

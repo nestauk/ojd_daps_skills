@@ -1,0 +1,47 @@
+#This is a template config file - we have added definitions to parameters that you will need to modify for your own taxonomy
+
+#the relative path to the trained NER model
+ner_model_path: "outputs/models/ner_model/20220825/"
+#the relative path to where
+taxonomy_path: "path/to/formatted_taxonomy.csv"
+#the name of your own taxonomy
+taxonomy_name: "your_taxonomy_name"
+#a boolean of whether you want to minimally clean job adverts or not - default is true
+clean_job_ads: True
+#the minimum multiskill length the multiskill needs to be in order to be split - defaults to 75
+min_multiskill_length: 75
+#the relative path to the taxonomy embedding file (optional - can be set to empty string)
+taxonomy_embedding_file_name: ""
+#the relative path to previous skill matches file (optional - can be set to empty string)
+prev_skill_matches_file_name: ""
+#the relative path to hard labelled skills file (optional - can be set to empty string)
+hard_labelled_skills_file_name: ""
+#the relative path to taxonomy hierarchy mapper file (optional - can be set to empty string)
+hier_name_mapper_file_name: ""
+#the number of hierarchy levels - should be changed to the number of levels in your own taxonomy
+num_hier_levels: 3
+#a dictionary defining skill types and hierarchy types in your own taxonomy
+skill_type_dict:
+  {
+    "skill_types":
+      ["A list of the values of the type column which code skills"],
+    "hier_types":
+      [
+        "A list of the values of the type column which code skill groups, these need to be in order from least to most granular",
+      ],
+  }
+#a threshold dictionary defining the minimum cosine similarity (set to 0.7 in this case); the minimum share and the minimum skill group similarity
+match_thresholds_dict:
+  {
+    "skill_match_thresh": 0.7,
+    "top_tax_skills": { 1: 0.5, 2: 0.5, 3: 0.5 },
+    "max_share": { 1: 0, 2: 0.2, 3: 0.2 },
+  }
+#the name of the skill text column in your formatted taxonomy
+skill_name_col: "description"
+#the name of the skill id column in your formatted taxonomy
+skill_id_col: "id"
+#the name of your hierarchy levels column in your formatted taxonomy - this is optional and can be set to empty string
+skill_hier_info_col: ""
+#the name of your skill type column in your formatted taxonomy
+skill_type_col: "type"
