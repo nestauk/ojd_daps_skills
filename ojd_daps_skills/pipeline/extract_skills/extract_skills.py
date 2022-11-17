@@ -9,7 +9,8 @@ from ojd_daps_skills.pipeline.extract_skills.extract_skills_utils import (
     load_toy_taxonomy,
 )
 from ojd_daps_skills.getters.data_getters import load_file
-from ojd_daps_skills import logger, PROJECT_DIR
+from ojd_daps_skills.getters.download_public_data import download
+from ojd_daps_skills import logger, PROJECT_DIR, PUBLIC_DATA_FOLDER_NAME
 
 import yaml
 import os
@@ -57,11 +58,12 @@ class ExtractSkills(object):
             logger.setLevel(logging.ERROR)
         if self.local:
             self.s3 = False
-            self.base_path = "downloaded_files/"
+            self.base_path = os.path.join(PROJECT_DIR, PUBLIC_DATA_FOLDER_NAME)
             if not os.path.exists(self.base_path):
                 logger.warning(
-                    "Neccessary files are not downloaded. First, run 'bash public_download.sh' to download <1GB of neccessary files."
+                    "Neccessary files are not downloaded. Downloading <1GB of neccessary files."
                 )
+                download()
         else:
             self.base_path = "escoe_extension/"
             self.s3 = True
