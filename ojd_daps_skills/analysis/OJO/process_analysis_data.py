@@ -1,6 +1,6 @@
 """
 Filter job data using deduplicated job ids to create outputs for the analysis pieces
-Output:
+Outputs:
 1. A dataset of the deduplicated job metadata
 2. A sample of the deduplicated job data with the skills data too
 """
