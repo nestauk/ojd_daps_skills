@@ -509,6 +509,7 @@ class JobNER(object):
             logger.info("Loading the model from a local location")
 
         try:
+            logger.info(f"Loading the model from {model_folder}")
             self.nlp = spacy.load(model_folder)
             self.ms_classifier = pickle.load(
                 open(os.path.join(model_folder, "ms_classifier.pkl"), "rb")

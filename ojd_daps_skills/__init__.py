@@ -51,7 +51,9 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-logger = logging.getLogger("SkillsExtractor") # NOTE: change logger name once we decide what library will be called
+logger = logging.getLogger(
+    "SkillsExtractor"
+)  # NOTE: change logger name once we decide what library will be called
 
 prefix_re = re.compile(fr'^(?:{ "|".join(["sentence_transformers", "boto"]) })')
 for name in logging.root.manager.loggerDict:
@@ -71,3 +73,5 @@ _base_config_path = Path(__file__).parent.resolve() / "config/base.yaml"
 config = get_yaml_config(_base_config_path)
 
 bucket_name = "open-jobs-lake"
+
+PUBLIC_DATA_FOLDER_NAME = "ojd_daps_skills_data"
