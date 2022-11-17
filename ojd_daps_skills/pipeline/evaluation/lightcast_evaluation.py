@@ -1,9 +1,10 @@
 """
-Script to extract EMSI skills from a random sample of 50 OJO job ads.
+Script to extract lightcast skills from a random sample of 50 OJO job ads.
 
-To run the script, python emsi_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
+To run the script, python ojd_daps_skills/pipeline/evaluation/lightcast_evaluation.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
+
+You will need to on the Nesta wifi or turn on the Nesta VPN. 
 """
-##################################################################
 import random
 import requests
 import json
@@ -11,9 +12,10 @@ from argparse import ArgumentParser
 import time
 import pandas as pd
 
-from ojd_daps_skills import config, bucket_name
+from ojd_daps_skills import config, bucket_name, logger
 
-from ojd_daps_skills.utils.sql_conn import est_conn
+from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
+
 
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
@@ -22,7 +24,7 @@ from ojd_daps_skills.getters.data_getters import (
 )
 from datetime import datetime as date
 
-##################################################################
+
 def get_job_advert_skills(conn, job_ids: list) -> dict:
     """Queries SQL db to return dataframe of job ids and skills.
     Args:
@@ -38,12 +40,12 @@ def get_job_advert_skills(conn, job_ids: list) -> dict:
     return job_skills.groupby("job_id")["preferred_label"].apply(list).to_dict()
 
 
-def get_emsi_access_token(client_id: str, client_secret: str) -> str:
-    """Generates temporary access token needed to query EMSI skills API.
+def get_lightcast_access_token(client_id: str, client_secret: str) -> str:
+    """Generates temporary access token needed to query lightcast skills API.
     
     Inputs:
-        client_id (str): Client ID from generated EMSI skills API credentials.
-        client_secret (str): Client secret from generated EMSI skills API credentials.
+        client_id (str): Client ID from generated lightcast skills API credentials.
+        client_secret (str): Client secret from generated lightcast skills API credentials.
     
     Outputs:
         access_token (str): Access token string valid for 1 hour.
@@ -62,8 +64,15 @@ def get_emsi_access_token(client_id: str, client_secret: str) -> str:
     else:
         return response
 
+def get_extracted_lightcast_skill(extracted_lightcast_skill):
+    """Helper function to return list of mapped lightcast skills"""
+    if 'SKILL' in extracted_lightcast_skill.keys():
+        return list(set([skill[1][0] for skill in extracted_lightcast_skill['SKILL']]))
+    else:
+        return extracted_lightcast_skill
 
-def extract_esmi_skills(
+
+def extract_lightcast_skills(
     access_token: str, job_advert_text: str, confidence_threshold: int
 ):
     """Extracts ESMI skills for a given english job advert.
@@ -104,10 +113,10 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument(
-        "--client-id", help="EMSI skills API client id",
+        "--client-id", help="lightcast skills API client id",
     )
 
-    parser.add_argument("--client-secret", help="EMSI skills API client secret.")
+    parser.add_argument("--client-secret", help="lightcast skills API client secret.")
 
     args = parser.parse_args()
 
@@ -119,49 +128,45 @@ if __name__ == "__main__":
         get_s3_resource(), bucket_name, config["ojo_random_sample_path"]
     )
 
-    # get skills
-    ##doing it this way round as sometimes the job id is not in the job id skills link db
-    conn = est_conn()
-    ojo_job_skills = get_job_advert_skills(conn, list(ojo_job_ads_sample.keys()))
-
-    # add skills to dict
-    ojo_jobs_with_skills = dict()
-    for job_id, ojo_job_ad in ojo_job_ads_sample.items():
-        if job_id in list(ojo_job_skills.keys()):
-            ojo_jobs_with_skills[job_id] = {
-                "job_ad_text": ojo_job_ad["description"],
-                "ojo_skills": ojo_job_skills[job_id],
-            }
-
     # then random sample 50 job adverts
     random.seed(72)
-    ojo_job_ads_50 = {
-        job_id: job_data
-        for job_id, job_data in ojo_jobs_with_skills.items()
-        if job_id in random.sample(list(ojo_jobs_with_skills.keys()), 50)
-    }
+    random_job_ids = random.sample(list(ojo_job_ads_sample.keys()), 50)
+    ojo_job_ads_sample_50 = {k:v['description'] for k, v in ojo_job_ads_sample.items() if k in random_job_ids}
 
-    # get EMSI access code
-    access_code = get_emsi_access_token(client_id, client_secret)
+    logger.info("randomly sampled 50 job adverts")
 
-    # get extracted EMSI skills
-    ojo_esmi_skills = dict()
-    for job_id, ojo_job_ad_data in ojo_job_ads_50.items():
-        esmi_skills = extract_esmi_skills(
+    #extract our lightcast skills
+    #get v2 skills
+    skills_extractor = ExtractSkills(config_name="extract_skills_lightcast_evaluation", s3=True)
+
+    skills_extractor.load()
+
+    extracted_skills = skills_extractor.extract_skills([advert.replace('[', '').replace(']', '').strip() for advert in list(ojo_job_ads_sample_50.values())])
+    
+    # get lightcast access code
+    access_code = get_lightcast_access_token(client_id, client_secret)
+
+    logger.info("got lightcast access token")
+
+    # get extracted lightcast skills
+    ojo_lightcast_skills = dict()
+    for i, (job_id, ojo_job_ad_data) in enumerate(ojo_job_ads_sample_50.items()):
+        lightcast_skills = extract_lightcast_skills(
             access_code,
-            ojo_job_ad_data["job_ad_text"],
+            ojo_job_ad_data,
             config["esmi_confidence_threshold"],
         )
-        if not isinstance(esmi_skills, requests.models.Response):  # if its not an error
-            ojo_esmi_skills[job_id] = {
-                "job_ad_text": ojo_job_ad_data["job_ad_text"],
-                "ojo_skills": ojo_job_ad_data["ojo_skills"],
-                "esmi_skills": [skill["skill"]["name"] for skill in esmi_skills],
-            }
+        if not isinstance(lightcast_skills, requests.models.Response):  # if its not an error
+            ojo_lightcast_skills[job_id] = {
+                "job_ad_text": ojo_job_ad_data,
+                "ojo_skills": get_extracted_lightcast_skill(extracted_skills[i]),
+                "lightcast_skills": [skill["skill"]["name"] for skill in lightcast_skills]}
+
+    logger.info("extracted lightcast skills")
 
     save_to_s3(
         get_s3_resource(),
         bucket_name,
-        ojo_esmi_skills,
-        (filename + f"{str(date.today().date()).replace('-', '')}.json"),
+        ojo_lightcast_skills,
+        ("escoe_extension/outputs/evaluation/ojo_emsi_skills/ojo_lightcast_skills_" + f"{str(date.today().date()).replace('-', '')}.json")
     )
