@@ -21,7 +21,7 @@ This package is split into the three pipeline steps:
 ## Installation
 
 ```
-pip install ojd_daps_skills
+pip install ojd_daps_skills@git+https://github.com/nestauk/ojd_daps_skills@96_change_s3_param#egg=ojd_daps_skills ## UPDATE TO DEV branch
 ```
 
 and
@@ -29,16 +29,6 @@ and
 ```
 python -m spacy download en_core_web_sm
 ```
-
-If you don't have access to Nesta's S3 buckets then you will first need to download locally the neccessary models and data files (around 850MB) by running:
-
-```
-bash public_download.sh
-```
-
-this requires having the AWS commandline tools - if you don't have these, you can download a zipped folder of the data by clicking on the following url: https://open-jobs-indicators.s3.eu-west-1.amazonaws.com/escoe_extension/downloaded_files.zip
-
-After downloading and unzipping, it is important that this folder is moved to the project's parent folder - i.e. `ojd_daps_skills/`.
 
 ## Pre-defined configurations
 
@@ -51,10 +41,6 @@ There are three configurations available for running the skills extraction algor
 These configurations contain all the information about parameter values, and trained model and data locations.
 
 ## Basic usage
-
-local=False: For usage by those with access to Nesta's S3 bucket.
-
-local=True (default): For public usage
 
 ```
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
@@ -76,6 +62,11 @@ predicted_skills
 job_skills_matched
 >>> [{'SKILL': [('excellent mathematics skills', ('working with computers', 'S5')), ('communication', ('use communication techniques', 'cdef'))], 'EXPERIENCE': ['experience in the IT sector']}, {'SKILL': [('presenting', ('communication, collaboration and creativity', 'S1')), ('excel software skills', ('use spreadsheets software', 'abcd')), ('excel', ('use spreadsheets software', 'abcd'))]}]
 ```
+
+Note:
+
+- local=True (default): For public usage - this will download a <1GB folder of the data and models needed for this package.
+- local=False: For usage by those with access to Nesta's S3 bucket.
 
 ## User-defined configurations
 
@@ -99,6 +90,17 @@ pytest
 - Run `make install` to configure the development environment:
   - Setup the conda environment
   - Configure `pre-commit`
+- Download spacy model: `python -m spacy download en_core_web_sm`
+
+If you don't have access to Nesta's S3 buckets then you will first need to download locally the neccessary models and data files (around 850MB) by running:
+
+```
+python ojd_daps_skills/getters/download_public_data.py
+```
+
+this requires having the AWS commandline tools - if you don't have these, you can download a zipped folder of the data by clicking on the following url: https://open-jobs-indicators.s3.eu-west-1.amazonaws.com/escoe_extension/ojd_daps_skills_data.zip
+
+After downloading and unzipping, it is important that this folder is moved to the project's parent folder - i.e. `ojd_daps_skills/`.
 
 ## Contributor guidelines
 

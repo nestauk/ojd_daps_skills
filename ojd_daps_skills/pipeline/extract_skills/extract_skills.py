@@ -9,7 +9,8 @@ from ojd_daps_skills.pipeline.extract_skills.extract_skills_utils import (
     load_toy_taxonomy,
 )
 from ojd_daps_skills.getters.data_getters import load_file
-from ojd_daps_skills import logger, PROJECT_DIR
+from ojd_daps_skills.getters.download_public_data import download
+from ojd_daps_skills import logger, PROJECT_DIR, PUBLIC_DATA_FOLDER_NAME
 
 import yaml
 import os
@@ -29,8 +30,8 @@ class ExtractSkills(object):
     Methods
     ----------
     load(taxonomy_embedding_file_name, prev_skill_matches_file_name, hier_name_mapper_file_name)
-        Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills, 
-        taxonomy embeddings), JobNER skills extraction class and SkillMapper skill mapper class. 
+        Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills,
+        taxonomy embeddings), JobNER skills extraction class and SkillMapper skill mapper class.
     get_skills(job_adverts)
         For an inputted list of job adverts, or a single job advert text, predict skill/experience entities
     format_skills(skills)
@@ -40,7 +41,7 @@ class ExtractSkills(object):
         For a list of predicted skills (the output of get_skills - a list of dicts) OR a list of skills, map each entity
         onto a skill/skill group from a taxonomy
     extract_skills(job_adverts, format_skills=False)
-        Does both get_skills and extract_skills. extract_skills can also take as input a list of 
+        Does both get_skills and extract_skills. extract_skills can also take as input a list of
         skills if format_skills is True
     """
 
@@ -59,11 +60,12 @@ class ExtractSkills(object):
             logger.setLevel(logging.ERROR)
         if self.local:
             self.s3 = False
-            self.base_path = "downloaded_files/"
-            if not os.path.exists(self.base_path):
+            self.base_path = PUBLIC_DATA_FOLDER_NAME + "/"
+            if not os.path.exists(os.path.join(PROJECT_DIR, PUBLIC_DATA_FOLDER_NAME)):
                 logger.warning(
-                    "Neccessary files are not downloaded. First, run 'bash public_download.sh' to download <1GB of neccessary files."
+                    "Neccessary files are not downloaded. Downloading <1GB of neccessary files."
                 )
+                download()
         else:
             self.base_path = "escoe_extension/"
             self.s3 = True
@@ -285,7 +287,7 @@ class ExtractSkills(object):
         Maps a list of skills to a skills taxonomy
 
         If predicted_skills is a list of skills, format it accordingly to
-            be mapped to a skills taxonomy. 
+            be mapped to a skills taxonomy.
         """
         if isinstance(predicted_skills[0], str):
             predicted_skills = self.format_skills(predicted_skills)
@@ -397,8 +399,8 @@ class ExtractSkills(object):
         Extract skills using the NER model from:
             1) A single job advert;
             2) A list of job adverts or;
-            3) A list of skills (can contain multiskills) 
-        if you are entering a list of skills, then you need to set `format_skills=True` 
+            3) A list of skills (can contain multiskills)
+        if you are entering a list of skills, then you need to set `format_skills=True`
         in order to map them to a taxonomy
         """
         if format_skills:
