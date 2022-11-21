@@ -1,5 +1,3 @@
-import sys
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
 """
 Add salaries and raw job titles to deduplicated job data generated from process_analysis_data.py
 
