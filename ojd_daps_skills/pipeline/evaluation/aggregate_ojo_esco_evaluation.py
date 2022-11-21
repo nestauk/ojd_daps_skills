@@ -3,7 +3,6 @@ OJO occupations
 
 python ojd_daps_skills/pipeline/evaluation/aggregate_ojo_esco_evaluation.py
 """
-##############################################################
 from ojd_daps_skills import PROJECT_DIR, config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
@@ -12,7 +11,6 @@ from ojd_daps_skills.getters.data_getters import (
 )
 import pandas as pd
 import itertools
-##############################################################
 
 s3 = get_s3_resource()
 
