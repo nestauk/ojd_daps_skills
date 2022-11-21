@@ -37,6 +37,10 @@ will read in the skills data, the deduplicated ids saved out by running `dedupli
 2. `dedupe_analysis_skills_sample.json` (+ a `.csv` version of this file) the skills + metadata for 100,000 job adverts
    where metadata is the date, location, occupation and summarised skill information (e.g. how many skills were in the job advert).
 
+To add additional metadata, including the raw job title, the raw salary information and the annual salary information:
+
+`python ojd_daps_skills/analysis/OJO/add_additional_metadata.py`
+
 ## Analysis
 
 All the analysis is done in Jupyter notebooks.
