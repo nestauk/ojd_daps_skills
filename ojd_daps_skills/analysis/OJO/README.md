@@ -46,3 +46,14 @@ All the analysis is done in Jupyter notebooks.
 The notebook `ojo_data_summary.ipynb` gives some high level stats about the OJO data, e.g. how many job adverts there are over time, the mean number of skills per job advert.
 
 Note: To plot the Altair figures as pngs in the notebook you will need to run them in jupyterlab.
+
+## Evaluation Analysis
+
+The script `evaluation_analysis.py` calculates some high level stats about two comparison approaches taken to compare the skills extraction algorithm with:
+
+1. Lightcast's extracted skills for 100 job adverts;
+2. Comparing ESCO's essential skills per occupation with our top skills (at the skill level) per occupation.
+
+### ESCO Occupations
+
+The script `esco_occupations.py` gives some high level stats about X, Y and Z.
