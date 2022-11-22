@@ -55,7 +55,7 @@ We compare ESCO’s essential skills per occupation with the top ESCO-mapped ski
 
 - Identifying occupations for which we have at least 100 job adverts;
 - Identify skills extracted at ONLY the skill level;
-- Identify a top skill threshold by calculating the 50 percentile % of jobs that require a given skill for a given occupation + 0.25 standard deviation
+- Identify a top skill threshold by calculating the 75 percentile % of skills counts for a given occupation
 - Identify the % of top ESCO-mapped skills in ESCO’s essential skills per occupation
 
 At a high level, we find that:
@@ -63,11 +63,19 @@ At a high level, we find that:
 - 58 occupations with 100 or more job adverts were found in both ESCO and a sample of deduplicated 100,000 job adverts
 - the average # of adverts per occupation is 345.54
 - We extract essential ESCO skills, transversal skills and additional skills
-- On average, 19 percent of essential ESCO skills were also in the top skills extracted per occupation
+- On average, 19.2 percent of essential ESCO skills were also in the top skills extracted per occupation
 - The occupation with the maximum % of top extracted skills that were also essential ESCO skills is 54.5, for the occupation ‘project manager’
-- There is 1 occupation for which there was no overlap between the list of top extracted skills and ESCO essential skills
+- There are 2 occupations for which there was no overlap between the list of top extracted skills and ESCO essential skills
 
 Similarly to the Lightcast approach, ESCO’s essential skill list per occupation may be very similar to the extracted skills, but not identical, leading to artificially lower overlap.
+
+To accommodate for the artificially lower overlap, we perform the same exercise one level higher in the taxonomy, at the lowest skill group level.
+
+We find that:
+- On average, 94.4 percent of essential ESCO skill groups were also in the top skill groups extracted per occupation
+- 43.1 percent of occupations’s top skill groups contain all essential ESCO skill groups 
+
+We interpret this to suggest that while there is a lower level of _exact_ overlap at the skill level, the extracted skills at the lowest skill group level appear representative of the essential skill groups required of specific occupations.   
 
 #### Evaluation - Manual judgement of false positive rate
 
