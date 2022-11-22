@@ -210,6 +210,98 @@
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load">
+<span class="sig-prename descclassname"><span class="pre">ExtractSkills.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxonomy_embedding_file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_skill_matches_file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hard_labelled_skills_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hier_name_mapper_file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load" title="Permalink to this definition">#</a></dt>
+<dd><p>Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills,
+taxonomy embeddings), JobNER skills extraction class and SkillMapper skill mapper class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>taxonomy_embedding_file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The relative path to a taxonomy embedding file if it exists. If left unset the embeddings will be generated when the code is run. Defaults to None.</p></li>
+<li><p><strong>prev_skill_matches_file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The relative path to a previous skill matches file if it exists. Defaults to None.</p></li>
+<li><p><strong>hard_labelled_skills_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The relative path to a hard labelled skills file if it exists. Defaults to None.</p></li>
+<li><p><strong>hier_name_mapper_file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The relative path to a hierarchy name mapper file if it exists. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills">
+<span class="sig-prename descclassname"><span class="pre">ExtractSkills.</span></span><span class="sig-name descname"><span class="pre">extract_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_adverts_skills</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_skills</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.extract_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills" title="Permalink to this definition">#</a></dt>
+<dd><p>Extract skills from job adverts using a trained NER model and map them to a taxonomy - combines both get_skills and extract_skills. Experiences will also be extracted, but not mapped to a taxonomy. It can also take as input a list of
+skills and map them to a taxonomy if format_skills is set to True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_adverts_skills</strong> (<em>str</em><em> or </em><em>list of strings</em>) – The text of a job advert, a list of job adverts texts, or a list of skills (if format_skills=True)</p></li>
+<li><p><strong>format_skills</strong> (<em>bool</em>) – If the input is a list of skills (rather than job adverts) then this needs to be set to True in order to format them correctly, default to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every</p>
+</dd>
+</dl>
+<p>skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the “SKILL” key.
+Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]
+:rtype: list of dictionaries for each job advert.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.get_skills">
+<span class="sig-prename descclassname"><span class="pre">ExtractSkills.</span></span><span class="sig-name descname"><span class="pre">get_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_adverts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.get_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.get_skills" title="Permalink to this definition">#</a></dt>
+<dd><p>Predict skill/multiskill/experience entities using the NER model in inputted job adverts.
+Multiskill entities will be split up and converted into individual skill entities where possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>job_adverts</strong> (<em>str</em><em> or </em><em>list of strings</em>) – The text of a job advert or a list of job adverts texts</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of entities extracted from each job advert in the form of dictionaries {“SKILL”: [“Microsoft Excel”], “MULTISKILL”: [], “EXPERIENCE”: []}</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list, the length is equal to the number of job adverts inputted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills">
+<span class="sig-prename descclassname"><span class="pre">ExtractSkills.</span></span><span class="sig-name descname"><span class="pre">map_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicted_skills</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.map_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills" title="Permalink to this definition">#</a></dt>
+<dd><p>Map skills from job advert(s) to a skills taxonomy. If predicted_skills is a list of skills, it will be formatted accordingly to
+be mapped to a skills taxonomy. All multiskill entities will be mapped in the same way as skill entities are.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>predicted_skills</strong> (<em>list of strings</em><em> or </em><em>a list of dicts</em>) – A list of skill entities either in the form of a list of strings (assumed to be from the same job advert) or a list of the dictionaries outputted from the get_skills function.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every</p>
+</dd>
+</dl>
+<p>skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one.
+Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]
+:rtype: list of dictionaries for each job advert.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.format_skills">
+<span class="sig-prename descclassname"><span class="pre">ExtractSkills.</span></span><span class="sig-name descname"><span class="pre">format_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skills</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.format_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.format_skills" title="Permalink to this definition">#</a></dt>
+<dd><p>Format list of skills from a single job advert to be in the format needed for mapping to a taxonomy. Also applies the
+multiskill splitting to any skills predicted to be multiskills.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>skills</strong> (<em>str</em><em> or </em><em>list of strings</em>) – A list of skills/multiskills from the job advert or a single skill</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The skills arranged into the format [{“SKILL”: […], “MULTISKILL”: […], “EXPERIENCE”: []}]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>a list of length 1 containing a dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
         </article>
