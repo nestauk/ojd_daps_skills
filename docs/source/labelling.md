@@ -4,13 +4,16 @@ To extract skills from job adverts we took an approach of training a named entit
 
 To train the NER model we needed labelled data. First we created a random sample of job adverts and got them into a form needed for labelling using [Label Studio](https://labelstud.io/). More about this labelling process can be found in the [`skill_ner` pipeline](https://nestauk.github.io/ojd_daps_skills/pipeline/skill_ner/README.md).
 
-![](../../outputs/reports/figures/label_studio.png)
-
 There are 3 entity labels in our training data:
 
 1. `SKILL`
 2. `MULTISKILL`
 3. `EXPERIENCE`
+
+
+The user interface for this labelling task looks like:
+
+![](../../outputs/reports/figures/label_studio.png)
 
 We tried our best to label from the start to end of each individual skill, starting at the verb (if given):
 ![](../../ojd_daps_skills/pipeline/skill_ner/ner_label_examples/label_eg1.jpg)

@@ -1,4 +1,4 @@
-# Usage
+# Custom Usage
 
 `extract_skills.py` combines the prediction of skills using code from [skill_ner](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner) with the mapping of skills to a taxonomy using code from [skill_ner_mapping](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping).
 
