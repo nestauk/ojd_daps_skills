@@ -63,7 +63,7 @@ class ExtractSkills(object):
             self.base_path = PUBLIC_DATA_FOLDER_NAME + "/"
             if not os.path.exists(os.path.join(PROJECT_DIR, PUBLIC_DATA_FOLDER_NAME)):
                 logger.warning(
-                    "Neccessary files are not downloaded. Downloading <1GB of neccessary files."
+                    "Neccessary files are not downloaded. Downloading ~1GB of neccessary files."
                 )
                 download()
         else:
