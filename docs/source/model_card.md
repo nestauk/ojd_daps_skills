@@ -72,10 +72,11 @@ Similarly to the Lightcast approach, ESCO’s essential skill list per occupatio
 To accommodate for the artificially lower overlap, we perform the same exercise one level higher in the taxonomy, at the lowest skill group level.
 
 We find that:
-- On average, 94.4 percent of essential ESCO skill groups were also in the top skill groups extracted per occupation
-- 43.1 percent of occupations’s top skill groups contain all essential ESCO skill groups 
 
-We interpret this to suggest that while there is a lower level of _exact_ overlap at the skill level, the extracted skills at the lowest skill group level appear representative of the essential skill groups required of specific occupations.   
+- On average, 94.4 percent of essential ESCO skill groups were also in the top skill groups extracted per occupation
+- 43.1 percent of occupations’s top skill groups contain all essential ESCO skill groups
+
+We interpret this to suggest that while there is a lower level of _exact_ overlap at the skill level, the extracted skills at the lowest skill group level appear representative of the essential skill groups required of specific occupations.
 
 #### Evaluation - Manual judgement of false positive rate
 
@@ -93,11 +94,18 @@ We also performed this analysis when looking at the skills extracted from 22 job
 - Predict whether or not a skill is multi-skill or not using scikit learn's SVM model. Features are length of entity; if 'and' in entity; if ',' in entity.
 - Split multiskills above 75 characters based on rules: split on and, duplicate verbs, split skill mentions. If multi skills are less than 75 characters but not split into single skills, keep in and treat them as single skills. If the length is more than 75 characters, still match to taxonomy. - The current predefined configurations ensures that every extracted skill will be matched to a taxonomy. However, if a skill is matched to the highest skill group, we label it as ‘unmatched’. Under this definition, we identify approximately 2% of skills as ‘unmatched’.
 
-### NER Metrics
+### Training data
 
 - For the NER model, 375 job adverts were labelled for skills, multiskills and experience.
 - As of 15th November 2022, **5641** entities in 375 job adverts from OJO were labelled;
 - **354** are multiskill, **4696** are skill, and **608** were experience entities. 20% of the labelled entities were held out as a test set to evaluate the models.
+
+The NER model we trained used [Spacy's](https://spacy.io/) NER neural network architecture. Their NER architecture _"features a sophisticated word embedding strategy using subword features and 'Bloom' embeddings, a deep convolutional neural network with residual connections, and a novel transition-based approach to named entity parsing"_ - more about this [here](https://spacy.io/universe/project/video-spacys-ner-model).
+
+You can read more about the creation of the labelling data [here](./labelling.md).
+
+### NER Metrics
+
 - A partial metric in the python library nerevaluate ([read more here](https://pypi.org/project/nervaluate/)) was used to calculate F1, precision and recall for the NER and SVM classifier on the held-out test set. As of 15th November 2022, the results are as follows:
 
 | Entity     | F1    | Precision | Recall |

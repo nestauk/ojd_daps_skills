@@ -6,6 +6,6 @@
 .. toctree::
    about.md
    custom_usage.md
-   skill_ner.md
    model_card.md
+   labelling.md
    extract_skills
