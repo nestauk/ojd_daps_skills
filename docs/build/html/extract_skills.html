@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Model Cards" href="model_card.html" />
+    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Entity Labelling" href="labelling.html" />
 
     <meta name="generator" content="sphinx-5.0.1, furo 2022.09.29"/>
         <title>The ExtractSkills class - Skills Extractor 1.0.0 documentation</title>
@@ -155,9 +155,9 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">Skills Extractor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Extract Skills</a></li>
-<li class="toctree-l1"><a class="reference internal" href="skill_ner.html">Skill NER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Custom Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labelling.html">Entity Labelling</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
 </ul>
 
@@ -198,64 +198,16 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ojd_daps_skills.pipeline.extract_skills.extract_skills.</span></span><span class="sig-name descname"><span class="pre">ExtractSkills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'extract_skills_toy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills" title="Permalink to this definition">#</a></dt>
-<dd><p>Class to extract skills from job adverts and map them to a skills taxonomy.
-.. attribute:: config_path (str)</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">type</dt>
-<dd class="field-odd"><p>the config path for a default setting</p>
+<dd><p>Class to extract skills from job adverts and map them to a skills taxonomy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_path</strong> (<em>str</em>) – The file name for the config file to be used, defaults to “extract_skills_toy”</p></li>
+<li><p><strong>local</strong> (<em>bool</em>) – Whether you want to load data from local files (True, if not found they will be downloaded from a public source) or via Nesta’s private s3 bucket (False, needs access), defaults to True</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – Whether to limit the number of logging messages (True) or not (False, good for debugging), defaults to True</p></li>
+</ul>
 </dd>
 </dl>
-</div></blockquote>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.local">
-<span class="sig-name descname"><span class="pre">local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.local" title="Permalink to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>whether you want to load data from local files (True) or via Nesta’s private s3 bucket (False, needs access)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">----------</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxonomy_embedding_file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_skill_matches_file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hier_name_mapper_file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load" title="Permalink to this definition">#</a></dt>
-<dd><p>Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills,
-taxonomy embeddings), JobNER skills extraction class and SkillMapper skill mapper class.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.get_skills">
-<span class="sig-name descname"><span class="pre">get_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_adverts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.get_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.get_skills" title="Permalink to this definition">#</a></dt>
-<dd><p>For an inputted list of job adverts, or a single job advert text, predict skill/experience entities</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.format_skills">
-<span class="sig-name descname"><span class="pre">format_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skills</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.format_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.format_skills" title="Permalink to this definition">#</a></dt>
-<dd><p>If input is list of skills, format list to be the output of get_skills - a list of dict to map
-each entity onto a skill/skill group from a taxonomy</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills">
-<span class="sig-name descname"><span class="pre">map_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicted_skills</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.map_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills" title="Permalink to this definition">#</a></dt>
-<dd><p>For a list of predicted skills (the output of get_skills - a list of dicts) OR a list of skills, map each entity
-onto a skill/skill group from a taxonomy</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills">
-<span class="sig-name descname"><span class="pre">extract_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_adverts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_skills</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.extract_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills" title="Permalink to this definition">#</a></dt>
-<dd><p>Does both get_skills and extract_skills. extract_skills can also take as input a list of
-skills if format_skills is True</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -266,14 +218,14 @@ skills if format_skills is True</p>
         
         <div class="related-pages">
           
-          <a class="prev-page" href="model_card.html">
+          <a class="prev-page" href="labelling.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Model Cards</div>
+                <div class="title">Entity Labelling</div>
                 
               </div>
             </a>
