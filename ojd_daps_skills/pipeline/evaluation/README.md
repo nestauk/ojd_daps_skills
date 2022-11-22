@@ -6,9 +6,9 @@ This directory contains the approaches taken to evaluate the current skills extr
 
 This approach compares a list of ESCO skills with a list of extracted OJO skills per occupation that is in both ESCO and OJO. In this instance, we are using a sample of 100,000 job adverts with extracted skills.
 
-To ensure that there are a reasonable amount of job adverts per ESCO occupation, we only examine occupations that have at least 100 job adverts associated to them. We also only compare skills that are mentioned in at least X% of job adverts per occupation, where X is 0.25 x the standard deviation above the skill percentage median (although this threshold can be modified) per occupation.
+To ensure that there are a reasonable amount of job adverts per ESCO occupation, we only examine occupations that have at least 100 job adverts associated to them. We also only compare top skills in the 75% quartile or greater.
 
-The output is a .json where we report on the skills that are mentioned in at least X percent of OJO job adverts AND ESCO skills per occuption, skills mentioned in OJO but not ESCO, skills mentioned in ESCO but not OJO and % of ESCO skills in the skills mentioned in at least X% of OJO job adverts.
+The output is a .json where we report on the skills that are mentioned in at least X percent of OJO job adverts AND ESCO skills per occuption, skills mentioned in OJO but not ESCO, skills mentioned in ESCO but not OJO and % of top OJO skills mentioned in essential ESCO skills.
 
 To run the script:
 

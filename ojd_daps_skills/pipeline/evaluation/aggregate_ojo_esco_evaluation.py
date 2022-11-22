@@ -131,24 +131,15 @@ if __name__ == "__main__":
     ## Compare ESCO and OJO skills
     # get skill percents per occupation
     deduped_skills_sample_df_exploded = ojo_job_adverts.explode("clean_skills")
-    skill_percent_occ = deduped_skills_sample_df_exploded.groupby(
-        ["occupation", "clean_skills"]
-    )["job_id"].nunique() / (
-        deduped_skills_sample_df_exploded.groupby("occupation")["job_id"].nunique()
-        * 100
-    )
-    skill_percent_occ = skill_percent_occ.reset_index().rename(
-        columns={"job_id": "skill_percent"}
-    )
+
+    ## Compare ESCO and OJO skills
+    skill_percent_occ = deduped_skills_sample_df_exploded.groupby('occupation').clean_skills.value_counts()/deduped_skills_sample_df_exploded.groupby('occupation').clean_skills.nunique()
+    skill_percent_occ = pd.DataFrame(skill_percent_occ).rename(columns={'clean_skills': 'skill_percent'}).reset_index()
 
     # generate skill threshold based on distribution of skill percentages
     skill_thresholds = (
-        skill_percent_occ.groupby("occupation")["skill_percent"].describe()["50%"]
-    ) + (
-        0.25
-        * skill_percent_occ.groupby("occupation")["skill_percent"].describe()["std"]
+        skill_percent_occ.groupby("occupation")["skill_percent"].describe()["75%"]
     )
-
     skill_percent_occ["skill_percent_threshold"] = skill_percent_occ["occupation"].map(
         skill_thresholds
     )
