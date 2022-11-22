@@ -2,11 +2,10 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="author" title="About these documents" href="#" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Skill NER" href="skill_ner.html" /><link rel="prev" title="&lt;no title&gt;" href="index.html" />
+    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="#" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Extract Skills" href="custom_usage.html" /><link rel="prev" title="&lt;no title&gt;" href="index.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>ojd_daps_skills - Skills Extractor 1.0.0 documentation</title>
+    <meta name="generator" content="sphinx-5.0.1, furo 2022.09.29"/>
+        <title>Skills Extractor - Skills Extractor 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -155,8 +154,10 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">ojd_daps_skills</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Skills Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Extract Skills</a></li>
 <li class="toctree-l1"><a class="reference internal" href="skill_ner.html">Skill NER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extract_skills.html">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
 </ul>
 
@@ -192,87 +193,129 @@
           </label>
         </div>
         <article role="main">
-          <section id="ojd-daps-skills">
-<h1>ojd_daps_skills<a class="headerlink" href="#ojd-daps-skills" title="Permalink to this heading">#</a></h1>
-<p>ojd_daps_skills is a package designed to extract skills from job adverts, and match them to an existing taxonomy if needed.</p>
-<p>This works by:</p>
-<ol class="arabic simple">
-<li><p>Finding skills in job adverts using a Named Entity Recognition (NER) model.</p></li>
-<li><p>Matching these skills to an existing skills taxonomy using semantic similarity.</p></li>
-</ol>
-<p>Much more about these steps can be found in <span class="xref myst">this report</span>.</p>
-<p>This package is split into the three pipeline steps:</p>
+          <div class="section" id="skills-extractor">
+<h1>Skills Extractor<a class="headerlink" href="#skills-extractor" title="Permalink to this heading">#</a></h1>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner">skill_ner</a></p></li>
-<li><p><a class="reference external" href="https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping">skill_ner_mapping</a></p></li>
-<li><p><a class="reference external" href="https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/evaluation">evaluation</a></p></li>
+<li><p><span class="xref myst">Installation</span></p></li>
+<li><p><span class="xref myst">Using Nesta’s Skills Extractor library</span></p></li>
+<li><p><span class="xref myst">Development</span></p></li>
 </ul>
-<p><img alt="" src="_images/overview.png" />
-<img alt="" src="_images/overview_example.png" /></p>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">ojd_daps_skills</span>
+<div class="section" id="welcome-to-nesta-s-skills-extractor-library">
+<h2>Welcome to Nesta’s Skills Extractor Library<a class="headerlink" href="#welcome-to-nesta-s-skills-extractor-library" title="Permalink to this heading">#</a></h2>
+<p>Welcome to the documentation of Nesta’s skills extractor library.</p>
+<p>This page contains information on how to install and use Nesta’s skills extraction library. The skills library allows you to extract skills phrases from job advertisement texts and maps them onto a skills taxonomy of your choice.</p>
+<p>We currently support three different taxonomies to map onto: the <a class="reference external" href="https://esco.ec.europa.eu/en/about-esco/what-esco">European Commission’s European Skills, Competences, and Occupations (ESCO)</a>, <a class="reference external" href="https://skills.lightcast.io/">Lightcast’s Open Skills</a> and a “toy” taxonomy developed internally for the purpose of testing.</p>
+<p>If you’d like to learn more about the models used in the library, please refer to the <a class="reference external" href="https://nestauk.github.io/ojd_daps_skills/docs/source/model_card.md">model card page</a>.</p>
+</div>
+<div class="section" id="installation-a-name-installation-a">
+<h2>Installation <a name="installation"></a><a class="headerlink" href="#installation-a-name-installation-a" title="Permalink to this heading">#</a></h2>
+<p>You can use pip to install the library:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">ojd_daps_skills</span><span class="nd">@git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nestauk</span><span class="o">/</span><span class="n">ojd_daps_skills</span><span class="nd">@dev</span><span class="c1">#egg=ojd_daps_skills</span>
 </pre></div>
 </div>
-<p>and</p>
+<p>You will also need to download <a class="reference external" href="https://spacy.io/models/en">spaCy’s</a> <code class="docutils literal notranslate"><span class="pre">en_core_web_sm</span></code> model:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">spacy</span> <span class="n">download</span> <span class="n">en_core_web_sm</span>
 </pre></div>
 </div>
-<p>If you don’t have access to Nesta’s S3 buckets then you will first need to download locally the neccessary models and data files (around 850MB) by running:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bash</span> <span class="n">public_download</span><span class="o">.</span><span class="n">sh</span>
-</pre></div>
+<p>When the package is first used it will automatically download a folder of neccessary data and models. This file is &lt; 1GB. Although you don’t need to have AWS credentials for this to work, you will need to download the <a class="reference external" href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a>.</p>
 </div>
-<p>this requires having the AWS commandline tools - if you don’t have these, you can download a zipped folder of the data by clicking on the following url: https://open-jobs-indicators.s3.eu-west-1.amazonaws.com/escoe_extension/downloaded_files.zip</p>
-<p>After downloading and unzipping, it is important that this folder is moved to the project’s parent folder - i.e. <code class="docutils literal notranslate"><span class="pre">ojd_daps_skills/</span></code>.</p>
-</section>
-<section id="pre-defined-configurations">
-<h2>Pre-defined configurations<a class="headerlink" href="#pre-defined-configurations" title="Permalink to this heading">#</a></h2>
-<p>There are three configurations available for running the skills extraction algorithm.</p>
+<div class="section" id="tl-dr-using-nesta-s-skills-extractor-library-a-name-usage-a">
+<h2>TL;DR: Using Nesta’s Skills Extractor library <a name="usage"></a><a class="headerlink" href="#tl-dr-using-nesta-s-skills-extractor-library-a-name-usage-a" title="Permalink to this heading">#</a></h2>
+<p>The library supports three key skills extraction functionalities :</p>
 <ol class="arabic simple">
-<li><p><span class="xref myst">extract_skills_toy</span> - Configuration for a toy taxonomy example, useful for testing.</p></li>
-<li><p><span class="xref myst">extract_skills_esco</span> - Configuration for extracting skills and matching them to the <a class="reference external" href="https://esco.ec.europa.eu/en">ESCO</a> skills taxonomy.</p></li>
-<li><p><span class="xref myst">extract_skills_lightcast</span> - Configuration for extracting skills and matching them to the <a class="reference external" href="https://skills.emsidata.com/">Lightcast</a> skills taxonomy.</p></li>
+<li><p>Extract AND map skills to a taxonomy of your choice;</p></li>
+<li><p>Extract skills from job adverts;</p></li>
+<li><p>Map a list of skills to a taxonomy of your choice.</p></li>
 </ol>
-<p>These configurations contain all the information about parameter values, and trained model and data locations.</p>
-</section>
-<section id="basic-usage">
-<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading">#</a></h2>
-<p>local=False: For usage by those with access to Nesta’s S3 bucket.</p>
-<p>local=True (default): For public usage</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ojd_daps_skills.pipeline.extract_skills.extract_skills</span> <span class="kn">import</span> <span class="n">ExtractSkills</span>
+<div class="section" id="extract-and-map-skills">
+<h3>1. Extract AND map skills<a class="headerlink" href="#extract-and-map-skills" title="Permalink to this heading">#</a></h3>
+<p>If you would like to extract AND map skills in one step, you are able to do so with the <code class="docutils literal notranslate"><span class="pre">extract_skills</span></code> method.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ojd_daps_skills.pipeline.extract_skills.extract_skills</span> <span class="kn">import</span> <span class="n">ExtractSkills</span> <span class="c1">#import the module</span>
 
-<span class="n">es</span> <span class="o">=</span> <span class="n">ExtractSkills</span><span class="p">(</span><span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;extract_skills_toy&quot;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">es</span> <span class="o">=</span> <span class="n">ExtractSkills</span><span class="p">(</span><span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;extract_skills_toy&quot;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#instantiate with toy taxonomy configuration file</span>
 
-<span class="n">es</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<span class="n">es</span><span class="o">.</span><span class="n">load</span><span class="p">()</span> <span class="c1">#load necessary models</span>
 
 <span class="n">job_adverts</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;You will need to have good communication and excellent mathematics skills. You will have experience in the IT sector.&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;You will need to have good excel and presenting skills. You need good excel software skills&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
+    <span class="s2">&quot;The job involves communication and maths skills&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;The job involves excel and presenting skills. You need good excel skills&quot;</span><span class="p">,</span>
+<span class="p">]</span> <span class="c1">#toy job advert examples</span>
 
-<span class="n">predicted_skills</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">get_skills</span><span class="p">(</span><span class="n">job_adverts</span><span class="p">)</span>
-<span class="n">job_skills_matched</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">map_skills</span><span class="p">(</span><span class="n">predicted_skills</span><span class="p">)</span>
+<span class="n">job_skills_matched</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">extract_skills</span><span class="p">(</span><span class="n">predicted_skills</span><span class="p">)</span> <span class="c1">#match and extract skills to toy taxonomy</span>
 
-<span class="n">predicted_skills</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[{</span><span class="s1">&#39;EXPERIENCE&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;experience in the IT sector&#39;</span><span class="p">],</span> <span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;communication&#39;</span><span class="p">,</span> <span class="s1">&#39;excellent mathematics skills&#39;</span><span class="p">],</span> <span class="s1">&#39;MULTISKILL&#39;</span><span class="p">:</span> <span class="p">[]},</span> <span class="p">{</span><span class="s1">&#39;EXPERIENCE&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;excel&#39;</span><span class="p">,</span> <span class="s1">&#39;presenting&#39;</span><span class="p">,</span> <span class="s1">&#39;excel software skills&#39;</span><span class="p">],</span> <span class="s1">&#39;MULTISKILL&#39;</span><span class="p">:</span> <span class="p">[]}]</span>
-<span class="n">job_skills_matched</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;excellent mathematics skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span> <span class="s1">&#39;S5&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;communication&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;use communication techniques&#39;</span><span class="p">,</span> <span class="s1">&#39;cdef&#39;</span><span class="p">))],</span> <span class="s1">&#39;EXPERIENCE&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;experience in the IT sector&#39;</span><span class="p">]},</span> <span class="p">{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;presenting&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;communication, collaboration and creativity&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;excel software skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;use spreadsheets software&#39;</span><span class="p">,</span> <span class="s1">&#39;abcd&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;excel&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;use spreadsheets software&#39;</span><span class="p">,</span> <span class="s1">&#39;abcd&#39;</span><span class="p">))]}]</span>
 </pre></div>
 </div>
-</section>
-<section id="user-defined-configurations">
-<h2>User-defined configurations<a class="headerlink" href="#user-defined-configurations" title="Permalink to this heading">#</a></h2>
-<p>For guidance about matching skills to a different taxonomy see <span class="xref myst">here</span>.</p>
-</section>
-<section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h2>
-<p>Some functions have tests, these can be checked by running</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
+<p>The outputs are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">job_skills_matched</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">[{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;maths skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;communicate with others&#39;</span><span class="p">,</span> <span class="s1">&#39;S1.1&#39;</span><span class="p">))]},</span> <span class="p">{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;presenting skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;communicate with others&#39;</span><span class="p">,</span> <span class="s1">&#39;S1.1&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;excel skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;computational skills&#39;</span><span class="p">,</span> <span class="s1">&#39;K2.1&#39;</span><span class="p">))]}]</span>
 </pre></div>
 </div>
-</section>
-<section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h2>
+</div>
+<div class="section" id="extract-skills">
+<h3>2. Extract skills<a class="headerlink" href="#extract-skills" title="Permalink to this heading">#</a></h3>
+<p>You can simply extract skills from a job advert or list of job adverts:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ojd_daps_skills.pipeline.extract_skills.extract_skills</span> <span class="kn">import</span> <span class="n">ExtractSkills</span> <span class="c1">#import the module</span>
+
+<span class="n">es</span> <span class="o">=</span> <span class="n">ExtractSkills</span><span class="p">(</span><span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;extract_skills_toy&quot;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#instantiate with toy taxonomy configuration file</span>
+
+<span class="n">es</span><span class="o">.</span><span class="n">load</span><span class="p">()</span> <span class="c1">#load necessary models</span>
+
+<span class="n">job_adverts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;The job involves communication and maths skills&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;The job involves excel and presenting skills. You need good excel skills&quot;</span><span class="p">,</span>
+<span class="p">]</span> <span class="c1">#toy job advert examples</span>
+
+<span class="n">predicted_skills</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">get_skills</span><span class="p">(</span><span class="n">job_adverts</span><span class="p">)</span> <span class="c1">#extract skills from list of job adverts</span>
+</pre></div>
+</div>
+<p>The outputs are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">predicted_skills</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">[{</span><span class="s1">&#39;EXPERIENCE&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;maths skills&#39;</span><span class="p">],</span> <span class="s1">&#39;MULTISKILL&#39;</span><span class="p">:</span> <span class="p">[]},</span> <span class="p">{</span><span class="s1">&#39;EXPERIENCE&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;presenting skills&#39;</span><span class="p">,</span> <span class="s1">&#39;excel skills&#39;</span><span class="p">],</span> <span class="s1">&#39;MULTISKILL&#39;</span><span class="p">:</span> <span class="p">[]}]</span>
+
+</pre></div>
+</div>
+</div>
+<div class="section" id="map-skills">
+<h3>3. Map skills<a class="headerlink" href="#map-skills" title="Permalink to this heading">#</a></h3>
+<p>You can map either the <code class="docutils literal notranslate"><span class="pre">predicted_skills</span></code> output from <code class="docutils literal notranslate"><span class="pre">get_stills</span></code> or simply map a list of skills to a taxonomy of your choice. In this instance, we map a list of skills:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ojd_daps_skills.pipeline.extract_skills.extract_skills</span> <span class="kn">import</span> <span class="n">ExtractSkills</span> <span class="c1">#import the module</span>
+
+<span class="n">es</span> <span class="o">=</span> <span class="n">ExtractSkills</span><span class="p">(</span><span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;extract_skills_toy&quot;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#instantiate with toy taxonomy configuration file</span>
+
+<span class="n">es</span><span class="o">.</span><span class="n">load</span><span class="p">()</span> <span class="c1">#load necessary models</span>
+
+<span class="n">skills_list</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Communication&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Excel skills&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;working with computers&quot;</span>
+<span class="p">]</span> <span class="c1">#list of skills (and/or multiskills) to be matched</span>
+
+<span class="n">skills_list_matched</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">map_skills</span><span class="p">(</span><span class="n">skills_list</span><span class="p">)</span> <span class="c1">#match formatted skills to toy taxonomy</span>
+</pre></div>
+</div>
+<p>The outputs are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">skills_list_matched</span>
+<span class="p">[{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;communication, collaboration and creativity&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">)),</span>
+   <span class="p">(</span><span class="s1">&#39;Excel skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span> <span class="s1">&#39;S5&#39;</span><span class="p">)),</span>
+   <span class="p">(</span><span class="s1">&#39;Communication&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;use communication techniques&#39;</span><span class="p">,</span> <span class="s1">&#39;cdef&#39;</span><span class="p">))]}]</span>
+</pre></div>
+</div>
+<p>Note:</p>
+<ul class="simple">
+<li><p>The option <code class="docutils literal notranslate"><span class="pre">local=False</span></code> can only be used by those with access to Nesta’s S3 bucket.</p></li>
+</ul>
+<p>For a more in depth description of parameters and methods, please refer to In depth: Using Nesta’s Skills Extractor library.</p>
+</div>
+</div>
+<div class="section" id="development-a-name-development-a">
+<h2>Development <a name="development"></a><a class="headerlink" href="#development-a-name-development-a" title="Permalink to this heading">#</a></h2>
+<p>If you’d like to modify or develop the source code you can clone it by first running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">nestauk</span><span class="o">/</span><span class="n">ojd_daps_skills</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<div class="section" id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Meet the data science cookiecutter <a class="reference external" href="http://nestauk.github.io/ds-cookiecutter/quickstart">requirements</a>, in brief:</p>
 <ul>
@@ -285,31 +328,56 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">touch</span> <span class="pre">.cookiecutter/state/conda-create.log</span></code></p></li>
 </ul>
 </li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to configure the development environment:</p>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to configure the development environment</p></li>
+<li><p>Download spacy model:</p>
 <ul>
-<li><p>Setup the conda environment</p></li>
-<li><p>Configure <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">spacy</span> <span class="pre">download</span> <span class="pre">en_core_web_sm</span></code></p></li>
 </ul>
 </li>
 </ul>
-</section>
-<section id="contributor-guidelines">
-<h2>Contributor guidelines<a class="headerlink" href="#contributor-guidelines" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md">Technical and working style guidelines</a></p>
-</section>
-</section>
+<p>If you don’t have the AWS CLI installed - you can download a zipped folder of the data <a class="reference external" href="https://open-jobs-indicators.s3.eu-west-1.amazonaws.com/escoe_extension/ojd_daps_skills_data.zip">by clicking here</a>. After downloading and unzipping, it is important that this folder is moved to the project’s parent folder - i.e. <code class="docutils literal notranslate"><span class="pre">ojd_daps_skills/</span></code>.</p>
+</div>
+<div class="section" id="project-structure">
+<h3>Project structure<a class="headerlink" href="#project-structure" title="Permalink to this heading">#</a></h3>
+<p>The project is split into three core pipeline folders:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner">skill_ner</a> - Training a Named Entity Recognition (NER) model to extract skills from job adverts.</p></li>
+<li><p><a class="reference external" href="https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping">skill_ner_mapping</a> - Matching skills to an existing skills taxonomy using semantic similarity.</p></li>
+<li><p><a class="reference external" href="https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/extract_skills">extract_skills</a> - User friendly functionality to extract and map skills from job adverts.</p></li>
+</ul>
+<p><img alt="" src="_images/overview.png" />
+<img alt="" src="_images/overview_example.png" /></p>
+<p>Much more about these steps can be found in <span class="xref myst">this report</span>.</p>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h3>
+<p>Some functions have tests, these can be checked by running</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="contributor-guidelines">
+<h3>Contributor guidelines<a class="headerlink" href="#contributor-guidelines" title="Permalink to this heading">#</a></h3>
+<p>The technical and working style guidelines can be found <a class="reference external" href="https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md">here</a>.</p>
+<hr class="docutils" />
+<p><small><p>Project based on <a target="_blank" href="https://github.com/nestauk/ds-cookiecutter">Nesta’s data science project template</a>
+(<a href="http://nestauk.github.io/ds-cookiecutter">Read the docs here</a>).
+</small></p>
+</div>
+</div>
+</div>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="skill_ner.html">
+          <a class="next-page" href="custom_usage.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Skill NER</div>
+                <div class="title">Extract Skills</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -356,14 +424,22 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">ojd_daps_skills</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#pre-defined-configurations">Pre-defined configurations</a></li>
-<li><a class="reference internal" href="#basic-usage">Basic usage</a></li>
-<li><a class="reference internal" href="#user-defined-configurations">User-defined configurations</a></li>
-<li><a class="reference internal" href="#testing">Testing</a></li>
+<li><a class="reference internal" href="#">Skills Extractor</a><ul>
+<li><a class="reference internal" href="#welcome-to-nesta-s-skills-extractor-library">Welcome to Nesta’s Skills Extractor Library</a></li>
+<li><a class="reference internal" href="#installation-a-name-installation-a">Installation <a name="installation"></a></a></li>
+<li><a class="reference internal" href="#tl-dr-using-nesta-s-skills-extractor-library-a-name-usage-a">TL;DR: Using Nesta’s Skills Extractor library <a name="usage"></a></a><ul>
+<li><a class="reference internal" href="#extract-and-map-skills">1. Extract AND map skills</a></li>
+<li><a class="reference internal" href="#extract-skills">2. Extract skills</a></li>
+<li><a class="reference internal" href="#map-skills">3. Map skills</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#development-a-name-development-a">Development <a name="development"></a></a><ul>
 <li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#project-structure">Project structure</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
 <li><a class="reference internal" href="#contributor-guidelines">Contributor guidelines</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -380,7 +456,6 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

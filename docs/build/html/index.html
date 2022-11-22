@@ -2,9 +2,9 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="ojd_daps_skills" href="about.html" />
+    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Skills Extractor" href="about.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.0.1, furo 2022.09.29"/>
         <title>Skills Extractor 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -154,8 +154,10 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="about.html">ojd_daps_skills</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">Skills Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="skill_ner.html">Skill NER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extract_skills.html">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
 </ul>
 
@@ -193,14 +195,35 @@
         <article role="main">
           <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="about.html">ojd_daps_skills</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="about.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="about.html#pre-defined-configurations">Pre-defined configurations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="about.html#basic-usage">Basic usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="about.html#user-defined-configurations">User-defined configurations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="about.html#testing">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="about.html#setup">Setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="about.html#contributor-guidelines">Contributor guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">Skills Extractor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about.html#welcome-to-nesta-s-skills-extractor-library">Welcome to Nesta’s Skills Extractor Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about.html#installation-a-name-installation-a">Installation <a name="installation"></a></a></li>
+<li class="toctree-l2"><a class="reference internal" href="about.html#tl-dr-using-nesta-s-skills-extractor-library-a-name-usage-a">TL;DR: Using Nesta’s Skills Extractor library <a name="usage"></a></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="about.html#extract-and-map-skills">1. Extract AND map skills</a></li>
+<li class="toctree-l3"><a class="reference internal" href="about.html#extract-skills">2. Extract skills</a></li>
+<li class="toctree-l3"><a class="reference internal" href="about.html#map-skills">3. Map skills</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="about.html#development-a-name-development-a">Development <a name="development"></a></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="about.html#setup">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="about.html#project-structure">Project structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="about.html#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="about.html#contributor-guidelines">Contributor guidelines</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="custom_usage.html#configuration-files-a-name-config-files-a">Configuration files <a name="config_files"></a></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="custom_usage.html#predefined-configurations-a-name-predefined-config-a">Predefined configurations <a name="predefined_config"></a></a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_usage.html#configuration-definitions-a-name-config-defs-a">Configuration definitions <a name="config_defs"></a></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="custom_usage.html#mapping-to-your-own-taxonomy-a-name-mapping-a">Mapping to your own taxonomy <a name="mapping"></a></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="custom_usage.html#define-your-own-configuration-file-a-name-custom-config-a">Define your own configuration file <a name="custom_config"></a></a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_usage.html#format-your-taxonomy-a-name-format-tax-a">Format your taxonomy <a name="format_tax"></a></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="skill_ner.html">Skill NER</a><ul>
@@ -219,18 +242,36 @@
 <li class="toctree-l2"><a class="reference internal" href="skill_ner.html#using-the-model-to-make-predictions-on-lots-of-job-adverts">Using the model to make predictions on lots of job adverts</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="extract_skills.html">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.local"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.local</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.load()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.get_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.get_skills()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.format_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.format_skills()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.map_skills()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.extract_skills()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model_card.html#model-card-full-pipeline-a-name-skills-ex-card-a">Model Card: Full pipeline <a name="skills_ex_card"></a></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#pipeline-high-level-summary">Pipeline High level summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#pipeline-intended-use">Pipeline Intended Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#pipeline-out-of-scope-uses">Pipeline Out of Scope Uses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#pipeline-metrics">Pipeline Metrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="model_card.html#comparison-1-degree-of-overlap-between-lightcasts-extracted-skills-and-our-lightcast-skills">Comparison 1 - Degree of overlap between Lightcast’s extracted skills and our Lightcast skills</a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_card.html#comparison-2-top-skills-per-occupation-comparison-to-esco-essential-skills-per-occupation">Comparison 2 - Top skills per occupation comparison to ESCO essential skills per occupation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_card.html#evaluation-manual-judgement-of-false-positive-rate">Evaluation - Manual judgement of false positive rate</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="model_card.html#model-card-extract-skills-a-name-extract-skills-card-a">Model Card: Extract Skills <a name="extract_skills_card"></a></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#summary">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#ner-metrics">NER Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#multiskill-metrics">Multiskill Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#caveats-and-recommendations">Caveats and Recommendations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="model_card.html#model-card-skills-to-taxonomy-mapping-a-name-mapping-card-a">Model Card: Skills to Taxonomy Mapping <a name="mapping_card"></a></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#id1">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#model-factors">Model Factors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#metrics-and-evaluation">Metrics and Evaluation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#id2">Caveats and Recommendations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extract_skills.html">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
 </ul>
 </div>
 
@@ -244,7 +285,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">ojd_daps_skills</div>
+                <div class="title">Skills Extractor</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -280,7 +321,6 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

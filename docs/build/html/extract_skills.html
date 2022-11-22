@@ -2,9 +2,9 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Skill NER" href="skill_ner.html" />
+    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Model Cards" href="model_card.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.0.1, furo 2022.09.29"/>
         <title>The ExtractSkills class - Skills Extractor 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -133,7 +133,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -154,8 +154,10 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="about.html">ojd_daps_skills</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">Skills Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Extract Skills</a></li>
 <li class="toctree-l1"><a class="reference internal" href="skill_ner.html">Skill NER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
 </ul>
 
@@ -185,7 +187,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -223,7 +225,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load">
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxonomy_embedding_file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_skill_matches_file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hier_name_mapper_file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load" title="Permalink to this definition">#</a></dt>
-<dd><p>loads all the neccessary data and models for this class</p>
+<dd><p>Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills,
+taxonomy embeddings), JobNER skills extraction class and SkillMapper skill mapper class.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -242,14 +245,15 @@ each entity onto a skill/skill group from a taxonomy</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills">
 <span class="sig-name descname"><span class="pre">map_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicted_skills</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.map_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills" title="Permalink to this definition">#</a></dt>
-<dd><p>For a list of predicted skills (the output of get_skills - a list of dicts), map each entity
+<dd><p>For a list of predicted skills (the output of get_skills - a list of dicts) OR a list of skills, map each entity
 onto a skill/skill group from a taxonomy</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills">
-<span class="sig-name descname"><span class="pre">extract_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_adverts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_to_tax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.extract_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills" title="Permalink to this definition">#</a></dt>
-<dd><p>Does both get_skills and extract_skills if map_to_tax=True, otherwise just does get_skills</p>
+<span class="sig-name descname"><span class="pre">extract_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_adverts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_skills</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ojd_daps_skills/pipeline/extract_skills/extract_skills.html#ExtractSkills.extract_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills" title="Permalink to this definition">#</a></dt>
+<dd><p>Does both get_skills and extract_skills. extract_skills can also take as input a list of
+skills if format_skills is True</p>
 </dd></dl>
 
 </dd></dl>
@@ -262,14 +266,14 @@ onto a skill/skill group from a taxonomy</p>
         
         <div class="related-pages">
           
-          <a class="prev-page" href="skill_ner.html">
+          <a class="prev-page" href="model_card.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Skill NER</div>
+                <div class="title">Model Cards</div>
                 
               </div>
             </a>
@@ -293,35 +297,8 @@ onto a skill/skill group from a taxonomy</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a><ul>
-<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code></a><ul>
-<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.local"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.local</span></code></a></li>
-<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.load()</span></code></a></li>
-<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.get_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.get_skills()</span></code></a></li>
-<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.format_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.format_skills()</span></code></a></li>
-<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.map_skills()</span></code></a></li>
-<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.extract_skills()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
@@ -331,7 +308,6 @@ onto a skill/skill group from a taxonomy</p>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>
