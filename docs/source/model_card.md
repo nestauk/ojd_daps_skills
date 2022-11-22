@@ -1,31 +1,16 @@
 # Model Cards
 
-- [Model Card: Full pipeline](#skills_ex_card)
-- [Pipeline High level summary](#pipeline_summary)
-- [Pipeline Intended Use](#intended_use)
-- [Pipeline Out of Scope Uses](#out_of_scope)
-- [Pipeline Metrics](#metrics)
-  - [Comparison 1 - Degree of overlap between Lightcast’s extracted skills and our Lightcast skills](#comp_1)
-  - [Comparison 2 - Top skills per occupation comparison to ESCO essential skills per occupation](#comp_2)
-  - [Evaluation - Manual judgement of false positive rate](#eval_man)
-- [Model Card: Extract Skills](#extract_skills)
-- [Summary](#extract_skills_summary)
-- [NER Metrics](#ner_metrics)
-- [Multiskill Metrics](#multiskill_metrics)
-- [Caveats and Recommendations](#caveats)
-- [Model Card: Skills to Taxonomy Mapping](#mapping_card)
-- [Summary](#mapping_summary)
-- [Model Factors](#mapping_factors)
-- [Metrics and Evaluation](#mapping_metrics)
-- [Caveats and Recommendations](#mapping_caveats)
-
 This page contains information for different parts of the skills extraction and mapping pipeline. We detail a high level summary of the pipeline and the pipeline's overall intended use. We then detail different parts of the pipeline.
 
 Developed by data scientists in Nesta’s Data Analytics Practice, (last updated on 15-11-2022).
 
+- [Model Card: Full pipeline](skills_ex_card)
+- [Model Card: Extract Skills](extract_skills_card)
+- [Model Card: Skills to Taxonomy Mapping](mapping_card)
+
 ## Model Card: Full pipeline <a name="skills_ex_card"></a>
 
-### Pipeline High level summary <a name="pipeline_summary"></a>
+### Pipeline High level summary
 
 ![](../../outputs/reports/figures/overview.png)
 
@@ -38,20 +23,20 @@ High level, the overall pipeline includes:
 
 For further information or feedback please contact Liz Gallagher, India Kerle or Cath Sleeman.
 
-### Pipeline Intended Use <a name="intended_use"></a>
+### Pipeline Intended Use
 
 - Extract skills from online job adverts and match extracted skills to a user’s skill taxonomy of choice, such as the European Commission’s European Skills, Competences, and Occupations (ESCO) or Lightcast’s Open Skills.
 - Intended users include researchers in labour statistics or related government bodies.
 
-### Pipeline Out of Scope Uses <a name="out_of_scope"></a>
+### Pipeline Out of Scope Uses
 
 Out of scope is extracting and matching skills from job adverts in non-English languages; extracting and matching skills from texts other than job adverts; drawing conclusions on new, unidentified skills.
 
 Skills extracted should not be used to determine skill demand without expert steer and input nor should be used for any discriminatory hiring practices.
 
-### Pipeline Metrics <a name="metrics"></a>
+### Pipeline Metrics
 
-#### Comparison 1 - Degree of overlap between Lightcast’s extracted skills and our Lightcast skills <a name="comp_1"></a>
+#### Comparison 1 - Degree of overlap between Lightcast’s extracted skills and our Lightcast skills
 
 - We compare extracted Lightcast skills from Lightcasts’ Open Skills algorithm and our current approach from 50 job adverts, with a minimum cosine similarity threshold between an extracted skill and taxonomy skill set to 0 to guarantee we only match at the skill level
 - We extract skills from 50 job adverts given the limits of use of Lightcast’s Open Skills algorithm
@@ -64,7 +49,7 @@ Skills extracted should not be used to determine skill demand without expert ste
 - For exact comparison, we set the cosine similarity threshold to 0 to guarantee extracted skill-level skills but would otherwise not do so. This allows for inappropriate skill matches i.e. ‘Eye Examination’ for a supply chain role
 - Lightcast’s algorithm may not be a single source of truth and it also extracts inappropriate skill matches i.e. ‘Flooring’ for a care assistant role
 
-#### Comparison 2 - Top skills per occupation comparison to ESCO essential skills per occupation <a name="comp_2"></a>
+#### Comparison 2 - Top skills per occupation comparison to ESCO essential skills per occupation
 
 We compare ESCO’s essential skills per occupation with the top ESCO-mapped skills per occupation. We identify top skills per occupation by:
 
@@ -84,23 +69,23 @@ At a high level, we find that:
 
 Similarly to the Lightcast approach, ESCO’s essential skill list per occupation may be very similar to the extracted skills, but not identical, leading to artificially lower overlap.
 
-#### Evaluation - Manual judgement of false positive rate <a name="eval_man"></a>
+#### Evaluation - Manual judgement of false positive rate
 
 We looked at the ESCO-mapped skills extracted from a random sample of 64 job adverts, and manually judged how many skills shouldn’t have been extracted from the job advert i.e. the false positives. Our results showed on average 27% of the skills extracted from a job advert are false positives.
 
 We also performed this analysis when looking at the skills extracted from 22 job adverts using Lightcast’s Skills Extractor API. We found on average 12% of the skills extracted from a job advert are false positives. We find on average Lightcast extract more skills (8 skills per job advert) than our algorithm does (5 skills per job advert).
 
-## Model Card: Extract Skills <a name="extract_skills"></a>
+## Model Card: Extract Skills <a name="extract_skills_card"></a>
 
 ![](../../outputs/reports/figures/predict_flow.png)
 
-### Summary <a name="extract_skills_summary"></a>
+### Summary
 
 - Train a NER spaCy component to extract skills, multiskills and experience from job adverts.
 - Predict whether or not a skill is multi-skill or not using scikit learn's SVM model. Features are length of entity; if 'and' in entity; if ',' in entity.
 - Split multiskills above 75 characters based on rules: split on and, duplicate verbs, split skill mentions. If multi skills are less than 75 characters but not split into single skills, keep in and treat them as single skills. If the length is more than 75 characters, still match to taxonomy. - The current predefined configurations ensures that every extracted skill will be matched to a taxonomy. However, if a skill is matched to the highest skill group, we label it as ‘unmatched’. Under this definition, we identify approximately 2% of skills as ‘unmatched’.
 
-### NER Metrics <a name="ner_metrics"></a>
+### NER Metrics
 
 - For the NER model, 375 job adverts were labelled for skills, multiskills and experience.
 - As of 15th November 2022, **5641** entities in 375 job adverts from OJO were labelled;
@@ -115,13 +100,13 @@ We also performed this analysis when looking at the skills extracted from 22 job
 
 - More details of the evaluation performance across both the NER model and the SVM model can be found in `outputs/models/ner_model/20220825/train_details.json`
 
-### Multiskill Metrics <a name="multiskill_metrics"></a>
+### Multiskill Metrics
 
 - The same training data and held out test set used for the NER model was used to evaluate the SVM model. On a held out test set, the SVM model achieved 91% accuracy.
 - When evaluating the multi skill splitter algorithm, 253 multiskill spans were labelled as ‘good’, ‘ok’ or ‘bad’ splits. Of the 253 multiskill spans, 80 were split. Of the splits, 66% were ‘good’, 9% were ‘ok’ and 25% were ‘bad’.
 - More details of the evaluation performance across both the NER model and the SVM model can be found in `outputs/models/ner_model/20220825/train_details.json`
 
-### Caveats and Recommendations <a name="caveats"></a>
+### Caveats and Recommendations
 
 - As we take a rules based approach to splitting multiskills, many multiskills do not get split. If a multiskill is unable to be split, we still match to a taxonomy of choice. Future work should add more rules to split multiskills.
 - We deduplicate at the extracted skill level but not at the taxonomy level. This means that if ‘excel skills’ is extracted twice from a job advert, it will be deduplicated and one will be matched to a taxonomy. However, if it mentions the strings "excel skills" and "Excel skill", both occurrences will be matched to a taxonomy and therefore the output will have two excel skills. If deduplicating is important, you will need to deduplicate at the taxonomy level.
@@ -132,7 +117,7 @@ We also performed this analysis when looking at the skills extracted from 22 job
 
 ![](../../outputs/reports/figures/overview_example.png)
 
-### Summary <a name="mapping_summary"></a>
+### Summary
 
 - Match to a taxonomy based on different similarity thresholds.
 - First try to match at the most granular level of a taxonomy based on cosine similarity between embedded, extracted skill and taxonomy skills. Extracted and taxonomy skills are embedded using huggingface’s sentence-transformers/all-MiniLM-L6-v2.
@@ -140,11 +125,11 @@ We also performed this analysis when looking at the skills extracted from 22 job
 - The first approach defines the taxonomy levels based on the number of skills where the similarity score is above a threshold. The second approach calculates the cosine distance between the extracted skill and the embedded taxonomy level description and chooses the closest taxonomy level.
 - if matching to ESCO, the top 100 skills from a sample of 100,000 job adverts are hard coded.
 
-### Model Factors <a name="mapping_factors"></a>
+### Model Factors
 
 The main factors in this matching approach are: 1) the different thresholds at different levels of a taxonomy and 2) the different matching approaches.
 
-### Metrics and Evaluation <a name="mapping_metrics"></a>
+### Metrics and Evaluation
 
 The thresholds at different levels of the taxonomy with different approaches are determined by labelling 100 unique randomly sampled skills and calculating the accuracy:
 
@@ -160,7 +145,7 @@ The thresholds at different levels of the taxonomy with different approaches are
 
 The configuration file contains the relevant thresholds per taxonomy. These thresholds will need to be manually tuned based on different taxonomies.
 
-### Caveats and Recommendations <a name="mapping_caveats"></a>
+### Caveats and Recommendations
 
 This step does less well when:
 

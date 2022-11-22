@@ -1,4 +1,4 @@
-# Extract Skills
+# Usage
 
 `extract_skills.py` combines the prediction of skills using code from [skill_ner](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner) with the mapping of skills to a taxonomy using code from [skill_ner_mapping](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping).
 
@@ -11,7 +11,7 @@ This page explains more about the custom usage of this class including creating 
   - [Define your own configuration file](#custom_config)
   - [Format your taxonomy](#format_tax)
 
-### Configuration files <a name="config_files"></a>
+## Configuration files <a name="config_files"></a>
 
 Core to the Extract Skills package, and in particular the taxonomy mapping functionality, is config files. These are included in the instantiation of the class, as so:
 
