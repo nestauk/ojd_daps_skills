@@ -11,18 +11,22 @@ hierarchy_levels: If a skill then which hierarchy levels is it in
 
 To run the script, python ojd_daps_skills/pipeline/skill_ner_mapping/lightcast_formatting.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
 """
+
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     save_to_s3,
 )
 from ojd_daps_skills import bucket_name
-from ojd_daps_skills.pipeline.evaluation.lightcast_evaluation import get_lightcast_access_token
+from ojd_daps_skills.pipeline.evaluation.lightcast_evaluation import (
+    get_lightcast_access_token,
+)
 
 import pandas as pd
 from argparse import ArgumentParser
 import requests
 import numpy as np
 import ast
+
 
 def get_lightcast_skills(access_code: str) -> pd.DataFrame:
     """Call lightcast API to return Open Skills taxonomy.
@@ -46,6 +50,7 @@ def get_lightcast_skills(access_code: str) -> pd.DataFrame:
         return pd.DataFrame(response.json()["data"])
     else:
         return response
+
 
 def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
     """Format lightcast skills taxonomy into format needed for
@@ -96,8 +101,12 @@ def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
         + "."
         + subcategory_skills["subcategory_id"].astype(str)
     )
-    subcategory_skills['subcategory_id'] = subcategory_skills['subcategory_id'].astype(str)
-    subcategory_skills_dict = subcategory_skills.set_index('subcategory_id')['id'].to_dict()
+    subcategory_skills["subcategory_id"] = subcategory_skills["subcategory_id"].astype(
+        str
+    )
+    subcategory_skills_dict = subcategory_skills.set_index("subcategory_id")[
+        "id"
+    ].to_dict()
     subcategory_skills = subcategory_skills[["id", "description"]]
     subcategory_skills = add_columns(subcategory_skills, "subcategory")
 
@@ -115,21 +124,28 @@ def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
             return [mapped_subcategory_ids]
         else:
             return hierarchy_levels
-    
+
     def remove_bad_hierarchy_levels(hierarchy_levels):
-        bad_hierarchy_levels = [['0.0', '0.0.100.0']]
+        bad_hierarchy_levels = [["0.0", "0.0.100.0"]]
         if hierarchy_levels == bad_hierarchy_levels:
             return np.nan
         else:
             return hierarchy_levels
 
-    lightcast_formatted = pd.concat([all_skills, category_skills, subcategory_skills]).reset_index(
-        drop=True
+    lightcast_formatted = pd.concat(
+        [all_skills, category_skills, subcategory_skills]
+    ).reset_index(drop=True)
+    lightcast_formatted[
+        "hierarchy_levels"
+    ] = lightcast_formatted.hierarchy_levels.apply(map_subcategory_ids).apply(
+        remove_bad_hierarchy_levels
     )
-    lightcast_formatted['hierarchy_levels'] = lightcast_formatted.hierarchy_levels.apply(map_subcategory_ids).apply(remove_bad_hierarchy_levels)
-    lightcast_formatted = lightcast_formatted.query('description.notna()').query('description != "NULL"')
-    
+    lightcast_formatted = lightcast_formatted.query("description.notna()").query(
+        'description != "NULL"'
+    )
+
     return lightcast_formatted
+
 
 if __name__ == "__main__":
 
@@ -146,8 +162,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument(
-        "--client-id",
-        help="EMSI skills API client id",
+        "--client-id", help="EMSI skills API client id",
     )
 
     parser.add_argument("--client-secret", help="EMSI skills API client secret.")
@@ -160,7 +175,7 @@ if __name__ == "__main__":
     access_code = get_lightcast_access_token(client_id, client_secret)
     lightcast_skills = get_lightcast_skills(access_code)
     lightcast_skills_formatted = format_lightcast_skills(lightcast_skills)
-    
+
     hier_name_mapper = (
         lightcast_skills_formatted[lightcast_skills_formatted["type"] != "skill"][
             ["id", "description"]
