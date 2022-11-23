@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="#" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Extract Skills" href="custom_usage.html" /><link rel="prev" title="&lt;no title&gt;" href="index.html" />
+    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="#" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Custom Usage" href="custom_usage.html" /><link rel="prev" title="&lt;no title&gt;" href="index.html" />
 
     <meta name="generator" content="sphinx-5.0.1, furo 2022.09.29"/>
         <title>Skills Extractor - Skills Extractor 1.0.0 documentation</title>
@@ -142,8 +142,11 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/Nesta_Logo_Blue_RGB.png" alt="Logo"/>
+  </div>
   
   <span class="sidebar-brand-text">Skills Extractor 1.0.0 documentation</span>
   
@@ -155,9 +158,9 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Skills Extractor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Extract Skills</a></li>
-<li class="toctree-l1"><a class="reference internal" href="skill_ner.html">Skill NER</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Custom Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labelling.html">Entity Labelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extract_skills.html">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
 </ul>
 
@@ -204,6 +207,7 @@
 <h2>Welcome to Nesta’s Skills Extractor Library<a class="headerlink" href="#welcome-to-nesta-s-skills-extractor-library" title="Permalink to this heading">#</a></h2>
 <p>Welcome to the documentation of Nesta’s skills extractor library.</p>
 <p>This page contains information on how to install and use Nesta’s skills extraction library. The skills library allows you to extract skills phrases from job advertisement texts and maps them onto a skills taxonomy of your choice.</p>
+<p><img alt="" src="_images/highlevel_example.png" /></p>
 <p>We currently support three different taxonomies to map onto: the <a class="reference external" href="https://esco.ec.europa.eu/en/about-esco/what-esco">European Commission’s European Skills, Competences, and Occupations (ESCO)</a>, <a class="reference external" href="https://skills.lightcast.io/">Lightcast’s Open Skills</a> and a “toy” taxonomy developed internally for the purpose of testing.</p>
 <p>If you’d like to learn more about the models used in the library, please refer to the <a class="reference external" href="https://nestauk.github.io/ojd_daps_skills/docs/source/model_card.md">model card page</a>.</p>
 </div>
@@ -237,17 +241,16 @@
 <span class="n">es</span><span class="o">.</span><span class="n">load</span><span class="p">()</span> <span class="c1">#load necessary models</span>
 
 <span class="n">job_adverts</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;The job involves communication and maths skills&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;The job involves excel and presenting skills. You need good excel skills&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;The job involves communication skills and maths skills&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;The job involves Excel skills. You will also need good presentation skills&quot;</span>
 <span class="p">]</span> <span class="c1">#toy job advert examples</span>
 
-<span class="n">job_skills_matched</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">extract_skills</span><span class="p">(</span><span class="n">predicted_skills</span><span class="p">)</span> <span class="c1">#match and extract skills to toy taxonomy</span>
-
+<span class="n">job_skills_matched</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">extract_skills</span><span class="p">(</span><span class="n">job_adverts</span><span class="p">)</span> <span class="c1">#match and extract skills to toy taxonomy</span>
 </pre></div>
 </div>
 <p>The outputs are as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">job_skills_matched</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;maths skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;communicate with others&#39;</span><span class="p">,</span> <span class="s1">&#39;S1.1&#39;</span><span class="p">))]},</span> <span class="p">{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;presenting skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;communicate with others&#39;</span><span class="p">,</span> <span class="s1">&#39;S1.1&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;excel skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;computational skills&#39;</span><span class="p">,</span> <span class="s1">&#39;K2.1&#39;</span><span class="p">))]}]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">[{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;communication skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;communication, collaboration and creativity&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;maths skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span> <span class="s1">&#39;S5&#39;</span><span class="p">))]},</span> <span class="p">{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;Excel skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span> <span class="s1">&#39;S5&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;presentation skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;communication, collaboration and creativity&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">))]}]</span>
 </pre></div>
 </div>
 </div>
@@ -261,8 +264,8 @@
 <span class="n">es</span><span class="o">.</span><span class="n">load</span><span class="p">()</span> <span class="c1">#load necessary models</span>
 
 <span class="n">job_adverts</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;The job involves communication and maths skills&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;The job involves excel and presenting skills. You need good excel skills&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;The job involves communication skills and maths skills&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;The job involves Excel skills. You will also need good presentation skills&quot;</span>
 <span class="p">]</span> <span class="c1">#toy job advert examples</span>
 
 <span class="n">predicted_skills</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">get_skills</span><span class="p">(</span><span class="n">job_adverts</span><span class="p">)</span> <span class="c1">#extract skills from list of job adverts</span>
@@ -270,7 +273,7 @@
 </div>
 <p>The outputs are as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">predicted_skills</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[{</span><span class="s1">&#39;EXPERIENCE&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;maths skills&#39;</span><span class="p">],</span> <span class="s1">&#39;MULTISKILL&#39;</span><span class="p">:</span> <span class="p">[]},</span> <span class="p">{</span><span class="s1">&#39;EXPERIENCE&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;presenting skills&#39;</span><span class="p">,</span> <span class="s1">&#39;excel skills&#39;</span><span class="p">],</span> <span class="s1">&#39;MULTISKILL&#39;</span><span class="p">:</span> <span class="p">[]}]</span>
+<span class="p">[{</span><span class="s1">&#39;EXPERIENCE&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;communication skills&#39;</span><span class="p">,</span> <span class="s1">&#39;maths skills&#39;</span><span class="p">],</span> <span class="s1">&#39;MULTISKILL&#39;</span><span class="p">:</span> <span class="p">[]},</span> <span class="p">{</span><span class="s1">&#39;EXPERIENCE&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Excel skills&#39;</span><span class="p">,</span> <span class="s1">&#39;presentation skills&#39;</span><span class="p">],</span> <span class="s1">&#39;MULTISKILL&#39;</span><span class="p">:</span> <span class="p">[]}]</span>
 
 </pre></div>
 </div>
@@ -295,10 +298,7 @@
 </div>
 <p>The outputs are as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">skills_list_matched</span>
-<span class="p">[{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span>
-    <span class="p">(</span><span class="s1">&#39;communication, collaboration and creativity&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">)),</span>
-   <span class="p">(</span><span class="s1">&#39;Excel skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span> <span class="s1">&#39;S5&#39;</span><span class="p">)),</span>
-   <span class="p">(</span><span class="s1">&#39;Communication&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;use communication techniques&#39;</span><span class="p">,</span> <span class="s1">&#39;cdef&#39;</span><span class="p">))]}]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">[{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;Excel skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span> <span class="s1">&#39;S5&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;Communication&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;use communication techniques&#39;</span><span class="p">,</span> <span class="s1">&#39;cdef&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;communication, collaboration and creativity&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">))]}]</span>
 </pre></div>
 </div>
 <p>Note:</p>
@@ -345,9 +345,9 @@
 <li><p><a class="reference external" href="https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping">skill_ner_mapping</a> - Matching skills to an existing skills taxonomy using semantic similarity.</p></li>
 <li><p><a class="reference external" href="https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/extract_skills">extract_skills</a> - User friendly functionality to extract and map skills from job adverts.</p></li>
 </ul>
+<p>Much more about these steps can be found in each of the pipeline folder READMEs.</p>
 <p><img alt="" src="_images/overview.png" />
 <img alt="" src="_images/overview_example.png" /></p>
-<p>Much more about these steps can be found in <span class="xref myst">this report</span>.</p>
 </div>
 <div class="section" id="testing">
 <h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h3>
@@ -377,7 +377,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Extract Skills</div>
+                <div class="title">Custom Usage</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
