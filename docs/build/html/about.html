@@ -159,6 +159,7 @@
   <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Skills Extractor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Custom Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_summary.html">Pipeline summary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labelling.html">Entity Labelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extract_skills.html">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
@@ -209,7 +210,7 @@
 <p>This page contains information on how to install and use Nesta’s skills extraction library. The skills library allows you to extract skills phrases from job advertisement texts and maps them onto a skills taxonomy of your choice.</p>
 <p><img alt="" src="_images/highlevel_example.png" /></p>
 <p>We currently support three different taxonomies to map onto: the <a class="reference external" href="https://esco.ec.europa.eu/en/about-esco/what-esco">European Commission’s European Skills, Competences, and Occupations (ESCO)</a>, <a class="reference external" href="https://skills.lightcast.io/">Lightcast’s Open Skills</a> and a “toy” taxonomy developed internally for the purpose of testing.</p>
-<p>If you’d like to learn more about the models used in the library, please refer to the <a class="reference external" href="https://nestauk.github.io/ojd_daps_skills/docs/source/model_card.md">model card page</a>.</p>
+<p>If you’d like to learn more about the models used in the library, please refer to the <a class="reference external" href="https://nestauk.github.io/ojd_daps_skills/build/html/model_card.html">model card page</a>.</p>
 </div>
 <div class="section" id="installation-a-name-installation-a">
 <h2>Installation <a name="installation"></a><a class="headerlink" href="#installation-a-name-installation-a" title="Permalink to this heading">#</a></h2>
@@ -221,7 +222,10 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">spacy</span> <span class="n">download</span> <span class="n">en_core_web_sm</span>
 </pre></div>
 </div>
-<p>When the package is first used it will automatically download a folder of neccessary data and models. This file is &lt; 1GB. Although you don’t need to have AWS credentials for this to work, you will need to download the <a class="reference external" href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a>.</p>
+<div class="section" id="aws-cli">
+<h3>AWS CLI<a class="headerlink" href="#aws-cli" title="Permalink to this heading">#</a></h3>
+<p>When the package is first used it will automatically download a folder of neccessary data and models. This file is ~ 1GB. Although you don’t need to have AWS credentials for this to work, you will need to download the <a class="reference external" href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a>.</p>
+</div>
 </div>
 <div class="section" id="tl-dr-using-nesta-s-skills-extractor-library-a-name-usage-a">
 <h2>TL;DR: Using Nesta’s Skills Extractor library <a name="usage"></a><a class="headerlink" href="#tl-dr-using-nesta-s-skills-extractor-library-a-name-usage-a" title="Permalink to this heading">#</a></h2>
@@ -231,6 +235,7 @@
 <li><p>Extract skills from job adverts;</p></li>
 <li><p>Map a list of skills to a taxonomy of your choice.</p></li>
 </ol>
+<p>The option <code class="docutils literal notranslate"><span class="pre">local=False</span></code> can only be used by those with access to Nesta’s S3 bucket.</p>
 <div class="section" id="extract-and-map-skills">
 <h3>1. Extract AND map skills<a class="headerlink" href="#extract-and-map-skills" title="Permalink to this heading">#</a></h3>
 <p>If you would like to extract AND map skills in one step, you are able to do so with the <code class="docutils literal notranslate"><span class="pre">extract_skills</span></code> method.</p>
@@ -301,11 +306,6 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="p">[{</span><span class="s1">&#39;SKILL&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;Excel skills&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span> <span class="s1">&#39;S5&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;Communication&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;use communication techniques&#39;</span><span class="p">,</span> <span class="s1">&#39;cdef&#39;</span><span class="p">)),</span> <span class="p">(</span><span class="s1">&#39;working with computers&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;communication, collaboration and creativity&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">))]}]</span>
 </pre></div>
 </div>
-<p>Note:</p>
-<ul class="simple">
-<li><p>The option <code class="docutils literal notranslate"><span class="pre">local=False</span></code> can only be used by those with access to Nesta’s S3 bucket.</p></li>
-</ul>
-<p>For a more in depth description of parameters and methods, please refer to In depth: Using Nesta’s Skills Extractor library.</p>
 </div>
 </div>
 <div class="section" id="development-a-name-development-a">
@@ -347,7 +347,8 @@
 </ul>
 <p>Much more about these steps can be found in each of the pipeline folder READMEs.</p>
 <p><img alt="" src="_images/overview.png" />
-<img alt="" src="_images/overview_example.png" /></p>
+<img alt="" src="_images/overview_example.png" />
+<em>An example of extracting skills and mapping them to the ESCO taxonomy.</em></p>
 </div>
 <div class="section" id="testing">
 <h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h3>
@@ -426,7 +427,10 @@
             <ul>
 <li><a class="reference internal" href="#">Skills Extractor</a><ul>
 <li><a class="reference internal" href="#welcome-to-nesta-s-skills-extractor-library">Welcome to Nesta’s Skills Extractor Library</a></li>
-<li><a class="reference internal" href="#installation-a-name-installation-a">Installation <a name="installation"></a></a></li>
+<li><a class="reference internal" href="#installation-a-name-installation-a">Installation <a name="installation"></a></a><ul>
+<li><a class="reference internal" href="#aws-cli">AWS CLI</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#tl-dr-using-nesta-s-skills-extractor-library-a-name-usage-a">TL;DR: Using Nesta’s Skills Extractor library <a name="usage"></a></a><ul>
 <li><a class="reference internal" href="#extract-and-map-skills">1. Extract AND map skills</a></li>
 <li><a class="reference internal" href="#extract-skills">2. Extract skills</a></li>

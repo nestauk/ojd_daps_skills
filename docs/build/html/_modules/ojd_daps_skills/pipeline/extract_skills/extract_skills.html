@@ -142,8 +142,11 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../../../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../../_static/Nesta_Logo_Blue_RGB.png" alt="Logo"/>
+  </div>
   
   <span class="sidebar-brand-text">Skills Extractor 1.0.0 documentation</span>
   
@@ -294,7 +297,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">base_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;ner_model_path&quot;</span><span class="p">]</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+<div class="viewcode-block" id="ExtractSkills.load"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">taxonomy_embedding_file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prev_skill_matches_file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -407,9 +410,9 @@
             <span class="p">)</span>
             <span class="c1"># self.hard_coded_skills = {1654958883999821: {&#39;ojo_skill&#39;: &#39;maths skills&#39;, &#39;match_skill&#39;: &#39;communicate with others&#39;, &#39;match_id&#39;: &#39;S1.1&#39;}}</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">hard_coded_skills</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hard_coded_skills</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="nf">format_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skills</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<div class="viewcode-block" id="ExtractSkills.format_skills"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.format_skills">[docs]</a>    <span class="k">def</span> <span class="nf">format_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skills</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Format list of skills from a single job advert to be in the format needed for mapping to a taxonomy. Also applies the</span>
 <span class="sd">        multiskill splitting to any skills predicted to be multiskills.</span>
 
@@ -449,9 +452,9 @@
             <span class="sa">f</span><span class="s2">&quot;reformatted list of skills to map to &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">taxonomy_name</span><span class="si">}</span><span class="s2">&#39; taxonomy&quot;</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="n">skill_dict</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">skill_dict</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">get_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_adverts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
+<div class="viewcode-block" id="ExtractSkills.get_skills"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.get_skills">[docs]</a>    <span class="k">def</span> <span class="nf">get_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_adverts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
         <span class="sd">&quot;&quot;&quot;Predict skill/multiskill/experience entities using the NER model in inputted job adverts.</span>
 <span class="sd">        Multiskill entities will be split up and converted into individual skill entities where possible.</span>
 
@@ -490,19 +493,18 @@
                     <span class="n">skills</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ent_text</span><span class="p">)</span>
             <span class="n">predicted_skills</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">skills</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">predicted_skills</span>
+        <span class="k">return</span> <span class="n">predicted_skills</span></div>
 
-    <span class="k">def</span> <span class="nf">map_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicted_skills</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
+<div class="viewcode-block" id="ExtractSkills.map_skills"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills">[docs]</a>    <span class="k">def</span> <span class="nf">map_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicted_skills</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
         <span class="sd">&quot;&quot;&quot;Map skills from job advert(s) to a skills taxonomy. If predicted_skills is a list of skills, it will be formatted accordingly to</span>
 <span class="sd">        be mapped to a skills taxonomy. All multiskill entities will be mapped in the same way as skill entities are.</span>
 
 <span class="sd">        :param predicted_skills: A list of skill entities either in the form of a list of strings (assumed to be from the same job advert) or a list of the dictionaries outputted from the get_skills function.</span>
 <span class="sd">        :type predicted_skills: list of strings or a list of dicts</span>
 
-<span class="sd">        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every</span>
-<span class="sd">        skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one.</span>
-<span class="sd">        Each dictionary is in the format {&#39;SKILL&#39;: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, &#39;EXPERIENCE&#39;: [...]]</span>
+<span class="sd">        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one. Each dictionary is in the format {&#39;SKILL&#39;: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, &#39;EXPERIENCE&#39;: [...]]</span>
 <span class="sd">        :rtype: list of dictionaries for each job advert.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">predicted_skills</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">predicted_skills</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_skills</span><span class="p">(</span><span class="n">predicted_skills</span><span class="p">)</span>
@@ -605,9 +607,9 @@
                             <span class="n">skills_to_hard_code</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">skill</span><span class="p">)</span>
                     <span class="n">formatted_skill</span><span class="p">[</span><span class="s2">&quot;SKILL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">skills_to_hard_code</span>
 
-        <span class="k">return</span> <span class="n">job_skills_matched_formatted</span>
+        <span class="k">return</span> <span class="n">job_skills_matched_formatted</span></div>
 
-    <span class="k">def</span> <span class="nf">extract_skills</span><span class="p">(</span>
+<div class="viewcode-block" id="ExtractSkills.extract_skills"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills">[docs]</a>    <span class="k">def</span> <span class="nf">extract_skills</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">job_adverts_skills</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">format_skills</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Extract skills from job adverts using a trained NER model and map them to a taxonomy - combines both get_skills and extract_skills. Experiences will also be extracted, but not mapped to a taxonomy. It can also take as input a list of</span>
@@ -619,9 +621,7 @@
 <span class="sd">        :param format_skills: If the input is a list of skills (rather than job adverts) then this needs to be set to True in order to format them correctly, default to False.</span>
 <span class="sd">        :type format_skills: bool</span>
 
-<span class="sd">        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every</span>
-<span class="sd">        skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the &quot;SKILL&quot; key.</span>
-<span class="sd">        Each dictionary is in the format {&#39;SKILL&#39;: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, &#39;EXPERIENCE&#39;: [...]]</span>
+<span class="sd">        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the &quot;SKILL&quot; key. Each dictionary is in the format {&#39;SKILL&#39;: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, &#39;EXPERIENCE&#39;: [...]]</span>
 <span class="sd">        :rtype: list of dictionaries for each job advert.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -635,7 +635,7 @@
 
         <span class="n">mapped_skills</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_skills</span><span class="p">(</span><span class="n">skills</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">mapped_skills</span></div>
+        <span class="k">return</span> <span class="n">mapped_skills</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

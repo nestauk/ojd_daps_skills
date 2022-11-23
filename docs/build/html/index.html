@@ -159,6 +159,7 @@
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="about.html">Skills Extractor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Custom Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_summary.html">Pipeline summary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labelling.html">Entity Labelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extract_skills.html">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
@@ -200,7 +201,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="about.html">Skills Extractor</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="about.html#welcome-to-nesta-s-skills-extractor-library">Welcome to Nesta’s Skills Extractor Library</a></li>
-<li class="toctree-l2"><a class="reference internal" href="about.html#installation-a-name-installation-a">Installation <a name="installation"></a></a></li>
+<li class="toctree-l2"><a class="reference internal" href="about.html#installation-a-name-installation-a">Installation <a name="installation"></a></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="about.html#aws-cli">AWS CLI</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="about.html#tl-dr-using-nesta-s-skills-extractor-library-a-name-usage-a">TL;DR: Using Nesta’s Skills Extractor library <a name="usage"></a></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="about.html#extract-and-map-skills">1. Extract AND map skills</a></li>
 <li class="toctree-l3"><a class="reference internal" href="about.html#extract-skills">2. Extract skills</a></li>
@@ -223,28 +227,27 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="custom_usage.html#mapping-to-your-own-taxonomy-a-name-mapping-a">Mapping to your own taxonomy <a name="mapping"></a></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="custom_usage.html#define-your-own-configuration-file-a-name-custom-config-a">Define your own configuration file <a name="custom_config"></a></a></li>
 <li class="toctree-l3"><a class="reference internal" href="custom_usage.html#format-your-taxonomy-a-name-format-tax-a">Format your taxonomy <a name="format_tax"></a></a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_usage.html#define-your-own-configuration-file-a-name-custom-config-a">Define your own configuration file <a name="custom_config"></a></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_summary.html">Pipeline summary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipeline_summary.html#intended-use">Intended Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline_summary.html#out-of-scope-uses">Out of Scope Uses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipeline_summary.html#metrics">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pipeline_summary.html#comparison-1-top-skill-groups-per-occupation-comparison-to-esco-essential-skill-groups-per-occupation">Comparison 1 - Top skill groups per occupation comparison to ESCO essential skill groups per occupation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipeline_summary.html#comparison-2-degree-of-overlap-between-lightcasts-extracted-skills-and-our-lightcast-skills">Comparison 2 - Degree of overlap between Lightcast’s extracted skills and our Lightcast skills</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipeline_summary.html#evaluation-manual-judgement-of-false-positive-rate">Evaluation - Manual judgement of false positive rate</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="model_card.html#model-card-full-pipeline-a-name-skills-ex-card-a">Model Card: Full pipeline <a name="skills_ex_card"></a></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="model_card.html#pipeline-high-level-summary">Pipeline High level summary</a></li>
-<li class="toctree-l3"><a class="reference internal" href="model_card.html#pipeline-intended-use">Pipeline Intended Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="model_card.html#pipeline-out-of-scope-uses">Pipeline Out of Scope Uses</a></li>
-<li class="toctree-l3"><a class="reference internal" href="model_card.html#pipeline-metrics">Pipeline Metrics</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="model_card.html#comparison-1-degree-of-overlap-between-lightcasts-extracted-skills-and-our-lightcast-skills">Comparison 1 - Degree of overlap between Lightcast’s extracted skills and our Lightcast skills</a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_card.html#comparison-2-top-skills-per-occupation-comparison-to-esco-essential-skills-per-occupation">Comparison 2 - Top skills per occupation comparison to ESCO essential skills per occupation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_card.html#evaluation-manual-judgement-of-false-positive-rate">Evaluation - Manual judgement of false positive rate</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="model_card.html#model-card-extract-skills-a-name-extract-skills-card-a">Model Card: Extract Skills <a name="extract_skills_card"></a></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model_card.html#model-card-named-entity-recognition-model-a-name-extract-skills-card-a">Model Card: Named Entity Recognition Model <a name="extract_skills_card"></a></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="model_card.html#summary">Summary</a></li>
-<li class="toctree-l3"><a class="reference internal" href="model_card.html#training-data">Training data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_card.html#training">Training</a></li>
 <li class="toctree-l3"><a class="reference internal" href="model_card.html#ner-metrics">NER Metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="model_card.html#multiskill-metrics">Multiskill Metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="model_card.html#caveats-and-recommendations">Caveats and Recommendations</a></li>
@@ -253,7 +256,6 @@
 <li class="toctree-l2"><a class="reference internal" href="model_card.html#model-card-skills-to-taxonomy-mapping-a-name-mapping-card-a">Model Card: Skills to Taxonomy Mapping <a name="mapping_card"></a></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="model_card.html#id1">Summary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="model_card.html#model-factors">Model Factors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="model_card.html#metrics-and-evaluation">Metrics and Evaluation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="model_card.html#id2">Caveats and Recommendations</a></li>
 </ul>
 </li>

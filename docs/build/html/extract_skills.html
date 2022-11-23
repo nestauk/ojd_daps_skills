@@ -243,12 +243,12 @@ skills and map them to a taxonomy if format_skills is set to True.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every</p>
+<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the “SKILL” key. Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of dictionaries for each job advert.</p>
 </dd>
 </dl>
-<p>skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the “SKILL” key.
-Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]
-:rtype: list of dictionaries for each job advert.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -279,12 +279,12 @@ be mapped to a skills taxonomy. All multiskill entities will be mapped in the sa
 <dd class="field-odd"><p><strong>predicted_skills</strong> (<em>list of strings</em><em> or </em><em>a list of dicts</em>) – A list of skill entities either in the form of a list of strings (assumed to be from the same job advert) or a list of the dictionaries outputted from the get_skills function.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every</p>
+<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one. Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of dictionaries for each job advert.</p>
 </dd>
 </dl>
-<p>skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one.
-Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]
-:rtype: list of dictionaries for each job advert.</p>
 </dd></dl>
 
 <dl class="py method">
