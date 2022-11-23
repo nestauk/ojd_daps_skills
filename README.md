@@ -10,6 +10,8 @@ Welcome to the documentation of Nesta's skills extractor library.
 
 This page contains information on how to install and use Nesta's skills extraction library. The skills library allows you to extract skills phrases from job advertisement texts and maps them onto a skills taxonomy of your choice.
 
+![](outputs/reports/figures/highlevel_example.png)
+
 We currently support three different taxonomies to map onto: the [European Commission’s European Skills, Competences, and Occupations (ESCO)](https://esco.ec.europa.eu/en/about-esco/what-esco), [Lightcast’s Open Skills](https://skills.lightcast.io/) and a “toy” taxonomy developed internally for the purpose of testing.
 
 If you'd like to learn more about the models used in the library, please refer to the [model card page](https://nestauk.github.io/ojd_daps_skills/docs/source/model_card.md).
@@ -50,19 +52,18 @@ es = ExtractSkills(config_name="extract_skills_toy", local=True) #instantiate wi
 es.load() #load necessary models
 
 job_adverts = [
-    "The job involves communication and maths skills",
-    "The job involves excel and presenting skills. You need good excel skills",
+    "The job involves communication skills and maths skills",
+    "The job involves Excel skills. You will also need good presentation skills"
 ] #toy job advert examples
 
-job_skills_matched = es.extract_skills(predicted_skills) #match and extract skills to toy taxonomy
-
+job_skills_matched = es.extract_skills(job_adverts) #match and extract skills to toy taxonomy
 ```
 
 The outputs are as follows:
 
 ```
 job_skills_matched
->>> [{'SKILL': [('maths skills', ('communicate with others', 'S1.1'))]}, {'SKILL': [('presenting skills', ('communicate with others', 'S1.1')), ('excel skills', ('computational skills', 'K2.1'))]}]
+>>> [{'SKILL': [('communication skills', ('communication, collaboration and creativity', 'S1')), ('maths skills', ('working with computers', 'S5'))]}, {'SKILL': [('Excel skills', ('working with computers', 'S5')), ('presentation skills', ('communication, collaboration and creativity', 'S1'))]}]
 ```
 
 #### 2. Extract skills
@@ -77,8 +78,8 @@ es = ExtractSkills(config_name="extract_skills_toy", local=True) #instantiate wi
 es.load() #load necessary models
 
 job_adverts = [
-    "The job involves communication and maths skills",
-    "The job involves excel and presenting skills. You need good excel skills",
+    "The job involves communication skills and maths skills",
+    "The job involves Excel skills. You will also need good presentation skills"
 ] #toy job advert examples
 
 predicted_skills = es.get_skills(job_adverts) #extract skills from list of job adverts
@@ -88,7 +89,7 @@ The outputs are as follows:
 
 ```
 predicted_skills
->>> [{'EXPERIENCE': [], 'SKILL': ['maths skills'], 'MULTISKILL': []}, {'EXPERIENCE': [], 'SKILL': ['presenting skills', 'excel skills'], 'MULTISKILL': []}]
+[{'EXPERIENCE': [], 'SKILL': ['communication skills', 'maths skills'], 'MULTISKILL': []}, {'EXPERIENCE': [], 'SKILL': ['Excel skills', 'presentation skills'], 'MULTISKILL': []}]
 
 ```
 
@@ -116,10 +117,7 @@ The outputs are as follows:
 
 ```
 skills_list_matched
-[{'SKILL': [('working with computers',
-    ('communication, collaboration and creativity', 'S1')),
-   ('Excel skills', ('working with computers', 'S5')),
-   ('Communication', ('use communication techniques', 'cdef'))]}]
+>>> [{'SKILL': [('Excel skills', ('working with computers', 'S5')), ('Communication', ('use communication techniques', 'cdef')), ('working with computers', ('communication, collaboration and creativity', 'S1'))]}]
 ```
 
 Note:
@@ -157,10 +155,10 @@ The project is split into three core pipeline folders:
 - [skill_ner_mapping](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/skill_ner_mapping) - Matching skills to an existing skills taxonomy using semantic similarity.
 - [extract_skills](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/pipeline/extract_skills) - User friendly functionality to extract and map skills from job adverts.
 
+Much more about these steps can be found in each of the pipeline folder READMEs.
+
 ![](outputs/reports/figures/overview.png)
 ![](outputs/reports/figures/overview_example.png)
-
-Much more about these steps can be found in [this report](outputs/reports/skills_extraction.md).
 
 ### Testing
 
