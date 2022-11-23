@@ -6,6 +6,7 @@
 .. toctree::
    about.md
    custom_usage.md
+   pipeline_summary.md
    model_card.md
    labelling.md
    extract_skills

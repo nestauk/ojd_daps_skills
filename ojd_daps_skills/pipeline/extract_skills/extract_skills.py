@@ -304,10 +304,9 @@ class ExtractSkills(object):
         :param predicted_skills: A list of skill entities either in the form of a list of strings (assumed to be from the same job advert) or a list of the dictionaries outputted from the get_skills function.
         :type predicted_skills: list of strings or a list of dicts
 
-        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every
-        skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one.
-        Each dictionary is in the format {'SKILL': [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, 'EXPERIENCE': [...]]
+        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one. Each dictionary is in the format {'SKILL': [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, 'EXPERIENCE': [...]]
         :rtype: list of dictionaries for each job advert.
+
         """
         if isinstance(predicted_skills[0], str):
             predicted_skills = self.format_skills(predicted_skills)
@@ -424,9 +423,7 @@ class ExtractSkills(object):
         :param format_skills: If the input is a list of skills (rather than job adverts) then this needs to be set to True in order to format them correctly, default to False.
         :type format_skills: bool
 
-        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every
-        skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the "SKILL" key.
-        Each dictionary is in the format {'SKILL': [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, 'EXPERIENCE': [...]]
+        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the "SKILL" key. Each dictionary is in the format {'SKILL': [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, 'EXPERIENCE': [...]]
         :rtype: list of dictionaries for each job advert.
 
         """
