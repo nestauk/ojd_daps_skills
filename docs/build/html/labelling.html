@@ -2,9 +2,11 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="#" />
+    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="The ExtractSkills class" href="extract_skills.html" /><link rel="prev" title="Model Cards" href="model_card.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/><title>Search - Skills Extractor 1.0.0 documentation</title><link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>Entity Labelling - Skills Extractor 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
@@ -131,7 +133,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -148,18 +150,18 @@
   
   <span class="sidebar-brand-text">Skills Extractor 1.0.0 documentation</span>
   
-</a><form class="sidebar-search-container" method="get" action="#" role="search">
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">Skills Extractor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Custom Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pipeline_summary.html">Pipeline summary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a></li>
-<li class="toctree-l1"><a class="reference internal" href="labelling.html">Entity Labelling</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Entity Labelling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extract_skills.html">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">The MIT License (MIT)</a></li>
 </ul>
@@ -181,7 +183,8 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -189,31 +192,62 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          
-<noscript>
-<div class="admonition error">
-  <p class="admonition-title">Error</p>
-  <p>
-    Please activate JavaScript to enable the search functionality.
-  </p>
+          <div class="section" id="entity-labelling">
+<h1>Entity Labelling<a class="headerlink" href="#entity-labelling" title="Permalink to this heading">#</a></h1>
+<p>To extract skills from job adverts we took an approach of training a named entity recognition (NER) model to predict which parts of job adverts were skills (“skill entities”) and which were experiences (“experience entities”).</p>
+<p>To train the NER model we needed labelled data. First we created a random sample of job adverts and got them into a form needed for labelling using <a class="reference external" href="https://labelstud.io/">Label Studio</a>. More about this labelling process can be found in the <a class="reference external" href="https://nestauk.github.io/ojd_daps_skills/pipeline/skill_ner/README.md"><code class="docutils literal notranslate"><span class="pre">skill_ner</span></code> pipeline</a>.</p>
+<p>There are 3 entity labels in our training data:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SKILL</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTISKILL</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EXPERIENCE</span></code></p></li>
+</ol>
+<p>The user interface for this labelling task looks like:</p>
+<p><img alt="" src="_images/label_studio.png" /></p>
+<p>We tried our best to label from the start to end of each individual skill, starting at the verb (if given):
+<img alt="" src="_images/label_eg1.jpg" /></p>
+<p>Sometimes it wasn’t easy to label individual skills, for example an earlier part of the sentence might be needed to define the later part. An example of this is “Working in a team and on an individual basis” - we could label “Working in a team” as a single skill, but “on an individual basis” makes no sense without the “Working” word. In these situations we labelled the whole span as multi skills:
+<img alt="" src="_images/label_eg4.jpg" /></p>
+<p>Sometimes there were no entities to label:
+<img alt="" src="_images/label_eg5.jpg" /></p>
+<p><code class="docutils literal notranslate"><span class="pre">EXPERIENCE</span></code> labels will often be followed by the word “experience” e.g. “insurance experience”, and we included some qualifications as experience, e.g. “Electrical qualifications”.</p>
+<div class="section" id="training-dataset">
+<h2>Training dataset<a class="headerlink" href="#training-dataset" title="Permalink to this heading">#</a></h2>
+<p>For the current NER model, 5641 entities in 375 job adverts from our dataset of job adverts were labelled; 354 are multiskill, 4696 are skill, and 608 were experience entities. 20% of the labelled entities were held out as a test set to evaluate the models.</p>
 </div>
-</noscript>
-
-<div id="search-results"></div>
+</div>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="extract_skills.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="model_card.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Model Cards</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -234,8 +268,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Entity Labelling</a><ul>
+<li><a class="reference internal" href="#training-dataset">Training dataset</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -247,8 +300,5 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
-    
-<script src="_static/searchtools.js"></script>
-<script src="_static/language_data.js"></script>
-<script src="searchindex.js"></script></body>
+    </body>
 </html>

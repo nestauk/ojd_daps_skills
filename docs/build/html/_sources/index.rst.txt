@@ -10,3 +10,4 @@
    model_card.md
    labelling.md
    extract_skills
+   license.md

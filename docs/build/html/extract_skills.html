@@ -2,9 +2,9 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Entity Labelling" href="labelling.html" />
+    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="The MIT License (MIT)" href="license.html" /><link rel="prev" title="Entity Labelling" href="labelling.html" />
 
-    <meta name="generator" content="sphinx-5.0.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>The ExtractSkills class - Skills Extractor 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -133,7 +133,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -159,9 +159,11 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">Skills Extractor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_usage.html">Custom Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_summary.html">Pipeline summary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_card.html">Model Cards</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labelling.html">Entity Labelling</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">The MIT License (MIT)</a></li>
 </ul>
 
 </div>
@@ -190,7 +192,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -238,17 +240,17 @@ skills and map them to a taxonomy if format_skills is set to True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>job_adverts_skills</strong> (<em>str</em><em> or </em><em>list of strings</em>) – The text of a job advert, a list of job adverts texts, or a list of skills (if format_skills=True)</p></li>
+<li><p><strong>job_adverts_skills</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>strings</em>) – The text of a job advert, a list of job adverts texts, or a list of skills (if format_skills=True)</p></li>
 <li><p><strong>format_skills</strong> (<em>bool</em>) – If the input is a list of skills (rather than job adverts) then this needs to be set to True in order to format them correctly, default to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the “SKILL” key. Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of dictionaries for each job advert.</p>
+<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every</p>
 </dd>
 </dl>
+<p>skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the “SKILL” key.
+Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]
+:rtype: list of dictionaries for each job advert.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -258,7 +260,7 @@ skills and map them to a taxonomy if format_skills is set to True.</p>
 Multiskill entities will be split up and converted into individual skill entities where possible.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>job_adverts</strong> (<em>str</em><em> or </em><em>list of strings</em>) – The text of a job advert or a list of job adverts texts</p>
+<dd class="field-odd"><p><strong>job_adverts</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>strings</em>) – The text of a job advert or a list of job adverts texts</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of entities extracted from each job advert in the form of dictionaries {“SKILL”: [“Microsoft Excel”], “MULTISKILL”: [], “EXPERIENCE”: []}</p>
@@ -276,15 +278,15 @@ Multiskill entities will be split up and converted into individual skill entitie
 be mapped to a skills taxonomy. All multiskill entities will be mapped in the same way as skill entities are.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>predicted_skills</strong> (<em>list of strings</em><em> or </em><em>a list of dicts</em>) – A list of skill entities either in the form of a list of strings (assumed to be from the same job advert) or a list of the dictionaries outputted from the get_skills function.</p>
+<dd class="field-odd"><p><strong>predicted_skills</strong> (<em>list</em><em> of </em><em>strings</em><em> or </em><em>a list</em><em> of </em><em>dicts</em>) – A list of skill entities either in the form of a list of strings (assumed to be from the same job advert) or a list of the dictionaries outputted from the get_skills function.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one. Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of dictionaries for each job advert.</p>
+<dd class="field-even"><p>A list of dictionaries for each job advert containing the skill and experience entities, and for every</p>
 </dd>
 </dl>
+<p>skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one.
+Each dictionary is in the format {‘SKILL’: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), …]}, ‘EXPERIENCE’: […]]
+:rtype: list of dictionaries for each job advert.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -294,7 +296,7 @@ be mapped to a skills taxonomy. All multiskill entities will be mapped in the sa
 multiskill splitting to any skills predicted to be multiskills.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>skills</strong> (<em>str</em><em> or </em><em>list of strings</em>) – A list of skills/multiskills from the job advert or a single skill</p>
+<dd class="field-odd"><p><strong>skills</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>strings</em>) – A list of skills/multiskills from the job advert or a single skill</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The skills arranged into the format [{“SKILL”: […], “MULTISKILL”: […], “EXPERIENCE”: []}]</p>
@@ -312,7 +314,15 @@ multiskill splitting to any skills predicted to be multiskills.</p>
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="license.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">The MIT License (MIT)</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
           <a class="prev-page" href="labelling.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
@@ -344,8 +354,34 @@ multiskill splitting to any skills predicted to be multiskills.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a><ul>
+<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code></a><ul>
+<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.load"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.load()</span></code></a></li>
+<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.extract_skills()</span></code></a></li>
+<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.get_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.get_skills()</span></code></a></li>
+<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.map_skills()</span></code></a></li>
+<li><a class="reference internal" href="#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.format_skills"><code class="docutils literal notranslate"><span class="pre">ExtractSkills.format_skills()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -355,6 +391,7 @@ multiskill splitting to any skills predicted to be multiskills.</p>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>
