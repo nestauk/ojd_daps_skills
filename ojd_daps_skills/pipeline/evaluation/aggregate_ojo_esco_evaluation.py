@@ -1,44 +1,26 @@
-"""Script to evaluate the first iteration of the skills algorithm."""
-##############################################################
-from ojd_daps_skills.utils.sql_conn import est_conn
+"""Script to compare top skills from ESCO occupations and from 
+OJO occupations
+
+python ojd_daps_skills/pipeline/evaluation/aggregate_ojo_esco_evaluation.py
+"""
 from ojd_daps_skills import PROJECT_DIR, config, bucket_name
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
-    get_s3_data_paths,
     load_s3_data,
     save_to_s3,
 )
-import glob
-import os
-import string
 import pandas as pd
 import itertools
-from datetime import datetime as date
-
-##############################################################
 
 s3 = get_s3_resource()
 
 
-def clean_job_title(job_title):
-    """Cleans job title to lowercase, remove punctuation, numbers and "bad" words."""
-
-    job_title = job_title.lower().translate(
-        str.maketrans("", "", string.punctuation + string.digits)
-    )
-    job_title = " ".join(job_title.split())
-    job_title = " ".join([job for job in job_title.split() if job not in ["amp"]])
-
-    return job_title.strip()
-
-
-def get_job_adverts(conn, esco_job_titles: list, ojo_job_count: int) -> pd.DataFrame:
-    """Queries SQL db to return merged dataframe of job ids, job skills and
-    job titles where the job title is in the ESCO occupations data AND the number
+def get_job_adverts(esco_job_titles: list, ojo_job_count: int) -> pd.DataFrame:
+    """Gets sample of deduplicated job ads,
+    job titles and skills where the job title is in the ESCO occupations data AND the number
     of job adverts associated to the job title is over ojo_job_count.
 
     Args:
-        conn: Engine to Nesta's SQL database.
         esco_job_titles (list): list of all possible cleaned ESCO occupations.
         ojo_job_count: number of job adverts per occupation threshold.
 
@@ -47,29 +29,30 @@ def get_job_adverts(conn, esco_job_titles: list, ojo_job_count: int) -> pd.DataF
                      that are also in ESCO AND have at least 100 job adverts associated
                      to the occupation.
     """
-    query_job_titles = "SELECT id, job_title_raw" " FROM raw_job_adverts "
-    job_titles = pd.read_sql(query_job_titles, conn)
-
-    clean_jobs = dict(
-        zip(
-            list(set(job_titles.job_title_raw)),
-            [clean_job_title(job) for job in list(set(job_titles.job_title_raw))],
-        )
+    deduped_skills_sample = load_s3_data(
+        s3,
+        bucket_name,
+        "escoe_extension/outputs/data/model_application_data/dedupe_analysis_skills_sample.json",
     )
-
-    job_titles["clean_ojo_job_title"] = job_titles.job_title_raw.map(clean_jobs)
+    deduped_skills_sample_df = pd.DataFrame(deduped_skills_sample)[
+        ["job_id", "occupation", "SKILL"]
+    ].dropna()
+    deduped_skills_sample_df["clean_skills"] = deduped_skills_sample_df["SKILL"].apply(
+        lambda skills: list(set([skill[1][0] for skill in skills]))
+    )
+    deduped_skills_sample_df[
+        "occupation"
+    ] = deduped_skills_sample_df.occupation.str.lower()
 
     ##only return OJO jobs that are in ESCO and that have over 100 occurances
-    job_titles = job_titles[job_titles.clean_ojo_job_title.isin(esco_job_titles)]
-    job_titles = job_titles.groupby("clean_ojo_job_title").filter(
-        lambda j: len(j) > ojo_job_count
+    deduped_skills_sample_df = deduped_skills_sample_df[
+        deduped_skills_sample_df.occupation.isin(esco_job_titles)
+    ]
+    deduped_skills_sample_df = deduped_skills_sample_df.groupby("occupation").filter(
+        lambda j: len(j) >= ojo_job_count
     )
 
-    # query job skills based on job titles with over n occurances in ESCO
-    query_job_skills = f"SELECT job_id, preferred_label FROM job_ad_skill_links WHERE job_id IN {tuple(set(job_titles.id))}"
-    job_skills = pd.read_sql(query_job_skills, conn)
-
-    return pd.merge(job_skills, job_titles, left_on="job_id", right_on="id")
+    return deduped_skills_sample_df
 
 
 def get_esco_data(esco_data_dir) -> pd.DataFrame:
@@ -83,18 +66,28 @@ def get_esco_data(esco_data_dir) -> pd.DataFrame:
         esco_skills_dict (pd.DataFrame): Merged DataFrame of ESCO jobs with associated alternative
         job titles and skills.
     """
-    esco_paths = get_s3_data_paths(s3, bucket_name, esco_data_dir, "*.csv")
-    esco_dfs = [load_s3_data(s3, bucket_name, esco_path) for esco_path in esco_paths]
 
-    esco_occ_skills = pd.merge(
-        pd.merge(
-            esco_dfs[0], esco_dfs[1], left_on="occupationUri", right_on="conceptUri"
-        ),
-        esco_dfs[2],
+    esco_occs = load_s3_data(
+        s3, bucket_name, "escoe_extension/inputs/data/esco/occupations_en.csv"
+    )
+    esco_occ_skills_walk = load_s3_data(
+        s3, bucket_name, "escoe_extension/inputs/data/esco/occupationSkillRelations.csv"
+    )
+    esco_skills = load_s3_data(
+        s3, bucket_name, "escoe_extension/inputs/data/esco/skills_en.csv"
+    )
+
+    esco_occ_skills_walk_merged = pd.merge(
+        esco_occs, esco_occ_skills_walk, left_on="conceptUri", right_on="occupationUri"
+    )
+    esco_occ_skills_merged = pd.merge(
+        esco_occ_skills_walk_merged,
+        esco_skills,
         left_on="skillUri",
         right_on="conceptUri",
     )
-    esco_occ_skills = esco_occ_skills[
+
+    esco_occ_skills_merged = esco_occ_skills_merged[
         ["preferredLabel_x", "altLabels_x", "preferredLabel_y", "altLabels_y"]
     ].rename(
         columns={
@@ -106,9 +99,11 @@ def get_esco_data(esco_data_dir) -> pd.DataFrame:
     )
 
     for alt_col in "alt_esco_skills", "alt_esco_job_titles":
-        esco_occ_skills[alt_col] = esco_occ_skills[alt_col].str.split("\n")
+        esco_occ_skills_merged[alt_col] = esco_occ_skills_merged[alt_col].str.split(
+            "\n"
+        )
 
-    return esco_occ_skills
+    return esco_occ_skills_merged.dropna()
 
 
 if __name__ == "__main__":
@@ -125,48 +120,33 @@ if __name__ == "__main__":
     )
 
     all_esco_job_titles = [
-        clean_job_title(job)
+        job
         for job in list(
             set(list(itertools.chain(*esco_jobs.all_esco_job_titles.to_list())))
         )
     ]
 
-    ##OJO jobs in ESCO
-    conn = est_conn()
-    ojo_job_adverts = get_job_adverts(conn, all_esco_job_titles, ojo_job_count)
+    ojo_job_adverts = get_job_adverts(all_esco_job_titles, ojo_job_count)
 
     ## Compare ESCO and OJO skills
     # get skill percents per occupation
-    skill_percent_occ = (
-        ojo_job_adverts.groupby(["clean_ojo_job_title", "preferred_label"])[
-            "job_id"
-        ].nunique()
-        / ojo_job_adverts.groupby("clean_ojo_job_title")["job_id"].nunique()
-        * 100
-    )
-    skill_percent_occ = skill_percent_occ.reset_index().rename(
-        columns={"job_id": "skill_percent"}
-    )
+    deduped_skills_sample_df_exploded = ojo_job_adverts.explode("clean_skills")
+
+    ## Compare ESCO and OJO skills
+    skill_percent_occ = deduped_skills_sample_df_exploded.groupby('occupation').clean_skills.value_counts()/deduped_skills_sample_df_exploded.groupby('occupation').clean_skills.nunique()
+    skill_percent_occ = pd.DataFrame(skill_percent_occ).rename(columns={'clean_skills': 'skill_percent'}).reset_index()
 
     # generate skill threshold based on distribution of skill percentages
     skill_thresholds = (
-        skill_percent_occ.groupby("clean_ojo_job_title")["skill_percent"].describe()[
-            "50%"
-        ]
-    ) + (
-        0.5
-        * skill_percent_occ.groupby("clean_ojo_job_title")["skill_percent"].describe()[
-            "std"
-        ]
+        skill_percent_occ.groupby("occupation")["skill_percent"].describe()["75%"]
     )
-
-    skill_percent_occ["skill_percent_threshold"] = skill_percent_occ[
-        "clean_ojo_job_title"
-    ].map(skill_thresholds)
+    skill_percent_occ["skill_percent_threshold"] = skill_percent_occ["occupation"].map(
+        skill_thresholds
+    )
 
     # compare OJO and ESCO skills
     ojo_esco_dict = dict()
-    for occupation, occ_data in skill_percent_occ.groupby("clean_ojo_job_title"):
+    for occupation, occ_data in skill_percent_occ.groupby("occupation"):
         esco_skills = set(
             esco_jobs[
                 esco_jobs["all_esco_job_titles"].apply(lambda x: occupation in x)
@@ -174,7 +154,9 @@ if __name__ == "__main__":
         )
         per_thresh = occ_data["skill_percent_threshold"].iloc[0]
         ojo_skill = set(
-            occ_data[occ_data["skill_percent"] > per_thresh]["preferred_label"].tolist()
+            skill_percent_occ[skill_percent_occ["skill_percent"] > per_thresh][
+                "clean_skills"
+            ].tolist()
         )
         in_both_ojo_esco, in_ojo_not_esco, in_esco_not_ojo = (
             set.intersection(esco_skills, ojo_skill),
@@ -184,15 +166,19 @@ if __name__ == "__main__":
         if ojo_skill:
             ojo_esco_dict[occupation] = {
                 "no_of_job_adverts": ojo_job_adverts[
-                    ojo_job_adverts.clean_ojo_job_title == occupation
+                    ojo_job_adverts.occupation == occupation
                 ]["job_id"].nunique(),
                 "in_both_ojo_esco": list(in_both_ojo_esco),
                 "in_ojo_not_esco": in_ojo_not_esco,
                 "in_esco_not_ojo": in_esco_not_ojo,
                 "skills_in_ojo_esco_percent": len(in_both_ojo_esco)
-                / len(ojo_skill)
+                / len(esco_skills)
                 * 100,
             }
-
     # Save occupation-level accuracy results to s3
-    save_to_s3(s3, bucket_name, ojo_esco_dict, output_path)
+    save_to_s3(
+        s3,
+        bucket_name,
+        ojo_esco_dict,
+        "escoe_extension/outputs/evaluation/aggregate_ojo_esco/ojo_esco_occupation_skills_results_v2.json",
+    )
