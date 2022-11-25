@@ -5,7 +5,7 @@ import itertools
 from ojd_daps_skills.utils.text_cleaning import short_hash
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 
-es = ExtractSkills(local=False)
+es = ExtractSkills(local=True)
 
 job_adverts = [
     "The job involves communication and maths skills",
@@ -72,7 +72,17 @@ def test_hardcoded_mapping():
     """
     The mapped results using the algorithm should be the same as the hardcoded results
     """
-    hard_coded_skills = es.hard_coded_skills
+
+    hard_coded_skills = {
+        "3267542715426065": {
+            "ojo_skill": "caring",
+            "match_skill": "assisting and caring",
+            "match_id": "S3.0.0",
+        }
+    }
+
+    # The toy taxonomy doesn't have a hard coded skill input
+    es.hard_coded_skills = hard_coded_skills
     hardcoded_matches = {
         h["ojo_skill"]: (h["match_skill"], h["match_id"])
         for h in hard_coded_skills.values()
@@ -85,7 +95,6 @@ def test_hardcoded_mapping():
         ]
     )
 
-    assert type(hard_coded_skills) == dict
     assert type(mapped_skills) == list
     assert len(mapped_skills) == len(hard_coded_skills)
 

@@ -20,29 +20,17 @@ from ojd_daps_skills.utils.text_cleaning import short_hash
 
 
 class ExtractSkills(object):
-    """
-    Class to extract skills from job adverts and map them to a skills taxonomy.
-    Attributes
-    ----------
-    config_path (str): the config path for a default setting
-    local (bool): whether you want to load data from local files (True) or via Nesta's private s3 bucket (False, needs access)
-    ----------
-    Methods
-    ----------
-    load(taxonomy_embedding_file_name, prev_skill_matches_file_name, hier_name_mapper_file_name)
-        Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills,
-        taxonomy embeddings), JobNER skills extraction class and SkillMapper skill mapper class.
-    get_skills(job_adverts)
-        For an inputted list of job adverts, or a single job advert text, predict skill/experience entities
-    format_skills(skills)
-        If input is list of skills, format list to be the output of get_skills - a list of dict to map
-        each entity onto a skill/skill group from a taxonomy
-    map_skills(predicted_skills)
-        For a list of predicted skills (the output of get_skills - a list of dicts) OR a list of skills, map each entity
-        onto a skill/skill group from a taxonomy
-    extract_skills(job_adverts, format_skills=False)
-        Does both get_skills and extract_skills. extract_skills can also take as input a list of
-        skills if format_skills is True
+    """Class to extract skills from job adverts and map them to a skills taxonomy.
+
+    :param config_path: The file name for the config file to be used, defaults to "extract_skills_toy"
+    :type config_path: str
+
+    :param local: Whether you want to load data from local files (True, if not found they will be downloaded from a public source) or via Nesta's private s3 bucket (False, needs access), defaults to True
+    :type local: bool
+
+    :param verbose: Whether to limit the number of logging messages (True) or not (False, good for debugging), defaults to True
+    :type verbose: bool
+
     """
 
     def __init__(self, config_name="extract_skills_toy", local=True, verbose=True):
@@ -118,8 +106,21 @@ class ExtractSkills(object):
         hard_labelled_skills_name: Optional[str] = None,
         hier_name_mapper_file_name: Optional[str] = None,
     ):
-        """
-        Loads necessary datasets, JobNER skills extraction class and SkillMapper skill mapper class
+        """Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills,
+        taxonomy embeddings), JobNER skills extraction class and SkillMapper skill mapper class.
+
+        :param taxonomy_embedding_file_name: The relative path to a taxonomy embedding file if it exists. If left unset the embeddings will be generated when the code is run. Defaults to None.
+        :type taxonomy_embedding_file_name: str, optional
+
+        :param prev_skill_matches_file_name: The relative path to a previous skill matches file if it exists. Defaults to None.
+        :type prev_skill_matches_file_name: str, optional
+
+        :param hard_labelled_skills_name: The relative path to a hard labelled skills file if it exists. Defaults to None.
+        :type hard_labelled_skills_name: str, optional
+
+        :param hier_name_mapper_file_name: The relative path to a hierarchy name mapper file if it exists. Defaults to None.
+        :type hier_name_mapper_file_name: str, optional
+
         """
 
         if (not taxonomy_embedding_file_name) and (self.taxonomy_embedding_file_name):
@@ -214,8 +215,15 @@ class ExtractSkills(object):
             self.hard_coded_skills = None
 
     def format_skills(self, skills: List[str]) -> List[dict]:
-        """
-        If input is list of skills strings, format list to map to taxonomy
+        """Format list of skills from a single job advert to be in the format needed for mapping to a taxonomy. Also applies the
+        multiskill splitting to any skills predicted to be multiskills.
+
+        :param skills: A list of skills/multiskills from the job advert or a single skill
+        :type skills: str or list of strings
+
+        :return: The skills arranged into the format [{"SKILL": [...], "MULTISKILL": [...], "EXPERIENCE": []}]
+        :rtype: a list of length 1 containing a dictionary
+
         """
 
         if isinstance(skills, str):
@@ -249,8 +257,15 @@ class ExtractSkills(object):
         return [skill_dict]
 
     def get_skills(self, job_adverts: Union[str, List[str]]):
-        """
-        Extract skills using the NER model from a single or a list of job adverts
+        """Predict skill/multiskill/experience entities using the NER model in inputted job adverts.
+        Multiskill entities will be split up and converted into individual skill entities where possible.
+
+        :param job_adverts: The text of a job advert or a list of job adverts texts
+        :type job_adverts: str or list of strings
+
+        :return: A list of entities extracted from each job advert in the form of dictionaries {"SKILL": ["Microsoft Excel"], "MULTISKILL": [], "EXPERIENCE": []}
+        :rtype: list, the length is equal to the number of job adverts inputted
+
         """
 
         if isinstance(job_adverts, str):
@@ -283,11 +298,15 @@ class ExtractSkills(object):
         return predicted_skills
 
     def map_skills(self, predicted_skills: Union[List[dict], List[str]]):
-        """
-        Maps a list of skills to a skills taxonomy
+        """Map skills from job advert(s) to a skills taxonomy. If predicted_skills is a list of skills, it will be formatted accordingly to
+        be mapped to a skills taxonomy. All multiskill entities will be mapped in the same way as skill entities are.
 
-        If predicted_skills is a list of skills, format it accordingly to
-            be mapped to a skills taxonomy.
+        :param predicted_skills: A list of skill entities either in the form of a list of strings (assumed to be from the same job advert) or a list of the dictionaries outputted from the get_skills function.
+        :type predicted_skills: list of strings or a list of dicts
+
+        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one. Each dictionary is in the format {'SKILL': [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, 'EXPERIENCE': [...]]
+        :rtype: list of dictionaries for each job advert.
+
         """
         if isinstance(predicted_skills[0], str):
             predicted_skills = self.format_skills(predicted_skills)
@@ -395,13 +414,18 @@ class ExtractSkills(object):
     def extract_skills(
         self, job_adverts_skills: Union[str, List[str]], format_skills=False
     ):
-        """
-        Extract skills using the NER model from:
-            1) A single job advert;
-            2) A list of job adverts or;
-            3) A list of skills (can contain multiskills)
-        if you are entering a list of skills, then you need to set `format_skills=True`
-        in order to map them to a taxonomy
+        """Extract skills from job adverts using a trained NER model and map them to a taxonomy - combines both get_skills and extract_skills. Experiences will also be extracted, but not mapped to a taxonomy. It can also take as input a list of
+        skills and map them to a taxonomy if format_skills is set to True.
+
+        :param job_adverts_skills: The text of a job advert, a list of job adverts texts, or a list of skills (if format_skills=True)
+        :type job_adverts_skills: str or list of strings
+
+        :param format_skills: If the input is a list of skills (rather than job adverts) then this needs to be set to True in order to format them correctly, default to False.
+        :type format_skills: bool
+
+        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the "SKILL" key. Each dictionary is in the format {'SKILL': [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, 'EXPERIENCE': [...]]
+        :rtype: list of dictionaries for each job advert.
+
         """
         if format_skills:
             skills = self.format_skills(job_adverts_skills)
