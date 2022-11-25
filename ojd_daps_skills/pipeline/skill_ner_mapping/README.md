@@ -15,7 +15,7 @@ This is done for ESCO and Lightcast in `esco_formatting.py` and `lightcast_forma
 Running:
 
 ```
-python -ojd_daps_skills/pipeline/skill_ner_mapping/esco_matcher_embeddings.py
+python ojd_daps_skills/pipeline/skill_ner_mapping/taxonomy_matcher_embeddings.py --config_name CONFIG_NAME --embed_fn EMBEDDING_FILE_NAME
 ```
 
-will create the ESCO taxonomy embeddings. This script just needs to be run once and is useful to do as a one off for speeding up the matching skills algorithm. It will save the file `escoe_extension/outputs/data/skill_ner_mapping/esco_embeddings.json`.
+will create the taxonomy embeddings for a given taxonomy in a config file. This script just needs to be run once and is useful to do as a one off for speeding up the matching skills algorithm. It will save the file `escoe_extension/outputs/data/skill_ner_mapping/EMBEDDING_FILE_NAME.json`.
