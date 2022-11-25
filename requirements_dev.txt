@@ -13,4 +13,5 @@ awscli
 pytest
 pre-commit
 pre-commit-hooks
+spacy
 pytest
