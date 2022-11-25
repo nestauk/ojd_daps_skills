@@ -1,2 +1,0 @@
-.. include:: ../../ojd_daps_skills/pipeline/skill_ner/README.md
-   :parser: myst_parser.sphinx_
