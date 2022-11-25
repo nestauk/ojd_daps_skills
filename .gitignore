@@ -15,6 +15,9 @@ research_daps/
 *.bbl
 *.blg
 
+# Sphinx documentation
+docs/_build/
+
 # Metaflow
 .metaflow
 metaflow.s3.*
