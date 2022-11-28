@@ -18,7 +18,7 @@ jobs:
           pip install -e ."[dev]"
       - name: Delete all existing html files
         run: |
-          rm -r docs/build/*
+          rm -rf docs/build/*
       - name: Make documentation
         run: |
           cd docs
