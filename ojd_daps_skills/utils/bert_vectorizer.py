@@ -42,6 +42,6 @@ class BertVectorizer:
             )
             self.bert_model.stop_multi_process_pool(pool)
         else:
-            self.embedded_x = self.bert_model.encode(texts, show_progress_bar=True)
+            self.embedded_x = self.bert_model.encode(texts, batch_size=self.batch_size)
         logger.info(f"Took {time.time() - t0} seconds")
         return self.embedded_x

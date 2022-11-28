@@ -130,6 +130,7 @@ class SkillMapper:
         skill_hier_info_col=None,
         skill_type_col="type",
         verbose=True,
+        multi_process=True,
     ):
         self.taxonomy = taxonomy
         self.skill_name_col = skill_name_col
@@ -137,11 +138,14 @@ class SkillMapper:
         self.skill_hier_info_col = skill_hier_info_col
         self.skill_type_col = skill_type_col
         self.verbose = verbose
+        self.multi_process = multi_process
         if self.verbose:
             logger.setLevel(logging.INFO)
         else:
             logger.setLevel(logging.ERROR)
-        self.bert_model = BertVectorizer(verbose=self.verbose).fit()
+        self.bert_model = BertVectorizer(
+            verbose=self.verbose, multi_process=self.multi_process
+        ).fit()
 
     def load_job_skills(self, ojo_skills_file_name, s3=True):
         # load job skills here
@@ -163,9 +167,19 @@ class SkillMapper:
         self.skill_hashes = dict()
 
         for ojo_job_id in self.ojo_job_ids:
-            ojo_job_skills = ojo_skills["predictions"][ojo_job_id]["SKILL"]
+            try:
+                ojo_job_skills = ojo_skills["predictions"][ojo_job_id]["SKILL"]
+            except:
+                ojo_job_skills = []
+
             # deal with multiskills here
-            ojo_job_multiskills = ojo_skills["predictions"][ojo_job_id]["MULTISKILL"]
+            try:
+                ojo_job_multiskills = ojo_skills["predictions"][ojo_job_id][
+                    "MULTISKILL"
+                ]
+            except:
+                ojo_job_multiskills = []
+
             all_ojo_job_skills = ojo_job_skills + ojo_job_multiskills
 
             if all_ojo_job_skills != []:
@@ -312,7 +326,7 @@ class SkillMapper:
             logger.error("Trying to map skills using empty dict of skills")
 
         clean_ojo_skill_embeddings = self.bert_model.transform(
-            skill_hashes_filtered.values()
+            list(skill_hashes_filtered.values())
         )
         # Find the closest matches to skills information
         skill_types = skill_type_dict.get("skill_types", [])
