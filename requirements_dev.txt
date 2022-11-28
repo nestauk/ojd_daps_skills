@@ -16,3 +16,4 @@ pre-commit-hooks
 spacy
 pytest
 furo
+myst_parser
