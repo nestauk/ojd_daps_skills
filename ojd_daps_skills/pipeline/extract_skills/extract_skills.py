@@ -31,7 +31,7 @@ class ExtractSkills(object):
     :param verbose: Whether to limit the number of logging messages (True) or not (False, good for debugging), defaults to True
     :type verbose: bool
 
-    :param multi_process: Whether to use multiprocessing (True) or not (False), defaults to True
+    :param multi_process: Whether to use multiprocessing (True) or not (False), defaults to False
     :type multi_process: bool
 
     """
@@ -41,7 +41,7 @@ class ExtractSkills(object):
         config_name="extract_skills_toy",
         local=True,
         verbose=True,
-        multi_process=True,
+        multi_process=False,
     ):
         # Set variables from the config file
         config_path = os.path.join(
