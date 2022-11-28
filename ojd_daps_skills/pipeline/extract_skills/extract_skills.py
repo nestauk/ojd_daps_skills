@@ -379,7 +379,10 @@ class ExtractSkills(object):
                             ],
                         )
                     )
-                    experience_list = predicted_skills[ix].get("EXPERIENCE", [])
+                    try:
+                        experience_list = predicted_skills[ix]["EXPERIENCE"]
+                    except:
+                        experience_list = []
 
                     job_skills_matched_formatted.append(
                         {
