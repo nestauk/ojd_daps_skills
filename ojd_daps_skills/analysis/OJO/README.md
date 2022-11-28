@@ -61,3 +61,9 @@ The script `evaluation_analysis.py` calculates some high level stats about two c
 ### ESCO Occupations
 
 The script `esco_occupations.py` gives some high level stats about X, Y and Z.
+
+## Skills extraction and matching quality
+
+The script `get_skills_sample_to_label.py` creates a sample of the skills extracted and the ESCO skills they are mapped to. This file was manually labelled to check quality of both the skill entity extraction and the skill mapping to ESCO - for each a value of 0 - "bad", 1 - "ok" and 2 - "excellent" was given.
+
+The analysis of these labels is given in the notebook `verify_skills_extract_results.ipynb`. Any of the skills entities that are mapped to ESCO using hardcoding are removed from this analysis.
