@@ -31,9 +31,18 @@ class ExtractSkills(object):
     :param verbose: Whether to limit the number of logging messages (True) or not (False, good for debugging), defaults to True
     :type verbose: bool
 
+    :param multi_process: Whether to use multiprocessing (True) or not (False), defaults to True
+    :type multi_process: bool
+
     """
 
-    def __init__(self, config_name="extract_skills_toy", local=True, verbose=True):
+    def __init__(
+        self,
+        config_name="extract_skills_toy",
+        local=True,
+        verbose=True,
+        multi_process=True,
+    ):
         # Set variables from the config file
         config_path = os.path.join(
             PROJECT_DIR, "ojd_daps_skills/config/", config_name + ".yaml"
@@ -42,6 +51,7 @@ class ExtractSkills(object):
             self.config = yaml.load(f, Loader=yaml.FullLoader)
         self.local = local
         self.verbose = verbose
+        self.multi_process = multi_process
         if self.verbose:
             logger.setLevel(logging.INFO)
         else:
@@ -171,6 +181,7 @@ class ExtractSkills(object):
             skill_hier_info_col=self.taxonomy_info.get("skill_hier_info_col"),
             skill_type_col=self.taxonomy_info.get("skill_type_col"),
             verbose=self.verbose,
+            multi_process=self.multi_process,
         )
 
         if self.taxonomy_name != "toy":
@@ -368,7 +379,7 @@ class ExtractSkills(object):
                             ],
                         )
                     )
-                    experience_list = predicted_skills[ix]["EXPERIENCE"]
+                    experience_list = predicted_skills[ix].get("EXPERIENCE", [])
 
                     job_skills_matched_formatted.append(
                         {
