@@ -1,5 +1,7 @@
 """One of script to format manually labelled skill spans
 in format for prev_skills_lookup_sample.json
+
+python ojd_daps_skills/pipeline/skill_ner_mapping/hard_coded_mapper_formatting.py
 """
 from ojd_daps_skills.utils.text_cleaning import short_hash
 from ojd_daps_skills import bucket_name
@@ -30,15 +32,7 @@ if __name__ == "__main__":
                 "esco_code": "match_id",
                 "new_label": "match_skill",
             }
-        )[
-            [
-                "ojo_skill",
-                "ojo_job_skill_hash",
-                "match_skill",
-                "match_id",
-                "hash_index",
-            ]
-        ]
+        )[["ojo_skill", "ojo_job_skill_hash", "match_skill", "match_id", "hash_index",]]
     )
 
     hard_coded_skills_dict = hard_coded_skills.set_index("hash_index").T.to_dict()
@@ -46,6 +40,13 @@ if __name__ == "__main__":
     save_to_s3(
         s3,
         bucket_name,
+        hard_coded_skills_dict,
+        "escoe_extension/outputs/data/skill_ner_mapping/hardcoded_ojo_esco_lookup.json",
+    )
+
+    save_to_s3(
+        s3,
+        "open-jobs-indicators",
         hard_coded_skills_dict,
         "escoe_extension/outputs/data/skill_ner_mapping/hardcoded_ojo_esco_lookup.json",
     )
