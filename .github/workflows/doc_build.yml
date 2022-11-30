@@ -37,5 +37,7 @@ jobs:
         uses: colmose/push-bot@v1.0.0
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
-          branch_name: ${GITHUB_REF##*/}
+          branch_name: "dev"
           bot_name: "docs-machine"
+        run: |
+          git push origin dev
