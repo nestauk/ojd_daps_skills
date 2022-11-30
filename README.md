@@ -167,6 +167,8 @@ Some functions have tests, these can be checked by running
 pytest
 ```
 
+There is also a github action that runs these tests for python 3.8 and python 3.9. 
+
 ### Contributor guidelines
 
 The technical and working style guidelines can be found [here](https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md).
