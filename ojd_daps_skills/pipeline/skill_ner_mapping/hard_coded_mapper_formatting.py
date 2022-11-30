@@ -2,6 +2,7 @@
 in format for prev_skills_lookup_sample.json
 
 python ojd_daps_skills/pipeline/skill_ner_mapping/hard_coded_mapper_formatting.py
+
 """
 from ojd_daps_skills.utils.text_cleaning import short_hash
 from ojd_daps_skills import bucket_name
