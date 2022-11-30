@@ -167,6 +167,8 @@ Some functions have tests, these can be checked by running
 pytest
 ```
 
+There is a github action to conduct unit tests on python version 3.8 and 3.9.
+
 ### Contributor guidelines
 
 The technical and working style guidelines can be found [here](https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md).
