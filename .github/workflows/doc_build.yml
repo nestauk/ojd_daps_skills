@@ -34,10 +34,7 @@ jobs:
           git add -f docs/build/*
           git diff-index --quiet HEAD || git commit -m "auto updating docs"
       - name: Push changes
-        uses: colmose/push-bot@v1.0.0
+        uses: ad-m/github-push-action@master
         with:
-          token: ${{ secrets.ACCESS_TOKEN }}
-          branch_name: "dev"
-          bot_name: "docs-machine"
-        run: |
-          git push origin dev
+          github_token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
+          branch: ${{ github.ref }}
