@@ -23,3 +23,4 @@ Documentation Checklist ✔️📚:
 
 - [ ] I have run `make html` in `docs`
 - [ ] I have manually reviewed the `docs/build/*.html` files locally to ensure they have formatted correctly
+- [ ] I have pushed both relevant markdown files AND their corresponding `docs/build/*.html` files
