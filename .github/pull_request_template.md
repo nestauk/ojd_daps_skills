@@ -2,7 +2,7 @@
 
 Thanks for contributing to Nesta's Skills Extractor Library 🙏!
 
-If you have suggested changes to _code_, please consult the checklist below.
+If you have suggested changes to _code_ anywhere outside of the ExtractSkills class, please consult the checklist below.
 
 Checklist ✔️🐍:
 
