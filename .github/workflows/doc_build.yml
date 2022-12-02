@@ -2,7 +2,7 @@ name: Build Documentation
 on:
   push:
     branches:
-      - 'push-action/**'
+      - "push-action/**"
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -28,14 +28,10 @@ jobs:
           cd ..
       - name: Commit changes to working branch
         run: |
+          git checkout -b docs-branch
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git status
           git add -f docs/build/*
           git diff-index --quiet HEAD || git commit -m "auto updating docs"
-      - name: Pushing to the protected branch 'protected'
-        uses: CasperWA/push-protected@v2
-        with:
-          token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
-          branch: dev
-          unprotect_reviews: true
+          git push origin docs-branch
