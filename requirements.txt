@@ -22,3 +22,5 @@ webdriver-manager
 s3fs
 boto3
 networkx
+furo
+myst_parser

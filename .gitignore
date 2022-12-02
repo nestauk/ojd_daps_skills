@@ -127,6 +127,3 @@ target/
 
 # NPM
 node_modules/
-
-# Sphinx documentation
-docs/_build/
