@@ -56,9 +56,45 @@ We found:
 - For exact comparison, we set the cosine similarity threshold to 0 to guarantee extracted skill-level skills but would otherwise not do so. This allows for inappropriate skill matches i.e. ‘Eye Examination’ for a supply chain role
 - Lightcast’s algorithm may not be a single source of truth and it also extracts inappropriate skill matches i.e. ‘Flooring’ for a care assistant role
 
-### Evaluation - Manual judgement of false positive rate
+### Evaluation 1 - Manual judgement of false positive rate
 
 We looked at the ESCO-mapped skills extracted from a random sample of 64 job adverts, and manually judged how many skills shouldn’t have been extracted from the job advert i.e. the false positives. We also performed this analysis when looking at the skills extracted from 22 job adverts using Lightcast’s Skills Extractor API.
 
 - Our results showed on average 27% of the skills extracted from a job advert are false positives.
 - For Lightcast, on average 12% of the skills extracted from a job advert are false positives.
+
+### Evaluation 2 - Manual judgement of skills extraction and mapping quality
+
+We manually tagged a random sample of skills extracted from job adverts, with whether we thought they were bad, OK or excellent skill entities, and whether we thought they had bad, OK or excellent matches to ESCO skills.
+
+- We felt that out of 183 skill entities 73% were excellent entities, 19% were OK and 8% were bad.
+- 172 out of 183 skill entities were matched to ESCO skills.
+- Of the 172 matched skill entities we felt 53% were excellently matched, 30% were OK and 17% were bad.
+
+|Skill entity quality|ESCO match quality|count|
+|---|----|---|
+|Bad	|Bad	|9|
+|Bad	|OK		|1|
+|OK|	Bad|	|9|
+|OK|	OK	|	16|
+|OK|	Excellent|	7|
+|Excellent|	Bad|	11|
+|Excellent|	OK|	35|
+|Excellent|	Excellent|	83|
+
+- 87% of the matches were to either an individual skill or the lowest level of the skills taxonomy (level 3).
+- The match quality is at its best when the skill entity is matched to an individual ESCO skill.
+
+|Taxonomy level mapped to | Number in sample | Average match quality score (0-bad, 1-OK, 2-excellent) |
+|---|---|---|
+|Skill|99|1.71|
+|Skill hierarchy level 3|51|0.90|
+|Attitudes hierarchy|8|1.63|
+|Skill hierarchy level 2|6|0.33|
+|Knoweldge hierarchy|6|0.17|
+|Transversal hierarchy|1|1.00|
+
+
+
+
+
