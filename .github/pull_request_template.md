@@ -1,6 +1,10 @@
 ---
 
-Checklist:
+Thanks for contributing to Nesta's Skills Extractor Library 🙏!
+
+If you have suggested changes to _code_, please consult the checklist below.
+
+Checklist ✔️🐍:
 
 - [ ] I have refactored my code out from `notebooks/`
 - [ ] I have checked the code runs
@@ -12,3 +16,11 @@ Checklist:
   - [ ] Appropriate information has been added to `README`s
 - [ ] I have explained the feature in this PR or (better) in `output/reports/`
 - [ ] I have requested a code review
+
+
+If you have suggested changes to _documentation_, please consult the checklist below.
+
+Documentation Checklist ✔️📚:
+
+- [ ] I have run `make html` in `docs`
+- [ ] I have manually reviewed the `docs/build/*.html` files locally to ensure they have formatted correctly
