@@ -39,7 +39,8 @@ At a high level, we find that:
 - 58 occupations with 100 or more job adverts were found in both ESCO and a sample of deduplicated 100,000 job adverts
 - The average # of adverts per occupation is 345.54
 - We extract essential ESCO skills, transversal skills and additional skills
-- On average, 94.4 percent of essential ESCO skill groups were also in the top skill groups extracted per occupation
+- On average, 94.5 percent of essential ESCO skill groups were also in the top skill groups extracted per occupation
+- The median percent of essential ESCO skills per occupation that were extracted from our algorithm is 97.84.
 
 ### Comparison 2 - Degree of overlap between Lightcast’s extracted skills and our Lightcast skills
 

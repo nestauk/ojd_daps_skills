@@ -32,7 +32,7 @@ def get_job_adverts(esco_job_titles: list, ojo_job_count: int) -> pd.DataFrame:
     deduped_skills_sample = load_s3_data(
         s3,
         bucket_name,
-        "escoe_extension/outputs/data/model_application_data/dedupe_analysis_skills_sample.json",
+        "escoe_extension/outputs/data/model_application_data/dedupe_analysis_skills_sample_temp_fix.json",
     )
     deduped_skills_sample_df = pd.DataFrame(deduped_skills_sample)[
         ["job_id", "occupation", "SKILL"]
@@ -133,13 +133,22 @@ if __name__ == "__main__":
     deduped_skills_sample_df_exploded = ojo_job_adverts.explode("clean_skills")
 
     ## Compare ESCO and OJO skills
-    skill_percent_occ = deduped_skills_sample_df_exploded.groupby('occupation').clean_skills.value_counts()/deduped_skills_sample_df_exploded.groupby('occupation').clean_skills.nunique()
-    skill_percent_occ = pd.DataFrame(skill_percent_occ).rename(columns={'clean_skills': 'skill_percent'}).reset_index()
+    skill_percent_occ = (
+        deduped_skills_sample_df_exploded.groupby(
+            "occupation"
+        ).clean_skills.value_counts()
+        / deduped_skills_sample_df_exploded.groupby("occupation").clean_skills.nunique()
+    )
+    skill_percent_occ = (
+        pd.DataFrame(skill_percent_occ)
+        .rename(columns={"clean_skills": "skill_percent"})
+        .reset_index()
+    )
 
     # generate skill threshold based on distribution of skill percentages
-    skill_thresholds = (
-        skill_percent_occ.groupby("occupation")["skill_percent"].describe()["75%"]
-    )
+    skill_thresholds = skill_percent_occ.groupby("occupation")[
+        "skill_percent"
+    ].describe()["75%"]
     skill_percent_occ["skill_percent_threshold"] = skill_percent_occ["occupation"].map(
         skill_thresholds
     )
