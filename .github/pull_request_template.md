@@ -17,7 +17,6 @@ Checklist ✔️🐍:
 - [ ] I have explained the feature in this PR or (better) in `output/reports/`
 - [ ] I have requested a code review
 
-
 If you have suggested changes to _documentation_, please consult the checklist below.
 
 Documentation Checklist ✔️📚:
