@@ -21,7 +21,7 @@ If you'd like to learn more about the models used in the library, please refer t
 You can use pip to install the library:
 
 ```
-pip install ojd_daps_skills@git+https://github.com/nestauk/ojd_daps_skills@dev#egg=ojd_daps_skills
+pip install ojd_daps_skills
 ```
 
 You will also need to download [spaCy's](https://spacy.io/models/en) `en_core_web_sm` model:
