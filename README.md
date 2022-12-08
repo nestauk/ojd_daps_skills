@@ -126,7 +126,7 @@ skills_list_matched
 
 ## App
 
-If you would like to demo the library using a front end, we have also [built a streamlit app](https://nesta-skill-extractor.streamlit.app/) that allows you to extract skills for a given text. The app allows you to paste a job advert of your choice, extract and mapp skills onto two of the configurations:  `extract_skills_toy` and `extract_skills_lightcast`. 
+If you would like to demo the library using a front end, we have also [built a streamlit app](https://nesta-skill-extractor.streamlit.app/) that allows you to extract skills for a given text. The app allows you to paste a job advert of your choice, extract and map skills onto any of the configurations:  `extract_skills_toy`, `extract_skills_lightcast` and `extract_skills_esco`. 
 
 ![nesta_esco](https://user-images.githubusercontent.com/46863334/206517833-fdf3c7f4-b90e-4dc9-94ca-4d6710abae6f.gif)
 
