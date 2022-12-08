@@ -71,30 +71,31 @@ We manually tagged a random sample of skills extracted from job adverts, with wh
 - 172 out of 183 skill entities were matched to ESCO skills.
 - Of the 172 matched skill entities we felt 53% were excellently matched, 30% were OK and 17% were inappropriate.
 
-|Skill entity quality|ESCO match quality|count|
-|---|----|---|
-|Inappropriate	|Inappropriate	|9|
-|Inappropriate	|OK		|1|
-|OK|	Inappropriate|	|9|
-|OK|	OK	|	16|
-|OK|	Excellent|	7|
-|Excellent|	Inappropriate|	11|
-|Excellent|	OK|	35|
-|Excellent|	Excellent|	83|
+| Skill entity quality | ESCO match quality | count |
+| -------------------- | ------------------ | ----- |
+| Inappropriate        | Inappropriate      | 9     |
+| Inappropriate        | OK                 | 1     |
+| OK                   | Inappropriate      |       | 9 |
+| OK                   | OK                 | 16    |
+| OK                   | Excellent          | 7     |
+| Excellent            | Inappropriate      | 11    |
+| Excellent            | OK                 | 35    |
+| Excellent            | Excellent          | 83    |
 
 - 87% of the matches were to either an individual skill or the lowest level of the skills taxonomy (level 3).
 - The match quality is at its best when the skill entity is matched to an individual ESCO skill.
 
-|Taxonomy level mapped to | Number in sample | Average match quality score (0-inappropriate, 1-OK, 2-excellent) |
-|---|---|---|
-|Skill|99|1.71|
-|Skill hierarchy level 3|51|0.90|
-|Attitudes hierarchy|8|1.63|
-|Skill hierarchy level 2|6|0.33|
-|Knoweldge hierarchy|6|0.17|
-|Transversal hierarchy|1|1.00|
+| Taxonomy level mapped to | Number in sample | Average match quality score (0-inappropriate, 1-OK, 2-excellent) |
+| ------------------------ | ---------------- | ---------------------------------------------------------------- |
+| Skill                    | 99               | 1.71                                                             |
+| Skill hierarchy level 3  | 51               | 0.90                                                             |
+| Attitudes hierarchy      | 8                | 1.63                                                             |
+| Skill hierarchy level 2  | 6                | 0.33                                                             |
+| Knoweldge hierarchy      | 6                | 0.17                                                             |
+| Transversal hierarchy    | 1                | 1.00                                                             |
 
 ---
+
 <small><p>This project was made possible via funding from the <a target="_blank" href="https://www.escoe.ac.uk/">Economic Statistics Centre of Excellence</a></p></small>
 
 <small><p>Project template is based on <a target="_blank" href="https://github.com/nestauk/ds-cookiecutter">Nesta's data science project template</a>
