@@ -24,4 +24,3 @@ boto3
 networkx
 furo
 myst_parser
-streamlit

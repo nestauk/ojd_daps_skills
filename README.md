@@ -172,9 +172,9 @@ pytest
 The technical and working style guidelines can be found [here](https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md).
 
 ---
+
 <small><p>This project was made possible via funding from the <a target="_blank" href="https://www.escoe.ac.uk/">Economic Statistics Centre of Excellence</a></p></small>
 
 <small><p>Project template is based on <a target="_blank" href="https://github.com/nestauk/ds-cookiecutter">Nesta's data science project template</a>
 (<a href="http://nestauk.github.io/ds-cookiecutter">Read the docs here</a>).
 </small>
-
