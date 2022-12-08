@@ -93,11 +93,3 @@ We manually tagged a random sample of skills extracted from job adverts, with wh
 | Skill hierarchy level 2  | 6                | 0.33                                                             |
 | Knoweldge hierarchy      | 6                | 0.17                                                             |
 | Transversal hierarchy    | 1                | 1.00                                                             |
-
----
-
-<small><p>This project was made possible via funding from the <a target="_blank" href="https://www.escoe.ac.uk/">Economic Statistics Centre of Excellence</a></p></small>
-
-<small><p>Project template is based on <a target="_blank" href="https://github.com/nestauk/ds-cookiecutter">Nesta's data science project template</a>
-(<a href="http://nestauk.github.io/ds-cookiecutter">Read the docs here</a>).
-</small>
