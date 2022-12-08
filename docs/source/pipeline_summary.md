@@ -65,27 +65,27 @@ We looked at the ESCO-mapped skills extracted from a random sample of 64 job adv
 
 ### Evaluation 2 - Manual judgement of skills extraction and mapping quality
 
-We manually tagged a random sample of skills extracted from job adverts, with whether we thought they were bad, OK or excellent skill entities, and whether we thought they had bad, OK or excellent matches to ESCO skills.
+We manually tagged a random sample of skills extracted from job adverts, with whether we thought they were inappropriate, OK or excellent skill entities, and whether we thought they had inappropriate, OK or excellent matches to ESCO skills.
 
-- We felt that out of 183 skill entities 73% were excellent entities, 19% were OK and 8% were bad.
+- We felt that out of 183 skill entities 73% were excellent entities, 19% were OK and 8% were inappropriate.
 - 172 out of 183 skill entities were matched to ESCO skills.
-- Of the 172 matched skill entities we felt 53% were excellently matched, 30% were OK and 17% were bad.
+- Of the 172 matched skill entities we felt 53% were excellently matched, 30% were OK and 17% were inappropriate.
 
 |Skill entity quality|ESCO match quality|count|
 |---|----|---|
-|Bad	|Bad	|9|
-|Bad	|OK		|1|
-|OK|	Bad|	|9|
+|Inappropriate	|Inappropriate	|9|
+|Inappropriate	|OK		|1|
+|OK|	Inappropriate|	|9|
 |OK|	OK	|	16|
 |OK|	Excellent|	7|
-|Excellent|	Bad|	11|
+|Excellent|	Inappropriate|	11|
 |Excellent|	OK|	35|
 |Excellent|	Excellent|	83|
 
 - 87% of the matches were to either an individual skill or the lowest level of the skills taxonomy (level 3).
 - The match quality is at its best when the skill entity is matched to an individual ESCO skill.
 
-|Taxonomy level mapped to | Number in sample | Average match quality score (0-bad, 1-OK, 2-excellent) |
+|Taxonomy level mapped to | Number in sample | Average match quality score (0-inappropriate, 1-OK, 2-excellent) |
 |---|---|---|
 |Skill|99|1.71|
 |Skill hierarchy level 3|51|0.90|
@@ -94,7 +94,9 @@ We manually tagged a random sample of skills extracted from job adverts, with wh
 |Knoweldge hierarchy|6|0.17|
 |Transversal hierarchy|1|1.00|
 
+---
+<small><p>This project was made possible via funding from the <a target="_blank" href="https://www.escoe.ac.uk/">Economic Statistics Centre of Excellence</a></p></small>
 
-
-
-
+<small><p>Project template is based on <a target="_blank" href="https://github.com/nestauk/ds-cookiecutter">Nesta's data science project template</a>
+(<a href="http://nestauk.github.io/ds-cookiecutter">Read the docs here</a>).
+</small>

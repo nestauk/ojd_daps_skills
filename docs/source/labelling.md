@@ -29,3 +29,10 @@ Sometimes there were no entities to label:
 ### Training dataset
 
 For the current NER model, 5641 entities in 375 job adverts from our dataset of job adverts were labelled; 354 are multiskill, 4696 are skill, and 608 were experience entities. 20% of the labelled entities were held out as a test set to evaluate the models.
+
+---
+<small><p>This project was made possible via funding from the <a target="_blank" href="https://www.escoe.ac.uk/">Economic Statistics Centre of Excellence</a></p></small>
+
+<small><p>Project template is based on <a target="_blank" href="https://github.com/nestauk/ds-cookiecutter">Nesta's data science project template</a>
+(<a href="http://nestauk.github.io/ds-cookiecutter">Read the docs here</a>).
+</small>
