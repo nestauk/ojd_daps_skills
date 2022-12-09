@@ -21,7 +21,7 @@ If you'd like to learn more about the models used in the library, please refer t
 You can use pip to install the library:
 
 ```
-pip install ojd_daps_skills
+pip install ojd-daps-skills
 ```
 
 You will also need to download [spaCy's](https://spacy.io/models/en) `en_core_web_sm` model:
@@ -124,6 +124,12 @@ skills_list_matched
 >>> [{'SKILL': [('Excel skills', ('working with computers', 'S5')), ('Communication', ('use communication techniques', 'cdef')), ('working with computers', ('communication, collaboration and creativity', 'S1'))]}]
 ```
 
+## App [UNDER DEVELOPMENT]
+
+If you would like to demo the library using a front end, we have also [built a streamlit app](https://nesta-skill-extractor.streamlit.app/) that allows you to extract skills for a given text. The app allows you to paste a job advert of your choice, extract and map skills onto any of the configurations: `extract_skills_toy`, `extract_skills_lightcast` and `extract_skills_esco`.
+
+![nesta_esco](https://user-images.githubusercontent.com/46863334/206517833-fdf3c7f4-b90e-4dc9-94ca-4d6710abae6f.gif)
+
 ## Development <a name="development"></a>
 
 If you'd like to modify or develop the source code you can clone it by first running:
@@ -173,6 +179,8 @@ The technical and working style guidelines can be found [here](https://github.co
 
 ---
 
-<small><p>Project based on <a target="_blank" href="https://github.com/nestauk/ds-cookiecutter">Nesta's data science project template</a>
+<small><p>This project was made possible via funding from the <a target="_blank" href="https://www.escoe.ac.uk/">Economic Statistics Centre of Excellence</a></p></small>
+
+<small><p>Project template is based on <a target="_blank" href="https://github.com/nestauk/ds-cookiecutter">Nesta's data science project template</a>
 (<a href="http://nestauk.github.io/ds-cookiecutter">Read the docs here</a>).
 </small>

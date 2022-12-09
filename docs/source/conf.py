@@ -17,12 +17,12 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Skills Extractor'
-copyright = '2022, Liz Gallagher, India Kerle'
-author = 'Liz Gallagher, India Kerle'
+project = "Skills Extractor"
+copyright = "2022, Liz Gallagher, India Kerle"
+author = "Liz Gallagher, India Kerle"
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0'
+release = "1.0.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -30,18 +30,18 @@ release = '1.0.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-#the myst_parser extension will allow us to use readmes 
+# the myst_parser extension will allow us to use readmes
 extensions = [
     "sphinx.ext.duration",
     "sphinx.ext.doctest",
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
-    "myst_parser"
+    "myst_parser",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -54,10 +54,10 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'furo'
+html_theme = "furo"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-html_logo = "_static/Nesta_Logo_Blue_RGB.png"
+html_static_path = ["_static"]
+html_logo = "_static/nesta_escoe_transparent.png"

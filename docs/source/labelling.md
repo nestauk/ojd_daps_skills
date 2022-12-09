@@ -10,7 +10,6 @@ There are 3 entity labels in our training data:
 2. `MULTISKILL`
 3. `EXPERIENCE`
 
-
 The user interface for this labelling task looks like:
 
 ![](../../outputs/reports/figures/label_studio.png)
