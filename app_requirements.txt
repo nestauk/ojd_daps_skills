@@ -1,0 +1,3 @@
+ojd-daps-skills
+awscli==1.27.25
+streamlit
