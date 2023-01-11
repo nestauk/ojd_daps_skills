@@ -124,9 +124,9 @@ skills_list_matched
 >>> [{'SKILL': [('Excel skills', ('working with computers', 'S5')), ('Communication', ('use communication techniques', 'cdef')), ('working with computers', ('communication, collaboration and creativity', 'S1'))]}]
 ```
 
-## App [UNDER DEVELOPMENT]
+## App
 
-If you would like to demo the library using a front end, we have also [built a streamlit app](https://nesta-skill-extractor.streamlit.app/) that allows you to extract skills for a given text. The app allows you to paste a job advert of your choice, extract and map skills onto any of the configurations: `extract_skills_toy`, `extract_skills_lightcast` and `extract_skills_esco`.
+If you would like to demo the library using a front end, we have also [built a streamlit app](http://18.169.52.145:8501/) that allows you to extract skills for a given text. The app allows you to paste a job advert of your choice, extract and map skills onto any of the configurations: `extract_skills_toy`, `extract_skills_lightcast` and `extract_skills_esco`.
 
 ![nesta_esco](https://user-images.githubusercontent.com/46863334/206517833-fdf3c7f4-b90e-4dc9-94ca-4d6710abae6f.gif)
 
