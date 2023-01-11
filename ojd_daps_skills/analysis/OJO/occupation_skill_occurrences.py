@@ -253,11 +253,11 @@ def set_node_attributes(net, sector_2_kd, sector_2_parent):
     node_attrs_name = {node_num: sector_2_kd.get(node_num) for node_num in net.nodes()}
     nx.set_node_attributes(net, node_attrs_name, "knowledge_domain")
 
-    return net
+    return net, kd_2_number
 
 
 # %%
-def plot_net(net, color_by="knowledge_domain", color_by_mapper=kd_2_number):
+def plot_net(net, color_by_mapper, color_by="knowledge_domain", weight_type="weight"):
     net_plotted = net
 
     plot = Plot(plot_width=600, plot_height=600)
@@ -324,10 +324,10 @@ edge_list.head(2)
 
 # %%
 net = create_network(edge_list, weight_type="weight")
-net = set_node_attributes(net, sector_2_kd, sector_2_parent)
+net, kd_2_number = set_node_attributes(net, sector_2_kd, sector_2_parent)
 
 # %%
-plot = plot_net(net, color_by="knowledge_domain", color_by_mapper=kd_2_number)
+plot = plot_net(net, color_by_mapper=kd_2_number, color_by="knowledge_domain")
 
 # %%
 output_file(
@@ -379,10 +379,6 @@ hgv_carer_skills_df.head(2)
 # ## One sector skill information
 # - Network of cooccuring skills coloured by skill taxonomy
 # - Most and least common skills
-
-# %%
-esco_skills
-esco_hier_mapper
 
 # %%
 ix_2_skill_id = {v: k for k, v in skill_id_2_ix.items()}
