@@ -1,0 +1,4 @@
+numpy==1.21.1
+ojd-daps-skills
+awscli==1.27.25
+streamlit
