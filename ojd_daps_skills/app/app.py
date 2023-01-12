@@ -1,17 +1,21 @@
 import streamlit as st
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
+import os
 
-col1, col2 = st.columns([50, 50])
-with col1:
-    st.image("docs/source/_static/nesta_escoe_transparent.png")
+image_dir = "app/nesta_escoe_skills.png"
+st.image(image_dir)
 
-st.header("Skills Extractor")
+with open("app/style.css") as css:
+    st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
 st.markdown(
     """
 This demo app is using Nesta's [Skills Extractor Library](https://github.com/nestauk/ojd_daps_skills)
 to extract skills for a given job advert and map them onto a skills taxonomy of
-your choice. This library was made possible via funding from the [Economic Statistics Centre of Excellence](https://esco.ec.europa.eu/en/classification/skill_main).
+your choice. Multiple organisations, from private corporations to government bodies, have developed skills taxonomies to organise labour market skills in a structured way.
+By mapping extracted skills to a pre-defined taxonomy, you are able to take advantage of the additional benefits of a taxonomy, including its structure and skill definitions.
+
+This library was made possible via funding from the [Economic Statistics Centre of Excellence](https://esco.ec.europa.eu/en/classification/skill_main).
 
 
 We currently support three taxonomies out-of-the-box:
@@ -23,6 +27,11 @@ We currently support three taxonomies out-of-the-box:
 To use the library, you can `pip install ojd-daps-skills` and [follow the documentation](https://nestauk.github.io/ojd_daps_skills/build/html/about.html) for basic usage,
 custom usage and to better understand the algorithm.
 """
+)
+
+st.warning(
+    "As with any algorithm, our approach has limitations. As a result, we cannot guarantee the accuracy or completeness of every extracted or mapped skill.",
+    icon="🤖",
 )
 
 test_tax = "Toy"
@@ -44,8 +53,8 @@ m = st.markdown(
     """
 <style>
 div.stButton > button:first-child {
-    background-color: #0000FF;
-    color:#FFFFFF;
+    background-color: #ffcccb;
+    color:#ffcccb;
 }
 </style>""",
     unsafe_allow_html=True,
@@ -54,7 +63,7 @@ div.stButton > button:first-child {
 button = st.button("extract skills")
 
 if button:
-    with st.spinner(""):
+    with st.spinner("🤖 Loading algorithms - this may take some time..."):
         es.load()
         extracted_skills = es.extract_skills(txt)
 
