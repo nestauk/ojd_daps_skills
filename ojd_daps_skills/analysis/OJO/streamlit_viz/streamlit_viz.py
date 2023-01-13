@@ -364,6 +364,43 @@ def create_location_quotident_graph(all_location_data, location):
     return base.configure_title(fontSize=24)
 
 
+def create_location_pie_chart(all_region_data, region):
+    source = pd.DataFrame(
+        {
+            "region": list(all_region_data.keys()),
+            "value": [
+                skill_info["num_ads"] for region, skill_info in all_region_data.items()
+            ],
+        }
+    )
+    source["percent"] = source["value"] / source.value.sum() * 100
+
+    pie = (
+        alt.Chart(source)
+        .mark_arc(innerRadius=50)
+        .encode(
+            theta=alt.Theta(field="value", type="quantitative"),
+            color=alt.Color(field="region", type="nominal", legend=None),
+            tooltip=[
+                alt.Tooltip("region", title="Region"),
+                alt.Tooltip("percent", title="% of Vacancies"),
+            ],
+            opacity=alt.condition(
+                alt.datum.region == region, alt.value(1), alt.value(0.1)
+            ),
+        )
+        .properties(
+            title="% of Vacancies by Region",
+        )
+        .configure_axis(grid=False)
+        .configure_view(strokeWidth=0)
+    )
+
+    configure_plots(pie)
+
+    return pie.configure_title(fontSize=24)
+
+
 # ========================================
 # ---------- Streamlit configs ------------
 
@@ -535,6 +572,12 @@ metric1.metric(label="**Number of job adverts**", value=all_region_data[geo]["nu
 metric2.metric(
     label="**Percentage of all job adverts**",
     value=f"{round((all_region_data[geo]['num_ads']/100000)*100,2)}%",
+)
+
+locations_pie_chart = create_location_pie_chart(all_region_data, geo)
+st.altair_chart(
+    locations_pie_chart,
+    use_container_width=True,
 )
 
 ## ----- The most common skills [selections: skill level] -----
