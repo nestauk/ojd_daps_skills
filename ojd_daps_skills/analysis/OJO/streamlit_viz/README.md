@@ -12,8 +12,9 @@ python ojd_daps_skills/analysis/OJO/process_viz_data.py
 
 ## In progress
 
-Exploring the data by sector (a.k.a occupation) can be seen by running:
+A preliminary analysis app can be seen by running:
 
 ```
-streamlit run ojd_daps_skills/analysis/OJO/streamlit_viz/per_sector.py
+pip install -r analysis_app_requirements.txt
+streamlit run ojd_daps_skills/analysis/OJO/streamlit_viz/streamlit_viz.py
 ```

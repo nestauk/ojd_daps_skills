@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
-
 import os
 
 import pandas as pd
