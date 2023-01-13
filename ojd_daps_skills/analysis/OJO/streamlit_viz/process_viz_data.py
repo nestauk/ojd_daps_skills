@@ -1,14 +1,12 @@
 """
 Script to process the skill occurences data into several outputs needed for the Streamlit viz
 
-For each occupation:
+For each occupation and regions:
 - Top 20 most common skills (all skill+groups, just skills group level 0, just skill group level 1, ..2 and 3)
 - Top 20 most similar jobs
 - Number of job adverts
 
 """
-
-
 import os
 from collections import Counter
 from itertools import chain, combinations
@@ -76,11 +74,11 @@ def load_datasets(s3, s3_folder, bucket_name):
     return skill_sample, job_id_2_skill_count, skill_id_2_ix, esco_skills
 
 
-def find_skill_proportions_per_sector(
-    skill_sample_df, job_id_2_skill_count, skill_id_2_ix, skill_counts=True
+def find_skill_proportions_per_group(
+    skill_sample_df, job_id_2_skill_count, skill_id_2_ix, group, skill_counts=True
 ):
     """
-    For each sector get the percentage of job adverts each skill is in
+    For each group get the percentage of job adverts each skill is in
 
     Args:
                     skill_sample_df (DataFrame): A dataframe where each row is a job advert and the skills found are
@@ -91,35 +89,33 @@ def find_skill_proportions_per_sector(
                     skill_counts (bool): Whether job_id_2_skill_count contains a dict of counts or just a list
 
     Returns:
-                    percentage_sector_skills_df (DataFrame): A dataframe where each row is a sector and each column is a skill
-                                    and the values are the percentage of job adverts from this sector which this skill is in
+                    percentage_group_skills_df (DataFrame): A dataframe where each row is a group and each column is a skill
+                                    and the values are the percentage of job adverts from this group which this skill is in
 
     """
 
-    sector_2_job_ids = skill_sample_df.groupby("sector")["job_id"].unique()
+    group_2_job_ids = skill_sample_df.groupby(group)["job_id"].unique()
 
-    percentage_sector_skills = {}
-    for sector, job_ids in tqdm(sector_2_job_ids.items()):
-        total_sector_skills = Counter()
+    percentage_group_skills = {}
+    for selected_group, job_ids in tqdm(group_2_job_ids.items()):
+        total_group_skills = Counter()
         for job_id in job_ids:
             if skill_counts:
                 skill_names = job_id_2_skill_count[job_id].keys()
             else:
                 skill_names = job_id_2_skill_count[job_id]
-            total_sector_skills += Counter(skill_names)
-        percentage_sector_skills[sector] = {
-            k: v / len(job_ids) for k, v in total_sector_skills.items()
+            total_group_skills += Counter(skill_names)
+        percentage_group_skills[selected_group] = {
+            k: v / len(job_ids) for k, v in total_group_skills.items()
         }
 
-    percentage_sector_skills_df = pd.DataFrame(percentage_sector_skills)
-    percentage_sector_skills_df = percentage_sector_skills_df.T
-    percentage_sector_skills_df.fillna(value=0, inplace=True)
-    # Map column names back to their ESCO codes
-    percentage_sector_skills_df.rename(
+    percentage_group_skills_df = pd.DataFrame(percentage_group_skills).T
+    percentage_group_skills_df.fillna(value=0, inplace=True)
+    percentage_group_skills_df.rename(
         columns={v: k for k, v in skill_id_2_ix.items()}, inplace=True
     )
 
-    return sector_2_job_ids, percentage_sector_skills_df
+    return group_2_job_ids, percentage_group_skills_df
 
 
 def get_skill_levels(s):
@@ -184,6 +180,7 @@ def get_skill_per_taxonomy_level(esco_skills, job_id_2_skill_count, skill_id_2_i
         job_lev_1 = set()
         job_lev_2 = set()
         job_lev_3 = set()
+        job_skill_level = set()
         for skill_id in job_ad_skills:
             if len(skill_id) > 10:
                 hier_levels = skill_id_2_levels.get(skill_id)
@@ -199,6 +196,7 @@ def get_skill_per_taxonomy_level(esco_skills, job_id_2_skill_count, skill_id_2_i
                             job_lev_2.add(lev_2)
                         if lev_3:
                             job_lev_3.add(lev_3)
+                job_skill_level.add(skill_id)
             else:
                 lev_0, lev_1, lev_2, lev_3 = get_skill_levels(skill_id)
                 if lev_1:
@@ -207,29 +205,29 @@ def get_skill_per_taxonomy_level(esco_skills, job_id_2_skill_count, skill_id_2_i
                     job_lev_2.add(lev_2)
                 if lev_3:
                     job_lev_3.add(lev_3)
-
         job_id_2_skill_hier_mentions_per_lev[job_id] = {
             "0": job_lev_0,
             "1": job_lev_1,
             "2": job_lev_2,
             "3": job_lev_3,
+            "4": job_skill_level,
         }
 
     return job_id_2_skill_hier_mentions_per_lev
 
 
-def get_top_skills_per_sector(percentage_sector_skills_df, esco_code2name, top_n=20):
-    top_skills_per_sector = {}
-    for sector_name, sector_skill_percentages in percentage_sector_skills_df.iterrows():
-        top_skills_per_sector[sector_name] = {
+def get_top_skills_per_group(percentage_group_skills_df, esco_code2name, top_n=20):
+    top_skills_per_group = {}
+    for group_name, group_skill_percentages in percentage_group_skills_df.iterrows():
+        top_skills_per_group[group_name] = {
             esco_code2name.get(skill_id, skill_id): top_skills
-            for skill_id, top_skills in sector_skill_percentages.sort_values(
+            for skill_id, top_skills in group_skill_percentages.sort_values(
                 ascending=False
             )[0:top_n]
             .to_dict()
             .items()
         }
-    return top_skills_per_sector
+    return top_skills_per_group
 
 
 if __name__ == "__main__":
@@ -261,8 +259,8 @@ if __name__ == "__main__":
 
     top_n = 100
 
-    sector_2_job_ids, percentage_sector_skills_df = find_skill_proportions_per_sector(
-        skill_sample_df, job_id_2_skill_count, skill_id_2_ix
+    sector_2_job_ids, percentage_sector_skills_df = find_skill_proportions_per_group(
+        skill_sample_df, job_id_2_skill_count, skill_id_2_ix, group="sector"
     )
 
     dists = euclidean_distances(
@@ -278,7 +276,7 @@ if __name__ == "__main__":
             if ix != i
         }
 
-    top_skills_per_sector = get_top_skills_per_sector(
+    top_skills_per_sector = get_top_skills_per_group(
         percentage_sector_skills_df, esco_code2name, top_n=20
     )
 
@@ -291,8 +289,8 @@ if __name__ == "__main__":
     )
 
     percentage_sector_skill_by_group_list = []
-    for group_num in ["0", "1", "2", "3"]:
-        _, percentage_sector_skill_by_group = find_skill_proportions_per_sector(
+    for group_num in ["0", "1", "2", "3", "4"]:
+        _, percentage_sector_skill_by_group = find_skill_proportions_per_group(
             skill_sample_df,
             {
                 job_id: skills[group_num]
@@ -300,8 +298,9 @@ if __name__ == "__main__":
             },
             skill_id_2_ix,
             skill_counts=False,
+            group="sector",
         )
-        top_skill_by_group_per_sector = get_top_skills_per_sector(
+        top_skill_by_group_per_sector = get_top_skills_per_group(
             percentage_sector_skill_by_group, esco_code2name, top_n=20
         )
         percentage_sector_skill_by_group_list.append(top_skill_by_group_per_sector)
@@ -318,6 +317,7 @@ if __name__ == "__main__":
                 "1": percentage_sector_skill_by_group_list[1][sector_name],
                 "2": percentage_sector_skill_by_group_list[2][sector_name],
                 "3": percentage_sector_skill_by_group_list[3][sector_name],
+                "4": percentage_sector_skill_by_group_list[4][sector_name],
             },
         }
 
@@ -414,5 +414,138 @@ if __name__ == "__main__":
             s3_folder,
             "streamlit_viz",
             "lightweight_skill_similarity_between_sectors_sample.csv",
+        ),
+    )
+
+    # Locations
+
+    # UNGROUPED SKILL PERCENTAGES PER LEVEL
+    skill_sample_df["itl_2_name"] = np.where(
+        skill_sample_df["itl_2_name"].str.contains("London"),
+        "London",
+        skill_sample_df["itl_2_name"],
+    )
+
+    from collections import defaultdict
+
+    skill_levels_list = list(job_id_2_skill_hier_mentions_per_lev.values())
+    job_id_len = skill_sample_df.job_id.nunique()
+
+    skill_sums = defaultdict(list)
+    for d in skill_levels_list:
+        for k, v in d.items():
+            skill_sums[k].append(list(v))
+
+    percentage_skills_by_skill_level = {str(_): list() for _ in range(5)}
+    for group_num in ["0", "1", "2", "3", "4"]:
+        skill_sum = Counter()
+        for skill_dict_list in skill_sums[group_num]:
+            skill_sum.update(skill_dict_list)
+        percentage_skills_by_skill_level[group_num].append(
+            {esco_code2name.get(k): v / job_id_len for k, v in skill_sum.items()}
+        )
+
+    sector_2_job_ids, percentage_skill_locs_df = find_skill_proportions_per_group(
+        skill_sample_df, job_id_2_skill_count, skill_id_2_ix, "itl_2_name"
+    )
+
+    top_skills_per_location = get_top_skills_per_group(
+        percentage_skill_locs_df, esco_code2name, top_n=20
+    )
+
+    number_job_adverts_per_location = (
+        skill_sample_df.groupby("itl_2_name")["job_id"].count().to_dict()
+    )
+
+    percentage_skill_by_group_list = []
+    for group_num in ["0", "1", "2", "3", "4"]:
+        _, percentage_skill_by_group = find_skill_proportions_per_group(
+            skill_sample_df,
+            {
+                job_id: skills[group_num]
+                for job_id, skills in job_id_2_skill_hier_mentions_per_lev.items()
+            },
+            skill_id_2_ix,
+            skill_counts=False,
+            group="itl_2_name",
+        )
+        top_skill_by_group_per_group = get_top_skills_per_group(
+            percentage_skill_by_group, esco_code2name, top_n=30
+        )
+        percentage_skill_by_group_list.append(top_skill_by_group_per_group)
+
+    # Combine all sector data together
+    all_location_data = {}
+    for location_name, num_ads in number_job_adverts_per_location.items():
+        all_location_data[location_name] = {
+            "num_ads": num_ads,
+            "top_skills": {
+                "all": top_skills_per_location[location_name],
+                "0": percentage_skill_by_group_list[0][location_name],
+                "1": percentage_skill_by_group_list[1][location_name],
+                "2": percentage_skill_by_group_list[2][location_name],
+                "3": percentage_skill_by_group_list[3][location_name],
+                "4": percentage_skill_by_group_list[4][location_name],
+            },
+        }
+
+    # final dfs to save
+    loc_dfs = []
+    for loc, skill_info in all_location_data.items():
+        loc_df = pd.DataFrame(skill_info["top_skills"]["1"], index=["skill_percent"]).T
+        loc_df["region"] = loc
+        loc_df = (
+            loc_df.reset_index()
+            .rename(columns={"index": "skill"})
+            .sort_values("skill")
+            .reset_index(drop=True)
+        )
+        loc_dfs.append(loc_df)
+    all_loc_df = pd.concat(loc_dfs)
+
+    all_loc_df["total_skill_percentage"] = all_loc_df.skill.map(
+        percentage_skills_by_skill_level["1"][0]
+    )
+    all_loc_df["location_quotident"] = (
+        all_loc_df["skill_percent"] / all_loc_df["total_skill_percentage"]
+    )
+    all_loc_df["location_difference"] = (
+        all_loc_df["skill_percent"] - all_loc_df["total_skill_percentage"]
+    )
+    all_loc_df = all_loc_df.drop(columns="total_skill_percentage")
+
+    all_loc_df["location_change"] = all_loc_df["location_quotident"] - 1
+    all_loc_df["color"] = np.where(all_loc_df["location_change"] > 0, "above", "below")
+
+    save_to_s3(
+        s3,
+        bucket_name,
+        percentage_skills_by_skill_level,
+        os.path.join(
+            s3_folder,
+            "streamlit_viz",
+            "skill_percents_per_level.json",
+        ),
+    )
+
+    save_to_s3(
+        s3,
+        bucket_name,
+        all_location_data,
+        os.path.join(
+            s3_folder,
+            "streamlit_viz",
+            "top_skills_per_loc_sample.json",
+        ),
+    )
+
+    save_to_s3(
+        s3,
+        bucket_name,
+        all_loc_df.reset_index(drop=True),
+        os.path.join(
+            s3_folder,
+            "streamlit_viz",
+            "top_skills_per_loc_quotident_sample.csv",
         ),
     )

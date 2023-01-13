@@ -1,12 +1,7 @@
-"""
-Run
+import sys
 
-streamlit run ojd_daps_skills/analysis/OJO/streamlit_viz/per_sector.py
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
 
-
-pip install streamlit_agraph
-pip install colour
-"""
 import os
 
 import pandas as pd
@@ -20,17 +15,15 @@ from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
     load_s3_data,
 )
-from ojd_daps_skills import bucket_name
+from ojd_daps_skills import bucket_name, PROJECT_DIR
 
-from ojd_daps_skills.utils.plotting import NESTA_COLOURS
+from ojd_daps_skills.utils.plotting import NESTA_COLOURS, configure_plots
+
+s3 = get_s3_resource()
+s3_folder = "escoe_extension/outputs/data"
 
 
-@st.cache
-def load_data():
-
-    s3 = get_s3_resource()
-
-    s3_folder = "escoe_extension/outputs/data"
+def load_sector_data():
 
     file_name = os.path.join(s3_folder, "streamlit_viz", "per_sector_sample.json")
     all_sector_data = load_s3_data(s3, bucket_name, file_name)
@@ -60,6 +53,27 @@ def load_data():
         percentage_job_adverts_per_sector,
         sector_similarity,
         sector_2_kd,
+    )
+
+
+def load_regional_data():
+
+    file_name = os.path.join(
+        s3_folder, "streamlit_viz", "top_skills_per_loc_sample.json"
+    )
+    all_region_data = load_s3_data(s3, bucket_name, file_name)
+
+    file_name = os.path.join(
+        s3_folder,
+        "streamlit_viz",
+        "top_skills_per_loc_quotident_sample.csv",
+    )
+
+    loc_quotident_data = load_s3_data(s3, bucket_name, file_name)
+
+    return (
+        all_region_data,
+        loc_quotident_data,
     )
 
 
@@ -180,7 +194,9 @@ def create_sector_skill_sim_network(
 
     legend_chart = legend_chart + legend_text
 
-    return nodes, edges, config, legend_chart
+    configure_plots(legend_chart)
+
+    return nodes, edges, config, legend_chart.configure_title(fontSize=24)
 
 
 def create_similar_sectors_text_chart(all_sector_data, sector):
@@ -268,7 +284,11 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
         .properties(height=200, width=300)
     )
 
-    return alt.hconcat(text_chart, legend_chart)
+    base = alt.hconcat(text_chart, legend_chart)
+
+    configure_plots(base)
+
+    return base.configure_title(fontSize=24)
 
 
 def create_common_skills_chart(all_sector_data, skill_group_level, sector):
@@ -279,6 +299,7 @@ def create_common_skills_chart(all_sector_data, skill_group_level, sector):
         "1": "skill groups",
         "2": "skill groups",
         "3": "skill groups",
+        "4": "skill",
     }
 
     top_skills = pd.DataFrame.from_dict(
@@ -296,8 +317,10 @@ def create_common_skills_chart(all_sector_data, skill_group_level, sector):
         .encode(
             y=alt.Y("sector", sort=None, axis=alt.Axis(title=None)),
             x=alt.X(
-                "percent",
-                axis=alt.Axis(title="Percentage of job adverts with this skill"),
+                "percent:Q",
+                axis=alt.Axis(
+                    title="Percentage of job adverts with this skill", format="%"
+                ),
             ),
             tooltip=[alt.Tooltip("percent", title="Percentage", format=".1%")],
         )
@@ -307,10 +330,101 @@ def create_common_skills_chart(all_sector_data, skill_group_level, sector):
             width=75,
         )
     )
-    return common_skills_chart
+
+    configure_plots(common_skills_chart)
+
+    return common_skills_chart.configure_title(fontSize=24)
+
+
+def create_location_quotident_graph(all_location_data, location):
+
+    geo_df = all_location_data[all_location_data["region"] == location]
+
+    base = (
+        alt.Chart(geo_df)
+        .mark_point(size=10, opacity=0.8, color="#0000FF")
+        .encode(
+            y=alt.Y("skill", sort="-x", axis=alt.Axis(title=None)),
+            x=alt.X(
+                "location_change",
+                axis=alt.Axis(title="Change"),
+            ),
+            color=alt.Color("color", legend=None),
+            tooltip=[
+                alt.Tooltip(
+                    "location_quotident", title="Location Quotident Score", format=".01"
+                )
+            ],
+        )
+        .properties(
+            title=f"Skill specialisms in {location}",
+            # height=100,
+            width=75,
+        )
+    )
+
+    configure_plots(base)
+
+    return base.configure_title(fontSize=24)
 
 
 # ========================================
+# ---------- Streamlit configs ------------
+
+with open("style.css") as css:
+    st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
+
+st.markdown(
+    """
+<style>
+.big-font {
+    font-size:42px !important;
+    font-weight: bold;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+<style>
+.medium-font {
+    font-size:36px !important;
+    font-weight: bold;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+# ----- Introduction -----
+
+col1, col2 = st.columns([50, 50])
+with col1:
+    st.image("nesta_escoe_transparent.png")
+st.markdown("<p class='big-font'>Introduction</p>", unsafe_allow_html=True)
+
+intro_text = """
+Nesta’s [Open Jobs Observatory (OJO)](https://www.nesta.org.uk/data-visualisation-and-interactive/open-jobs-observatory/) provides free and up-to-date information on UK skills demands by collecting thousands of online job adverts. A set of algorithms, including our open source [Skills Extractor library](https://nestauk.github.io/ojd_daps_skills/build/html/index.html), were developed in order to make the most of the data scraped from job advertisements websites as part of OJO.
+
+Both our suite of algorithms and ever growing database of online job adverts allow us to get a granular sense of the skills demanded in the UK. These insights are valuable to many stakeholders, including the national government, local councils and HR professionals.
+
+For example, the national government can identify growing and declining UK occupations and skills to inform economic growth or skill policy agendas.
+
+Similarly, local councils can better understand their regional skill demand profile and use these insights to allocate resources to appropriate professional training bodies.
+
+Finally, HR professionals and career advice personnel can use our [skills extractor app](http://18.169.52.145:8501/) to quickly identify the skills required of a job and the most qualified individuals for it.
+"""
+
+st.markdown(intro_text)
+
+method_text = """
+We’ve developed a number of example analyses to demonstrate the value of both OJO and our suite of algorithms. We’ve conducted this analysis on a sample of 100,000 job adverts posted online between January 2021 and August 2022. The analyses are organised by relevance to the identified stakeholders.
+"""
+
+st.markdown(method_text)
+
 # ----- National Government Use Case -----
 
 (
@@ -318,11 +432,15 @@ def create_common_skills_chart(all_sector_data, skill_group_level, sector):
     percentage_job_adverts_per_sector,
     sector_similarity,
     sector_2_kd,
-) = load_data()
+) = load_sector_data()
 
-st.title("National Government Use Case")
 
-st.subheader("Skills per occupation")
+st.markdown(
+    "<p class='big-font'>National Government Use Case</p>", unsafe_allow_html=True
+)
+
+st.markdown("<p class='medium-font'>Skills per occupation</p>", unsafe_allow_html=True)
+
 
 st.markdown(
     "For a selected occupation you can see the most similar occupations (based on the skills asked for) and the most common skills or skill groups."
@@ -333,9 +451,11 @@ top_sectors = [k for k, v in all_sector_data.items() if v["num_ads"] > 500]
 sector = st.selectbox("Select occupation", top_sectors)
 
 metric1, metric2 = st.columns((1, 1))
-metric1.metric(label="Number of job adverts", value=all_sector_data[sector]["num_ads"])
+metric1.metric(
+    label="**Number of job adverts**", value=all_sector_data[sector]["num_ads"]
+)
 metric2.metric(
-    label="Percentage of all job adverts",
+    label="**Percentage of all job adverts**",
     value=f"{percentage_job_adverts_per_sector[sector]}%",
 )
 
@@ -353,6 +473,7 @@ selection_mapper = {
     'Broad/mid (e.g. "S1")': "1",
     'Mid/granular (e.g. "S1.2")': "2",
     'Most granular (e.g. "S1.2.3")': "3",
+    "Skill": "4",
 }
 
 skill_group_level = st.selectbox(
@@ -371,7 +492,11 @@ st.altair_chart(
 
 ## ----- Skill similarities network [selections: none] -----
 
-st.subheader("Skill similarities between occupations")
+st.markdown(
+    "<p class='medium-font'>Skill similarities between occupations</p>",
+    unsafe_allow_html=True,
+)
+
 st.markdown(
     "Connections between occupations are made when the similarity between the two occupations is over a threshold. Node size shows number of job adverts from this occupation."
 )
@@ -388,3 +513,93 @@ nodes, edges, config, legend_chart = create_sector_skill_sim_network(
 agraph(nodes, edges, config)
 
 st.altair_chart(legend_chart, use_container_width=True)
+
+# ========================================
+# ----- Local Government Use Case -----
+
+(
+    all_region_data,
+    loc_quotident_data,
+) = load_regional_data()
+
+regions_list = list(all_region_data.keys())
+
+st.markdown("<p class='big-font'>Local Council Use Case</p>", unsafe_allow_html=True)
+
+st.markdown("<p class='medium-font'>Skills per Region</p>", unsafe_allow_html=True)
+
+st.markdown(
+    "For a selected region, you can see the most common skills (based on the skills asked for)."
+)
+
+geo = st.selectbox("Select Region", regions_list)
+
+metric1, metric2 = st.columns((1, 1))
+metric1.metric(label="**Number of job adverts**", value=all_region_data[geo]["num_ads"])
+metric2.metric(
+    label="**Percentage of all job adverts**",
+    value=f"{round((all_region_data[geo]['num_ads']/100000)*100,2)}%",
+)
+
+## ----- The most common skills [selections: skill level] -----
+
+skill_group_level = st.selectbox(
+    "Select skill or skill group level", list(selection_mapper.keys())
+)
+
+skill_group_level = selection_mapper[skill_group_level]
+
+common_skills_chart = create_common_skills_chart(
+    all_region_data, skill_group_level, geo
+)
+
+st.altair_chart(
+    common_skills_chart.configure_axis(labelLimit=300),
+    use_container_width=True,
+)
+
+## ----- Skill specialisms [selections: location] -----
+
+st.markdown(
+    "<p class='medium-font'>Regional Skill Specialisms</p>", unsafe_allow_html=True
+)
+
+st.markdown(
+    "In addition to getting a high level sense of the types of skills requested at a regional level, we can also identify regional skill 'specialisms' by calculating the location quotident between regional skills requested and overall skills requested."
+)
+
+st.markdown(
+    "Regions specialise in skill groups with Location Quotident Scores above 1 while skill groups with scores below 1 are underrepresented regionally."
+)
+
+location_quotident_chart = create_location_quotident_graph(loc_quotident_data, geo)
+st.altair_chart(
+    location_quotident_chart.configure_axis(labelLimit=300),
+    use_container_width=True,
+)
+
+# ========================================
+# ----- Career Advice Personnel Use Case -----
+
+st.markdown(
+    "<p class='big-font'>Career Advice Personnel Use Case</p>", unsafe_allow_html=True
+)
+
+hr_text = """
+    In addition to the open-source library, we have also developed a demo app for HR professionals and career advice personnel to quickly identify the skills required of a job and the most qualified individuals for it.
+"""
+st.markdown(hr_text)
+
+st.markdown("<p class='medium-font'>Demo</p>", unsafe_allow_html=True)
+
+demo_text = """
+"""
+
+# ========================================
+# ----- Conclusions -----
+
+st.markdown("<p class='big-font'>Conclusions</p>", unsafe_allow_html=True)
+
+conclusion_text = """"""
+
+st.markdown(conclusion_text)
