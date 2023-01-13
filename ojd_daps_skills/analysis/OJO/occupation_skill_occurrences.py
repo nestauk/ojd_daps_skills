@@ -42,7 +42,7 @@ from ojd_daps_skills.getters.data_getters import (
     save_to_s3,
 )
 from ojd_daps_skills import bucket_name
-from ojd_daps_skills.analysis.OJO.get_skill_occurences_matrix import (
+from ojd_daps_skills.analysis.OJO.get_skill_occurrences_matrix import (
     get_cooccurence_matrix,
 )
 
@@ -120,6 +120,29 @@ file_name = os.path.join(
 )
 skill_id_2_ix = load_s3_data(s3, bucket_name, file_name)
 skill_id_2_ix = {k: str(v) for k, v in skill_id_2_ix.items()}
+
+# %%
+esco_hier_mapper = load_s3_data(
+    s3,
+    bucket_name,
+    "escoe_extension/outputs/data/skill_ner_mapping/esco_hier_mapper.json",
+)
+
+# %%
+esco_skills = load_s3_data(
+    s3,
+    bucket_name,
+    "escoe_extension/outputs/data/skill_ner_mapping/esco_data_formatted.csv",
+)
+
+
+# %%
+esco_code2name = {
+    c: b
+    for job_skills in skill_sample
+    if job_skills.get("SKILL")
+    for a, [b, c] in job_skills.get("SKILL", [None, [None, None]])
+}
 
 # %% [markdown]
 # ## Group by occupations and get average skill occurrences
@@ -230,11 +253,11 @@ def set_node_attributes(net, sector_2_kd, sector_2_parent):
     node_attrs_name = {node_num: sector_2_kd.get(node_num) for node_num in net.nodes()}
     nx.set_node_attributes(net, node_attrs_name, "knowledge_domain")
 
-    return net
+    return net, kd_2_number
 
 
 # %%
-def plot_net(net, color_by="knowledge_domain", color_by_mapper=kd_2_number):
+def plot_net(net, color_by_mapper, color_by="knowledge_domain", weight_type="weight"):
     net_plotted = net
 
     plot = Plot(plot_width=600, plot_height=600)
@@ -301,10 +324,10 @@ edge_list.head(2)
 
 # %%
 net = create_network(edge_list, weight_type="weight")
-net = set_node_attributes(net, sector_2_kd, sector_2_parent)
+net, kd_2_number = set_node_attributes(net, sector_2_kd, sector_2_parent)
 
 # %%
-plot = plot_net(net, color_by="knowledge_domain", color_by_mapper=kd_2_number)
+plot = plot_net(net, color_by_mapper=kd_2_number, color_by="knowledge_domain")
 
 # %%
 output_file(
@@ -351,3 +374,145 @@ hgv_carer_skills_df = get_cooccurence_matrix(
     hgv_carer_counts_dict, skill_id_2_ix, convert_int=False
 )
 hgv_carer_skills_df.head(2)
+
+# %% [markdown]
+# ## One sector skill information
+# - Network of cooccuring skills coloured by skill taxonomy
+# - Most and least common skills
+
+# %%
+ix_2_skill_id = {v: k for k, v in skill_id_2_ix.items()}
+
+# %%
+# The average presence of a skill in each sector (doesnt account for duplication)
+average_presence_sector_skills = {}
+for sector, job_ids in tqdm(sector_2_job_ids.items()):
+    total_sector_skills = Counter()
+    for job_id in job_ids:
+        total_sector_skills += Counter({j: 1 for j in job_id_2_skill_count[job_id]})
+    average_presence_sector_skills[sector] = {
+        k: v / len(job_ids) for k, v in total_sector_skills.items()
+    }
+
+# %%
+sector = "1st Line Support/Helpdesk"
+
+# %%
+sorted_average_skill_mentions = sorted(
+    average_presence_sector_skills[sector].items(),
+    key=lambda item: item[1],
+    reverse=True,
+)
+top_bottom_n = 10
+skill_props = (
+    sorted_average_skill_mentions[0:top_bottom_n]
+    + sorted_average_skill_mentions[-top_bottom_n:]
+)
+skill_props_df = pd.DataFrame(
+    [(esco_code2name[ix_2_skill_id[s]], p) for s, p in skill_props],
+    columns=["skill", "proportion"],
+)
+skill_props_df.head(2)
+
+# %%
+chart_title = (
+    f"Skills in the highest and lowest proportions of job adverts for {sector}"
+)
+
+chart = (
+    alt.Chart(skill_props_df)
+    .mark_bar()
+    .encode(
+        alt.Y("skill", title="ESCO skill", sort=None),
+        alt.X("proportion", title="Proportion of job adverts"),
+        #     alt.Color('proportion'),
+        tooltip=["skill", "proportion"],
+    )
+    .configure_mark(opacity=0.8, color="pink")
+    .properties(width=300)
+)
+chart = configure_plots(chart, chart_title=chart_title)
+# AltairSaver().save(chart, f"{today}_num_job_adverts_chunked")
+chart
+
+# %%
+job_ids = sector_2_job_ids[sector]
+
+# The combinations of unique skills within a job advert
+job2skill = {
+    job_id: skills
+    for job_id, skills in job_id_2_skill_count.items()
+    if job_id in job_ids
+}
+
+pairs = list(
+    chain(*[list(combinations(sorted(list(set(x))), 2)) for x in job2skill.values()])
+)
+pairs = [x for x in pairs if len(x) > 0]
+edge_list = pd.DataFrame(pairs, columns=["source", "target"])
+edge_list["weight"] = 1
+edge_list_weighted = (
+    edge_list.groupby(["source", "target"])["weight"].sum().reset_index(drop=False)
+)
+
+# %%
+edge_list_weighted.head(2)
+
+# %%
+edge_list_weighted_sorted = edge_list_weighted.sort_values(
+    "weight", ascending=False
+).reset_index(drop=True)
+edge_list_weighted_sorted.head(2)
+
+# %%
+for top_n in range(10):
+    print(
+        f"'{esco_code2name[ix_2_skill_id[edge_list_weighted_sorted.iloc[top_n]['source']]]}' and '{esco_code2name[ix_2_skill_id[edge_list_weighted_sorted.iloc[top_n]['target']]]}' are commonly co-occuring"
+    )
+
+# %%
+net = nx.from_pandas_edgelist(edge_list_weighted, edge_attr=True)
+
+min_degree = 1
+max_degree = 500  # This skill can only co-occur with another in a maximum of max_degree job adverts
+min_weight = 10  # Has to cooccur in at least min_weight job adverts
+
+keepnodes = [
+    node
+    for node, degree in dict(net.degree()).items()
+    if degree in range(min_degree, max_degree)
+]
+net_filt = net.subgraph(keepnodes)
+high_weight = (
+    (s, e) for s, e, w in net_filt.edges(data=True) if (w["weight"] > min_weight)
+)
+net_filt = net_filt.edge_subgraph(high_weight)
+
+node_attrs_name = {
+    node_num: esco_code2name[ix_2_skill_id[node_num]] for node_num in net_filt.nodes()
+}
+nx.set_node_attributes(net_filt, node_attrs_name, "skill")
+len(net_filt.nodes())
+
+# %%
+net_plotted = net_filt
+
+plot = Plot(plot_width=600, plot_height=600)
+plot.title.text = "Skill graph col"
+
+node_hover_tool = HoverTool(tooltips=[("Skill", "@skill")])
+plot.add_tools(node_hover_tool, BoxZoomTool(), ResetTool(), WheelZoomTool(), SaveTool())
+
+graph_renderer = from_networkx(net_plotted, nx.spring_layout, scale=1, center=(0, 0))
+
+graph_renderer.node_renderer.glyph = Circle(
+    size=10, fill_color="red", line_color=None
+)  # Spectral4[0])
+graph_renderer.edge_renderer.glyph = MultiLine(
+    line_color="black", line_alpha=0.3, line_width=0.5
+)
+plot.renderers.append(graph_renderer)
+
+show(plot, notebook_handle=True)
+
+# %%
