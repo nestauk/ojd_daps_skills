@@ -26,10 +26,6 @@ We currently support three taxonomies out-of-the-box:
 1. The [European Commission's Skills Taxonomy](https://esco.ec.europa.eu/en/classification/skill_main), a multilingual classification of European Skills, Competences, Qualifications and Occupations;
 2. [Lightcast's Open Skills Taxonomy](https://skills.lightcast.io/) and;
 3. A [Toy Taxonomy](https://github.com/nestauk/ojd_daps_skills/blob/dev/ojd_daps_skills/config/extract_skills_toy.yaml) that is helpful for testing;
-
-
-To use the library, you can `pip install ojd-daps-skills` and [follow the documentation](https://nestauk.github.io/ojd_daps_skills/build/html/about.html) for basic usage,
-custom usage and to better understand the algorithm.
 """
 )
 
