@@ -677,7 +677,7 @@ with col1:
     st.write("")
 
 with col2:
-    st.image("images/scene_1.gif")
+    st.image(os.path.join(PROJECT_DIR, "ojd_daps_skills/analysis/OJO/streamlit_viz/images/scene_1.gif"))
 
 with col3:
     st.write("")
@@ -686,10 +686,10 @@ with col3:
 col1, col2 = st.columns([50, 50])
 with col1:
     st.header("**_ESCO_ Extracted Skills**")
-    st.image("images/esco_extracted_skills.png")
+    st.image(os.path.join(PROJECT_DIR, "ojd_daps_skills/analysis/OJO/streamlit_viz/images/esco_extracted_skills.png"))
 with col2:
     st.header("**_Lightcast_ Extracted Skills**")
-    st.image("images/lightcast_extracted_skills.png")
+    st.image(os.path.join(PROJECT_DIR, "ojd_daps_skills/analysis/OJO/streamlit_viz/images/lightcast_extracted_skills.png"))
 
 tax_text = """The job text in the example above is for a Commercial Finance Manager. The app allows you to pick a taxonomy to map onto before extracting skills. You are able to easily change the taxonomy to map onto and see how the taxonomy skills differ."""
 
