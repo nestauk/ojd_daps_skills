@@ -1,11 +1,15 @@
+import sys
+
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
+
 import streamlit as st
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 import os
 
-image_dir = "app/nesta_escoe_skills.png"
+image_dir = "nesta_escoe_skills.png"
 st.image(image_dir)
 
-with open("app/style.css") as css:
+with open("style.css") as css:
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
 st.markdown(
@@ -49,6 +53,8 @@ elif app_mode == test_tax:
 elif app_mode == lightcast_tax:
     es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
 
+es.load()
+
 m = st.markdown(
     """
 <style>
@@ -64,7 +70,6 @@ button = st.button("extract skills")
 
 if button:
     with st.spinner("🤖 Loading algorithms - this may take some time..."):
-        es.load()
         extracted_skills = es.extract_skills(txt)
 
     if "SKILL" in extracted_skills[0].keys():
