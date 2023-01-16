@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
-
 import streamlit as st
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 import os
