@@ -209,6 +209,7 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
         orient="index",
         columns=["euclid_dist"],
     )
+    similar_sectors.drop(index="Other", inplace=True)
     similar_sectors.sort_values(
         by="euclid_dist", inplace=True, ascending=True
     )  # Smaller Euclid dist is closer
@@ -227,34 +228,6 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
         )
     }
 
-    similar_sectors_text_invisible = pd.DataFrame(
-        {
-            "x": [0] * 10,
-            "y": [0] * 10,
-            "value": list(similarity_colors.keys()),
-            "color": list(similarity_colors.values()),
-        }
-    )
-
-    legend_chart = (
-        alt.Chart(similar_sectors_text_invisible)
-        .mark_circle(size=0)
-        .encode(
-            x=alt.X("x", axis=alt.Axis(labels=False, grid=False), title=""),
-            y=alt.Y("y", axis=alt.Axis(labels=False, grid=False), title=""),
-            color=alt.Color(
-                "value",
-                scale=alt.Scale(
-                    domain=list(similarity_colors.keys()),
-                    range=list(similarity_colors.values()),
-                ),
-                # scale=alt.Scale(domain=["most", "least"], range=[0,1]),
-                legend=alt.Legend(title=""),
-            ),
-        )
-        .properties(height=200, width=50)
-    )
-
     similar_sectors_text = pd.DataFrame(
         {
             "x": [0] * 5 + [1] * 5,
@@ -268,16 +241,9 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
         }
     )
 
-    text_chart = (
+    circle_chart = (
         alt.Chart(similar_sectors_text, title="Most similar occupations")
-        .mark_text(
-            align="left",
-            baseline="middle",
-            fontSize=16,
-            dx=10,
-            color="black",
-            font="Averta Demo",
-        )
+        .mark_circle(size=100)
         .encode(
             x=alt.X("x", axis=alt.Axis(labels=False, grid=False), title=""),
             y=alt.Y("y", axis=alt.Axis(labels=False, grid=False), title=""),
@@ -289,12 +255,41 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
                     domain=list(similarity_colors.keys()),
                     range=list(similarity_colors.values()),
                 ),
+                legend=None   
             ),
         )
         .properties(height=200, width=300)
     )
 
-    base = alt.hconcat(text_chart, legend_chart)
+    text_chart = (
+        alt.Chart(similar_sectors_text, title="Most similar occupations")
+        .mark_text(align="left", baseline="middle", fontSize=16, dx=10, color="black")
+        .encode(
+            x=alt.X("x", axis=alt.Axis(labels=False, grid=False), title=""),
+            y=alt.Y("y", axis=alt.Axis(labels=False, grid=False), title=""),
+            text="value",
+            tooltip=[alt.Tooltip("sim_score", title="Similarity score", format=".2")],
+        ).properties(height=200, width=300)
+    )
+
+    similar_sectors_colors = pd.DataFrame({
+        'x': [0,0,0,0], 'y': [0,0,0,0], 'color': ['#008000', '#72aa00', '#d58e00', '#f00'], 
+    'sim_type': ['Very similar', 'Quite similar', 'Mid similarity', 'Not similar']})
+
+    legend_chart = alt.Chart(similar_sectors_colors).mark_circle(size=0).encode(
+            x=alt.X("x", axis=alt.Axis(labels=False, grid=False), title=""),
+            y=alt.Y("y", axis=alt.Axis(labels=False, grid=False), title=""),
+            color=alt.Color(
+                "sim_type",
+                scale=alt.Scale(
+                    domain=list(dict(zip(similar_sectors_colors['sim_type'], similar_sectors_colors['color'])).keys()),
+                    range=list(dict(zip(similar_sectors_colors['sim_type'], similar_sectors_colors['color'])).values()),
+                ),
+                legend=alt.Legend(title=""),
+            ),
+        ).properties(height=200, width=10)
+
+    base = alt.hconcat(circle_chart+text_chart, legend_chart)
 
     configure_plots(base)
 
@@ -429,7 +424,7 @@ def create_location_pie_chart(all_region_data, region):
 # ========================================
 # ---------- Streamlit configs ------------
 
-with open("style.css") as css:
+with open(os.path.join(PROJECT_DIR, "ojd_daps_skills/analysis/OJO/streamlit_viz/style.css")) as css:
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
 st.markdown(
@@ -460,7 +455,7 @@ st.markdown(
 
 col1, col2 = st.columns([50, 50])
 with col1:
-    st.image("images/nesta_escoe_transparent.png")
+    st.image(os.path.join(PROJECT_DIR, "ojd_daps_skills/analysis/OJO/streamlit_viz/images/nesta_escoe_transparent.png"))
 st.markdown("<p class='big-font'>Introduction</p>", unsafe_allow_html=True)
 
 intro_text = """
@@ -501,7 +496,7 @@ st.markdown("<p class='medium-font'>Skills per occupation</p>", unsafe_allow_htm
 
 
 st.markdown(
-    "For a selected occupation you can see the most similar occupations (based on the skills asked for) and the most common skills or skill groups."
+    "For a selected occupation you can see the most similar occupations (based on the skills asked for) and the most common skills or skill groups. Only occupations with over 500 job adverts are included."
 )
 
 top_sectors = [k for k, v in all_sector_data.items() if v["num_ads"] > 500]
