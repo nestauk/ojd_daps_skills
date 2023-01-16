@@ -184,7 +184,14 @@ def create_sector_skill_sim_network(
 
     legend_text = (
         alt.Chart(legend_df)
-        .mark_text(align="left", baseline="middle", fontSize=12, color="black", dx=10)
+        .mark_text(
+            align="left",
+            baseline="middle",
+            fontSize=12,
+            color="black",
+            dx=10,
+            font="Averta Demo",
+        )
         .encode(x="x", y="y", text="value")
     )
 
@@ -263,7 +270,14 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
 
     text_chart = (
         alt.Chart(similar_sectors_text, title="Most similar occupations")
-        .mark_text(align="left", baseline="middle", fontSize=16, dx=10, color="black")
+        .mark_text(
+            align="left",
+            baseline="middle",
+            fontSize=16,
+            dx=10,
+            color="black",
+            font="Averta Demo",
+        )
         .encode(
             x=alt.X("x", axis=alt.Axis(labels=False, grid=False), title=""),
             y=alt.Y("y", axis=alt.Axis(labels=False, grid=False), title=""),
@@ -338,18 +352,29 @@ def create_location_quotident_graph(all_location_data, location):
 
     base = (
         alt.Chart(geo_df)
-        .mark_point(size=10, opacity=0.8, color="#0000FF")
+        .mark_point(size=10, opacity=0.8, color="#0000FF", filled=True)
         .encode(
             y=alt.Y("skill", sort="-x", axis=alt.Axis(title=None)),
             x=alt.X(
                 "location_change",
-                axis=alt.Axis(title="Change"),
+                axis=alt.Axis(title="Location Quotident Difference"),
+            ),
+            size=alt.Size(
+                "skill_percent",
+                title=["Percentage of job adverts", "with this skill group (%)"],
             ),
             color=alt.Color("color", legend=None),
             tooltip=[
                 alt.Tooltip(
-                    "location_quotident", title="Location Quotident Score", format=".01"
-                )
+                    "skill_percent",
+                    title="% of job adverts with this skill group",
+                    format=",.2f",
+                ),
+                alt.Tooltip(
+                    "location_change",
+                    title="Location Quotident Difference",
+                    format=",.2f",
+                ),
             ],
         )
         .properties(
@@ -435,7 +460,7 @@ st.markdown(
 
 col1, col2 = st.columns([50, 50])
 with col1:
-    st.image("nesta_escoe_transparent.png")
+    st.image("images/nesta_escoe_transparent.png")
 st.markdown("<p class='big-font'>Introduction</p>", unsafe_allow_html=True)
 
 intro_text = """
@@ -557,15 +582,21 @@ st.altair_chart(legend_chart, use_container_width=True)
 
 regions_list = list(all_region_data.keys())
 
-st.markdown("<p class='big-font'>Local Council Use Case</p>", unsafe_allow_html=True)
-
-st.markdown("<p class='medium-font'>Skills per Region</p>", unsafe_allow_html=True)
-
 st.markdown(
-    "For a selected region, you can see the most common skills (based on the skills asked for)."
+    "<p class='big-font'>Use Case for Local Governments</p>", unsafe_allow_html=True
 )
 
 geo = st.selectbox("Select Region", regions_list)
+
+local_gov_text = """
+    In addition to national level insights, we are also able to get a local sense of the skills landscape using our algorithms and database.
+
+    For example, we can get a breakdown of vacancies by statistical regions of the UK. This provides insights into where jobs in the UK are concentrated.
+"""
+
+st.markdown(local_gov_text)
+
+st.markdown("<p class='medium-font'>Vacancies per Region</p>", unsafe_allow_html=True)
 
 metric1, metric2 = st.columns((1, 1))
 metric1.metric(label="**Number of job adverts**", value=all_region_data[geo]["num_ads"])
@@ -581,6 +612,14 @@ st.altair_chart(
 )
 
 ## ----- The most common skills [selections: skill level] -----
+
+st.markdown("<p class='medium-font'>Skills per Region</p>", unsafe_allow_html=True)
+
+local_gov_text = """In addition to vacancies by region, we can also interrogate the types of skills commonly requested by region. By taking advantage of the ESCO taxonomy's structure, we can get a high level sense of
+skills demanded at any level of the taxonomy, ranging from very high level skill groups right down to the individual skill.
+"""
+
+st.markdown(local_gov_text)
 
 skill_group_level = st.selectbox(
     "Select skill or skill group level", list(selection_mapper.keys())
@@ -603,13 +642,12 @@ st.markdown(
     "<p class='medium-font'>Regional Skill Specialisms</p>", unsafe_allow_html=True
 )
 
-st.markdown(
-    "In addition to getting a high level sense of the types of skills requested at a regional level, we can also identify regional skill 'specialisms' by calculating the location quotident between regional skills requested and overall skills requested."
-)
+loc_text = """Finally, we can also identify regional skill 'specialisms' by calculating the location quotident between regional skills requested and overall skills requested. We calculate the location quotident by dividing the % of job vacancies requiring a skill group in a given area by the whole of the UK. Regions specialise in skill groups with Location Quotident Scores above 1 while skill groups with scores below 1 are underrepresented regionally.
 
-st.markdown(
-    "Regions specialise in skill groups with Location Quotident Scores above 1 while skill groups with scores below 1 are underrepresented regionally."
-)
+Local governments can take advantage of this analysis by identifying regional skill gaps or by attracting businesses in specific industries based on regional skill specialisms.
+"""
+
+st.markdown(loc_text)
 
 location_quotident_chart = create_location_quotident_graph(loc_quotident_data, geo)
 st.altair_chart(
@@ -621,24 +659,61 @@ st.altair_chart(
 # ----- Career Advice Personnel Use Case -----
 
 st.markdown(
-    "<p class='big-font'>Career Advice Personnel Use Case</p>", unsafe_allow_html=True
+    "<p class='big-font'>Use Case for Career Advice Personnel</p>",
+    unsafe_allow_html=True,
 )
 
 hr_text = """
-    In addition to the open-source library, we have also developed a demo app for HR professionals and career advice personnel to quickly identify the skills required of a job and the most qualified individuals for it.
+    In addition to the open-source library, we have also developed an app for HR professionals and career advice personnel to quickly identify the skills required of a job and the most qualified individuals for it.
+
+    The app works by simply **copying and pasting text** for a given job advert and **clicking 'extract skills'** to get a list of raw and mapped skills for a given taxonomy.
+
+    We currently support three taxonomies out-of-the-box:
+
+    1. The [European Commission's Skills Taxonomy](https://esco.ec.europa.eu/en/classification/skill_main), a multilingual classification of European Skills, Competences, Qualifications and Occupations;
+    2. [Lightcast's Open Skills Taxonomy](https://skills.lightcast.io/) and;
+    3. A [Toy Taxonomy](https://github.com/nestauk/ojd_daps_skills/blob/dev/ojd_daps_skills/config/extract_skills_toy.yaml) that is helpful for testing;
 """
 st.markdown(hr_text)
 
-st.markdown("<p class='medium-font'>Demo</p>", unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1, 6, 1])
 
-demo_text = """
-"""
+with col1:
+    st.write("")
+
+with col2:
+    st.image("images/scene_1.gif")
+
+with col3:
+    st.write("")
+
+
+col1, col2 = st.columns([50, 50])
+with col1:
+    st.header("**_ESCO_ Extracted Skills**")
+    st.image("images/esco_extracted_skills.png")
+with col2:
+    st.header("**_Lightcast_ Extracted Skills**")
+    st.image("images/lightcast_extracted_skills.png")
+
+tax_text = """The job text in the example above is for a Commercial Finance Manager. The app allows you to pick a taxonomy to map onto before extracting skills. You are able to easily change the taxonomy to map onto and see how the taxonomy skills differ."""
+
+st.markdown(tax_text)
+
+conc_text = """Ultimately, the tool helps HR professionals by saving time on searching for skills in lengthy job postings and provides an official 'skills' language by mapping skills to known taxonomies."""
+
+st.markdown(conc_text)
 
 # ========================================
 # ----- Conclusions -----
 
 st.markdown("<p class='big-font'>Conclusions</p>", unsafe_allow_html=True)
 
-conclusion_text = """"""
+conclusion_text = """
+    Both our ever growing database of online job adverts and our suite of algorithms can ultimately help stakeholders ranging from government bodies to HR professionals make better labour market decisions.
+
+    If you are interested in the analysis, our [Skills Extractor library](https://nestauk.github.io/ojd_daps_skills/build/html/index.html) or the [Open Jobs Observatory](https://www.nesta.org.uk/data-visualisation-and-interactive/open-jobs-observatory/), do get in contact with
+    [Cath Sleeman](mailto:cath.sleeman@nesta.org.uk), [Elizabeth Gallagher](mailto:elizabeth.gallagher@nesta.org.uk) or [India Kerle](mailto:india.kerle@nesta.org.uk).
+"""
 
 st.markdown(conclusion_text)
