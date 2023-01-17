@@ -14,14 +14,11 @@ This demo app is using Nesta's [Skills Extractor Library](https://github.com/nes
 to extract skills for a given job advert and map them onto a skills taxonomy of
 your choice. Multiple organisations, from private corporations to government bodies, have developed skills taxonomies to organise labour market skills in a structured way.
 By mapping extracted skills to a pre-defined taxonomy, you are able to take advantage of the additional benefits of a taxonomy, including its structure and skill definitions.
-
 This library was made possible via funding from the [Economic Statistics Centre of Excellence](https://esco.ec.europa.eu/en/classification/skill_main).
-
-
 We currently support three taxonomies out-of-the-box:
 1. The [European Commission's Skills Taxonomy](https://esco.ec.europa.eu/en/classification/skill_main), a multilingual classification of European Skills, Competences, Qualifications and Occupations;
 2. [Lightcast's Open Skills Taxonomy](https://skills.lightcast.io/) and;
-3. A [Toy Taxonomy](https://github.com/nestauk/ojd_daps_skills/blob/dev/ojd_daps_skills/config/extract_skills_toy.yaml) that is helpful for testing;
+3. A [Toy Taxonomy](https://github.com/nestauk/ojd_daps_skills/blob/dev/ojd_daps_skills/config/extract_skills_toy.yaml) that is helpful for testing.
 """
 )
 
@@ -45,8 +42,6 @@ elif app_mode == test_tax:
 elif app_mode == lightcast_tax:
     es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
 
-es.load()
-
 m = st.markdown(
     """
 <style>
@@ -59,6 +54,8 @@ div.stButton > button:first-child {
 )
 
 button = st.button("extract skills")
+
+es.load()
 
 if button:
     with st.spinner("🤖 Loading algorithms - this may take some time..."):
