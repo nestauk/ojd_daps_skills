@@ -55,10 +55,9 @@ div.stButton > button:first-child {
 
 button = st.button("extract skills")
 
-es.load()
-
 if button:
     with st.spinner("🤖 Loading algorithms - this may take some time..."):
+        es.load()
         extracted_skills = es.extract_skills(txt)
 
     if "SKILL" in extracted_skills[0].keys():
