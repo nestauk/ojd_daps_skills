@@ -15,6 +15,6 @@ python ojd_daps_skills/analysis/OJO/process_viz_data.py
 A preliminary analysis app can be seen by running:
 
 ```
-pip install -r analysis_app_requirements.txt
+pip install -r requirements_analysis_app.txt
 streamlit run ojd_daps_skills/analysis/OJO/streamlit_viz/streamlit_viz.py
 ```
