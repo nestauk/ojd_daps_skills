@@ -2,6 +2,26 @@ import streamlit as st
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 import os
 
+
+def hash_config_name(es):
+    # custom hash function in order to use st.cache
+    return es.taxonomy_name
+
+
+@st.cache(hash_funcs={ExtractSkills: hash_config_name})
+def load_model(app_mode):
+
+    if app_mode == esco_tax:
+        es = ExtractSkills(config_name="extract_skills_esco", local=True)
+    elif app_mode == test_tax:
+        es = ExtractSkills(config_name="extract_skills_toy", local=True)
+    elif app_mode == lightcast_tax:
+        es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
+
+    es.load()
+    return es
+
+
 image_dir = "nesta_escoe_skills.png"
 st.image(image_dir)
 
@@ -35,12 +55,6 @@ app_mode = st.selectbox(
 )
 txt = st.text_area("Add your job advert text here ✨", "")
 
-if app_mode == esco_tax:
-    es = ExtractSkills(config_name="extract_skills_esco", local=True)
-elif app_mode == test_tax:
-    es = ExtractSkills(config_name="extract_skills_toy", local=True)
-elif app_mode == lightcast_tax:
-    es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
 
 m = st.markdown(
     """
@@ -53,11 +67,13 @@ div.stButton > button:first-child {
     unsafe_allow_html=True,
 )
 
+es = load_model(app_mode)
+
 button = st.button("extract skills")
 
 if button:
     with st.spinner("🤖 Loading algorithms - this may take some time..."):
-        es.load()
+
         extracted_skills = es.extract_skills(txt)
 
     if "SKILL" in extracted_skills[0].keys():
