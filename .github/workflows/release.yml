@@ -1,10 +1,14 @@
-name: Upload skills library to TestPyPi
+name: Upload library to TestPyPi
 on:
   release:
     types: [created]
 jobs:
   deploy:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: "3.8"
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
