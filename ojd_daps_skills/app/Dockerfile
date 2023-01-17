@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY . .
 
-RUN pip3 install -r app_requirements.txt
+RUN pip3 install -r requirements_app.txt
 
 RUN python -m spacy download en_core_web_sm
 
