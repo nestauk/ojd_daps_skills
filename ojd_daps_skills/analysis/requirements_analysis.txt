@@ -1,0 +1,7 @@
+jupyter==1.0.0
+matplotlib==3.5.2
+altair==4.2.0
+altair_saver
+networkx==2.8.7
+selenium==4.2.0
+webdriver-manager==3.8.4
