@@ -31,6 +31,10 @@ setup(
     version="1.0.0",
     description="Extract skill phrases from job advertisement texts and map them onto a skills taxonomy of your choice.",
     url="https://github.com/nestauk/ojd_daps_skills",
+    project_urls={
+        "Documentation": "https://nestauk.github.io/ojd_daps_skills/build/html/about.html",
+        "Source": "https://github.com/nestauk/ojd_daps_skills",
+    },
     author="Nesta",
     author_email="dataanalytics@nesta.org.uk",
     maintainer="Nesta",
