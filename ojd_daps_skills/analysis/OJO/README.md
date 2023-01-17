@@ -62,6 +62,16 @@ The script `evaluation_analysis.py` calculates some high level stats about two c
 
 The script `esco_occupations.py` gives some high level stats about X, Y and Z.
 
+## Skill cooccurrence analysis
+
+Collate the skill occurences in the sample of job adverts by running
+
+```
+python ojd_daps_skills/analysis/ojo/get_skill_occurrences_matrix.py
+```
+
+Then data produced in this script can be read into the notebook `occupation_skill_occurrences.ipynb` to analyse skill co-occurence differences between occupations. In this notebook a network is created where each node is an occupation and each edge is weighted by the euclidean distance betwen each occupation's average skill similarity. This network can be downloaded and viewed from `between_occupation_skill_similarity_30112022.html`.
+
 ## Skills extraction and matching quality
 
 The script `get_skills_sample_to_label.py` creates a sample of the skills extracted and the ESCO skills they are mapped to. This file was manually labelled to check quality of both the skill entity extraction and the skill mapping to ESCO - for each a value of 0 - "bad", 1 - "ok" and 2 - "excellent" was given.
