@@ -20,7 +20,6 @@ setup(
     long_description=open(os.path.join(BASE_DIR, "README.md")).read(),
     long_description_content_type="text/markdown",
     install_requires=read_lines(os.path.join(BASE_DIR, "requirements.txt")),
-    extras_require={"dev": read_lines(os.path.join(BASE_DIR, "requirements_dev.txt"))},
     packages=find_packages(exclude=["docs"]),
     package_data={
         # If any package contains *.yaml files, include them:
@@ -28,8 +27,8 @@ setup(
             "*.yaml",
         ],
     },
-    version="1.0.0",
-    description="Extract skill phrases from job advertisement texts and map them onto a skills taxonomy of your choice.",
+    version="1.0.5-alpha",
+    description="Extract skills from job ads and maps them onto a skills taxonomy of your choice.",
     url="https://github.com/nestauk/ojd_daps_skills",
     author="Nesta",
     author_email="dataanalytics@nesta.org.uk",
