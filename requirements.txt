@@ -19,7 +19,7 @@ selenium==4.2.0
 altair_saver
 webdriver-manager==3.8.4
 s3fs==2022.5.0
-boto3
+boto3==1.21.21
 networkx==2.8.7
 furo==2022.9.29
 myst_parser
