@@ -15,4 +15,3 @@ pre-commit
 pre-commit-hooks
 spacy
 pytest
-streamlit==1.16.0
