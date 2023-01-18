@@ -21,7 +21,9 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=read_lines(os.path.join(BASE_DIR, "requirements.txt")),
     extras_require={"dev": read_lines(os.path.join(BASE_DIR, "requirements_dev.txt"))},
-    packages=find_packages(exclude=["docs"]),
+    packages=find_packages(
+        exclude=["docs", "ojd_daps_skills/analysis", "ojd_daps_skills/app"]
+    ),
     package_data={
         # If any package contains *.yaml files, include them:
         "": [
