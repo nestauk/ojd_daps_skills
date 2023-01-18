@@ -1,4 +1,4 @@
-name: Upload library to TestPyPi
+name: Upload library to PyPi
 on:
   release:
     types: [created]

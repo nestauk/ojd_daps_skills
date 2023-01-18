@@ -8,7 +8,7 @@ import subprocess
 
 
 tag_cmd = "echo $(git describe --tags --abbrev=0)"
-version = subprocess.check_output(tag_cmd, shell=True).decode('ascii').replace('\n', '')
+tag_version = subprocess.check_output(tag_cmd, shell=True).decode('ascii').replace('\n', '')
 
 def read_lines(path):
     """Read lines of `path`."""
@@ -31,7 +31,7 @@ setup(
             "*.yaml",
         ],
     },
-    version=version,
+    version=tag_version,
     description="Extract skills from job ads and maps them onto a skills taxonomy of your choice.",
     url="https://github.com/nestauk/ojd_daps_skills",
     author="Nesta",
