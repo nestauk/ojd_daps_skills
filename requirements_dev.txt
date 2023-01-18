@@ -10,8 +10,11 @@ Sphinx
 sphinxcontrib-napoleon
 sphinx-rtd-theme
 awscli==1.27.32
-pytest
 pre-commit
 pre-commit-hooks
 spacy
 pytest
+sqlalchemy==1.4.37
+pymysql==1.0.2
+furo==2022.9.29
+myst_parser

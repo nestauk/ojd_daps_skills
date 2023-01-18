@@ -173,6 +173,10 @@ Some functions have tests, these can be checked by running
 pytest
 ```
 
+### Analysis
+
+Various pieces of analysis are done in the [analysis folder](https://github.com/nestauk/ojd_daps_skills/tree/dev/ojd_daps_skills/analysis/). These require access to various datasets from Nesta's private S3 bucket and are therefore only designed for internal Nesta use.
+
 ### Contributor guidelines
 
 The technical and working style guidelines can be found [here](https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md).
