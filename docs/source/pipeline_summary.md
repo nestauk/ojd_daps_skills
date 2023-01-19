@@ -1,4 +1,4 @@
-# Pipeline summary
+# Pipeline summary and metrics
 
 ![](../../outputs/reports/figures/overview.png)
 
@@ -75,7 +75,7 @@ We manually tagged a random sample of skills extracted from job adverts, with wh
 | -------------------- | ------------------ | ----- |
 | Inappropriate        | Inappropriate      | 9     |
 | Inappropriate        | OK                 | 1     |
-| OK                   | Inappropriate      |       | 9 |
+| OK                   | Inappropriate      | 9     |
 | OK                   | OK                 | 16    |
 | OK                   | Excellent          | 7     |
 | Excellent            | Inappropriate      | 11    |
