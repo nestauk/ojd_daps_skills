@@ -21,7 +21,9 @@ s3_folder = "escoe_extension/outputs/data"
 
 def load_sector_data():
 
-    file_name = os.path.join(s3_folder, "streamlit_viz", "per_sector_sample.json")
+    file_name = os.path.join(
+        s3_folder, "streamlit_viz", "per_sector_sample_updated.json"
+    )
     all_sector_data = load_s3_data(s3, bucket_name, file_name)
 
     file_name = os.path.join(
@@ -255,7 +257,7 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
                     domain=list(similarity_colors.keys()),
                     range=list(similarity_colors.values()),
                 ),
-                legend=None   
+                legend=None,
             ),
         )
         .properties(height=200, width=300)
@@ -269,34 +271,66 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
             y=alt.Y("y", axis=alt.Axis(labels=False, grid=False), title=""),
             text="value",
             tooltip=[alt.Tooltip("sim_score", title="Similarity score", format=".2")],
-        ).properties(height=200, width=300)
+        )
+        .properties(height=200, width=300)
     )
 
-    similar_sectors_colors = pd.DataFrame({
-        'x': [0,0,0,0], 'y': [0,0,0,0], 'color': ['#008000', '#72aa00', '#d58e00', '#f00'], 
-    'sim_type': ['Very similar', 'Quite similar', 'Mid similarity', 'Not similar']})
+    similar_sectors_colors = pd.DataFrame(
+        {
+            "x": [0, 0, 0, 0],
+            "y": [0, 0, 0, 0],
+            "color": ["#008000", "#72aa00", "#d58e00", "#f00"],
+            "sim_type": [
+                "Very similar",
+                "Quite similar",
+                "Mid similarity",
+                "Not similar",
+            ],
+        }
+    )
 
-    legend_chart = alt.Chart(similar_sectors_colors).mark_circle(size=0).encode(
+    legend_chart = (
+        alt.Chart(similar_sectors_colors)
+        .mark_circle(size=0)
+        .encode(
             x=alt.X("x", axis=alt.Axis(labels=False, grid=False), title=""),
             y=alt.Y("y", axis=alt.Axis(labels=False, grid=False), title=""),
             color=alt.Color(
                 "sim_type",
                 scale=alt.Scale(
-                    domain=list(dict(zip(similar_sectors_colors['sim_type'], similar_sectors_colors['color'])).keys()),
-                    range=list(dict(zip(similar_sectors_colors['sim_type'], similar_sectors_colors['color'])).values()),
+                    domain=list(
+                        dict(
+                            zip(
+                                similar_sectors_colors["sim_type"],
+                                similar_sectors_colors["color"],
+                            )
+                        ).keys()
+                    ),
+                    range=list(
+                        dict(
+                            zip(
+                                similar_sectors_colors["sim_type"],
+                                similar_sectors_colors["color"],
+                            )
+                        ).values()
+                    ),
                 ),
                 legend=alt.Legend(title=""),
             ),
-        ).properties(height=200, width=10)
+        )
+        .properties(height=200, width=10)
+    )
 
-    base = alt.hconcat(circle_chart+text_chart, legend_chart)
+    base = alt.hconcat(circle_chart + text_chart, legend_chart)
 
     configure_plots(base)
 
     return base.configure_title(fontSize=24)
 
 
-def create_common_skills_chart(all_sector_data, skill_group_level, sector):
+def create_common_skills_chart(
+    all_sector_data, skill_group_level, sector, remove_trans=False
+):
 
     skill_group_select_text = {
         "all": "skills or skill groups",
@@ -307,8 +341,13 @@ def create_common_skills_chart(all_sector_data, skill_group_level, sector):
         "4": "skill",
     }
 
+    if remove_trans:
+        key_name = "top_skills_no_transversal"
+    else:
+        key_name = "top_skills"
+
     top_skills = pd.DataFrame.from_dict(
-        all_sector_data[sector]["top_skills"][skill_group_level],
+        all_sector_data[sector][key_name][skill_group_level],
         orient="index",
         columns=["percent"],
     )
@@ -532,14 +571,16 @@ selection_mapper = {
 skill_group_level = st.selectbox(
     "Select skill group level", list(selection_mapper.keys())
 )
+remove_trans = st.checkbox("Remove transversal skills")
+
 skill_group_level = selection_mapper[skill_group_level]
 
 common_skills_chart = create_common_skills_chart(
-    all_sector_data, skill_group_level, sector
+    all_sector_data, skill_group_level, sector, remove_trans=remove_trans
 )
 
 st.altair_chart(
-    common_skills_chart.configure_axis(labelLimit=300),
+    common_skills_chart.configure_axis(labelLimit=500),
     use_container_width=True,
 )
 
