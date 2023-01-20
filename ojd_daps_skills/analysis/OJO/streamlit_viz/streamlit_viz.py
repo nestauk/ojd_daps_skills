@@ -623,7 +623,6 @@ st.altair_chart(legend_chart, use_container_width=True)
 
 # ========================================
 # ----- Local Government Use Case -----
-
 (
     all_region_data,
     loc_quotident_data,

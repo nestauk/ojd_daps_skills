@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
-
 """
 Script to process the skill occurences data into several outputs needed for the Streamlit viz
 
@@ -21,6 +17,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.metrics.pairwise import euclidean_distances
 from streamlit_agraph import agraph, Node, Edge, Config
+from collections import defaultdict
 
 from ojd_daps_skills.getters.data_getters import (
     get_s3_resource,
@@ -483,8 +480,6 @@ if __name__ == "__main__":
         "London",
         skill_sample_df["itl_2_name"],
     )
-
-    from collections import defaultdict
 
     skill_levels_list = list(job_id_2_skill_hier_mentions_per_lev.values())
     job_id_len = skill_sample_df.job_id.nunique()
