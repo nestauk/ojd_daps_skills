@@ -4,6 +4,13 @@ from setuptools import find_packages
 from setuptools import setup
 
 import os
+import subprocess
+
+
+tag_cmd = "echo $(git describe --tags --abbrev=0)"
+tag_version = (
+    subprocess.check_output(tag_cmd, shell=True).decode("ascii").replace("\n", "")
+)
 
 
 def read_lines(path):
@@ -30,8 +37,8 @@ setup(
             "*.yaml",
         ],
     },
-    version="1.0.0",
-    description="Extract skill phrases from job advertisement texts and map them onto a skills taxonomy of your choice.",
+    version=tag_version,
+    description="Extract skills from job ads and maps them onto a skills taxonomy of your choice.",
     url="https://github.com/nestauk/ojd_daps_skills",
     project_urls={
         "Documentation": "https://nestauk.github.io/ojd_daps_skills/build/html/about.html",
