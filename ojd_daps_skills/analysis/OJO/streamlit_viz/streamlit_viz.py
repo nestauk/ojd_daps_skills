@@ -255,7 +255,7 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
                     domain=list(similarity_colors.keys()),
                     range=list(similarity_colors.values()),
                 ),
-                legend=None   
+                legend=None,
             ),
         )
         .properties(height=200, width=300)
@@ -269,27 +269,57 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
             y=alt.Y("y", axis=alt.Axis(labels=False, grid=False), title=""),
             text="value",
             tooltip=[alt.Tooltip("sim_score", title="Similarity score", format=".2")],
-        ).properties(height=200, width=300)
+        )
+        .properties(height=200, width=300)
     )
 
-    similar_sectors_colors = pd.DataFrame({
-        'x': [0,0,0,0], 'y': [0,0,0,0], 'color': ['#008000', '#72aa00', '#d58e00', '#f00'], 
-    'sim_type': ['Very similar', 'Quite similar', 'Mid similarity', 'Not similar']})
+    similar_sectors_colors = pd.DataFrame(
+        {
+            "x": [0, 0, 0, 0],
+            "y": [0, 0, 0, 0],
+            "color": ["#008000", "#72aa00", "#d58e00", "#f00"],
+            "sim_type": [
+                "Very similar",
+                "Quite similar",
+                "Mid similarity",
+                "Not similar",
+            ],
+        }
+    )
 
-    legend_chart = alt.Chart(similar_sectors_colors).mark_circle(size=0).encode(
+    legend_chart = (
+        alt.Chart(similar_sectors_colors)
+        .mark_circle(size=0)
+        .encode(
             x=alt.X("x", axis=alt.Axis(labels=False, grid=False), title=""),
             y=alt.Y("y", axis=alt.Axis(labels=False, grid=False), title=""),
             color=alt.Color(
                 "sim_type",
                 scale=alt.Scale(
-                    domain=list(dict(zip(similar_sectors_colors['sim_type'], similar_sectors_colors['color'])).keys()),
-                    range=list(dict(zip(similar_sectors_colors['sim_type'], similar_sectors_colors['color'])).values()),
+                    domain=list(
+                        dict(
+                            zip(
+                                similar_sectors_colors["sim_type"],
+                                similar_sectors_colors["color"],
+                            )
+                        ).keys()
+                    ),
+                    range=list(
+                        dict(
+                            zip(
+                                similar_sectors_colors["sim_type"],
+                                similar_sectors_colors["color"],
+                            )
+                        ).values()
+                    ),
                 ),
                 legend=alt.Legend(title=""),
             ),
-        ).properties(height=200, width=10)
+        )
+        .properties(height=200, width=10)
+    )
 
-    base = alt.hconcat(circle_chart+text_chart, legend_chart)
+    base = alt.hconcat(circle_chart + text_chart, legend_chart)
 
     configure_plots(base)
 
@@ -343,45 +373,58 @@ def create_common_skills_chart(all_sector_data, skill_group_level, sector):
 
 def create_location_quotident_graph(all_location_data, location):
 
-    geo_df = all_location_data[all_location_data["region"] == location]
+    geo_df = all_location_data[
+        (all_location_data["region"] == location)
+        & (all_location_data["skill_percent"] >= 0.05)
+    ].sort_values("absolute_location_change", ascending=False)[:15]
+    geo_df["skill_percent"] = round(geo_df["skill_percent"] * 100, 2)
 
     base = (
         alt.Chart(geo_df)
         .mark_point(size=10, opacity=0.8, color="#0000FF", filled=True)
         .encode(
-            y=alt.Y("skill", sort="-x", axis=alt.Axis(title=None)),
+            y=alt.Y("skill", sort="-x", axis=alt.Axis(title=None, labelLimit=1000)),
             x=alt.X(
-                "location_change",
-                axis=alt.Axis(title="Location Quotident Difference"),
+                "location_quotident",
+                axis=alt.Axis(title="Location Quotident"),
             ),
             size=alt.Size(
-                "skill_percent",
+                "skill_percent:Q",
                 title=["Percentage of job adverts", "with this skill group (%)"],
             ),
-            color=alt.Color("color", legend=None),
+            color=alt.Color(
+                "location_change",
+                scale=alt.Scale(domainMid=0, scheme="redblue"),
+                legend=None,
+            ),
             tooltip=[
                 alt.Tooltip(
-                    "skill_percent",
+                    "skill_percent:Q",
                     title="% of job adverts with this skill group",
                     format=",.2f",
                 ),
                 alt.Tooltip(
                     "location_change",
-                    title="Location Quotident Difference",
+                    title="Location Quotident Change",
                     format=",.2f",
                 ),
             ],
         )
         .properties(
-            title=f"Skill specialisms in {location}",
-            # height=100,
-            width=75,
+            title=f"Skill Intensity in {location}",
         )
     )
 
-    configure_plots(base)
+    vline = (
+        alt.Chart(pd.DataFrame({"location_quotident": [1], "color": ["red"]}))
+        .mark_rule(opacity=0.8)
+        .encode(x="location_quotident", color=alt.Color("color:N", scale=None))
+    )
 
-    return base.configure_title(fontSize=24)
+    base_line = base + vline
+    configure_plots(base_line)
+
+    return base_line.configure_title(fontSize=24)
 
 
 def create_location_pie_chart(all_region_data, region):
@@ -634,10 +677,10 @@ st.altair_chart(
 ## ----- Skill specialisms [selections: location] -----
 
 st.markdown(
-    "<p class='medium-font'>Regional Skill Specialisms</p>", unsafe_allow_html=True
+    "<p class='medium-font'>Regional Skill Intensity</p>", unsafe_allow_html=True
 )
 
-loc_text = """Finally, we can also identify regional skill 'specialisms' by calculating the location quotident between regional skills requested and overall skills requested. We calculate the location quotident by dividing the % of job vacancies requiring a skill group in a given area by the whole of the UK. Regions specialise in skill groups with Location Quotident Scores above 1 while skill groups with scores below 1 are underrepresented regionally.
+loc_text = """Finally, we can also calculate regional skill intensities by calculating the location quotident between regional skills requested and overall skills requested. We calculate the location quotident by dividing the % of job vacancies requiring a skill group in a given area by the whole of the UK. Regions specialise in skill groups with Location Quotident Scores above 1 while skill groups with scores below 1 are underrepresented regionally.
 
 Local governments can take advantage of this analysis by identifying regional skill gaps or by attracting businesses in specific industries based on regional skill specialisms.
 """

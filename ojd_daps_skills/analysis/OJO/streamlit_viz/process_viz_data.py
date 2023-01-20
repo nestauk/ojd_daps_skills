@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills")
+
 """
 Script to process the skill occurences data into several outputs needed for the Streamlit viz
 
@@ -417,8 +421,7 @@ if __name__ == "__main__":
         ),
     )
 
-    # Locations
-
+    # LOCATION
     # UNGROUPED SKILL PERCENTAGES PER LEVEL
     skill_sample_df["itl_2_name"] = np.where(
         skill_sample_df["itl_2_name"].str.contains("London"),
@@ -450,7 +453,7 @@ if __name__ == "__main__":
     )
 
     top_skills_per_location = get_top_skills_per_group(
-        percentage_skill_locs_df, esco_code2name, top_n=20
+        percentage_skill_locs_df, esco_code2name, top_n=None
     )
 
     number_job_adverts_per_location = (
@@ -470,7 +473,7 @@ if __name__ == "__main__":
             group="itl_2_name",
         )
         top_skill_by_group_per_group = get_top_skills_per_group(
-            percentage_skill_by_group, esco_code2name, top_n=30
+            percentage_skill_by_group, esco_code2name, top_n=None
         )
         percentage_skill_by_group_list.append(top_skill_by_group_per_group)
 
@@ -492,7 +495,7 @@ if __name__ == "__main__":
     # final dfs to save
     loc_dfs = []
     for loc, skill_info in all_location_data.items():
-        loc_df = pd.DataFrame(skill_info["top_skills"]["1"], index=["skill_percent"]).T
+        loc_df = pd.DataFrame(skill_info["top_skills"]["3"], index=["skill_percent"]).T
         loc_df["region"] = loc
         loc_df = (
             loc_df.reset_index()
@@ -504,8 +507,9 @@ if __name__ == "__main__":
     all_loc_df = pd.concat(loc_dfs)
 
     all_loc_df["total_skill_percentage"] = all_loc_df.skill.map(
-        percentage_skills_by_skill_level["1"][0]
+        percentage_skills_by_skill_level["3"][0]
     )
+
     all_loc_df["location_quotident"] = (
         all_loc_df["skill_percent"] / all_loc_df["total_skill_percentage"]
     )
@@ -515,8 +519,8 @@ if __name__ == "__main__":
     all_loc_df = all_loc_df.drop(columns="total_skill_percentage")
 
     all_loc_df["location_change"] = all_loc_df["location_quotident"] - 1
-    all_loc_df["color"] = np.where(all_loc_df["location_change"] > 0, "above", "below")
 
+    all_loc_df["absolute_location_change"] = all_loc_df.location_change.abs()
     save_to_s3(
         s3,
         bucket_name,
