@@ -220,17 +220,31 @@ def get_skill_per_taxonomy_level(esco_skills, job_id_2_skill_count, skill_id_2_i
     return job_id_2_skill_hier_mentions_per_lev
 
 
-def get_top_skills_per_group(percentage_group_skills_df, esco_code2name, top_n=20):
+def get_top_skills_per_group(
+    percentage_group_skills_df, esco_code2name, top_n=20, esco_id_2_trans_flag=None
+):
     top_skills_per_group = {}
     for group_name, group_skill_percentages in percentage_group_skills_df.iterrows():
-        top_skills_per_group[group_name] = {
-            esco_code2name.get(skill_id, skill_id): top_skills
-            for skill_id, top_skills in group_skill_percentages.sort_values(
-                ascending=False
-            )[0:top_n]
-            .to_dict()
-            .items()
-        }
+        if not esco_id_2_trans_flag:
+            top_skills_per_group[group_name] = {
+                esco_code2name.get(skill_id, skill_id): top_skills
+                for skill_id, top_skills in group_skill_percentages.sort_values(
+                    ascending=False
+                )[0:top_n]
+                .to_dict()
+                .items()
+            }
+        else:
+            # Don't include transversal skills
+            top_skills_per_group[group_name] = {
+                esco_code2name.get(skill_id, skill_id): top_skills
+                for skill_id, top_skills in group_skill_percentages.sort_values(
+                    ascending=False
+                )[0:top_n]
+                .to_dict()
+                .items()
+                if not esco_id_2_trans_flag.get(skill_id, False)
+            }
     return top_skills_per_group
 
 
@@ -243,6 +257,23 @@ if __name__ == "__main__":
     skill_sample, job_id_2_skill_count, skill_id_2_ix, esco_skills = load_datasets(
         s3, s3_folder, bucket_name
     )
+
+    def is_transversal(esco_id, hier_levels):
+        if len(esco_id) > 10:
+            if "T" in str(hier_levels):
+                return True
+            else:
+                return False
+        else:
+            if "T" in str(esco_id):
+                return True
+            else:
+                return False
+
+    esco_skills["is_transversal"] = esco_skills.apply(
+        lambda x: is_transversal(x["id"], x["hierarchy_levels"]), axis=1
+    )
+    esco_id_2_trans_flag = dict(zip(esco_skills["id"], esco_skills["is_transversal"]))
 
     skill_sample_df = pd.DataFrame(skill_sample)
     skill_sample_df["sector"] = skill_sample_df["sector"].apply(clean_sector_name)
@@ -283,6 +314,12 @@ if __name__ == "__main__":
     top_skills_per_sector = get_top_skills_per_group(
         percentage_sector_skills_df, esco_code2name, top_n=20
     )
+    top_skills_per_sector_no_trans = get_top_skills_per_group(
+        percentage_sector_skills_df,
+        esco_code2name,
+        top_n=20,
+        esco_id_2_trans_flag=esco_id_2_trans_flag,
+    )
 
     number_job_adverts_per_sector = (
         skill_sample_df.groupby("sector")["job_id"].count().to_dict()
@@ -293,6 +330,7 @@ if __name__ == "__main__":
     )
 
     percentage_sector_skill_by_group_list = []
+    percentage_sector_skill_by_group_list_no_trans = []
     for group_num in ["0", "1", "2", "3", "4"]:
         _, percentage_sector_skill_by_group = find_skill_proportions_per_group(
             skill_sample_df,
@@ -307,7 +345,16 @@ if __name__ == "__main__":
         top_skill_by_group_per_sector = get_top_skills_per_group(
             percentage_sector_skill_by_group, esco_code2name, top_n=20
         )
+        top_skill_by_group_per_sector_no_trans = get_top_skills_per_group(
+            percentage_sector_skill_by_group,
+            esco_code2name,
+            top_n=20,
+            esco_id_2_trans_flag=esco_id_2_trans_flag,
+        )
         percentage_sector_skill_by_group_list.append(top_skill_by_group_per_sector)
+        percentage_sector_skill_by_group_list_no_trans.append(
+            top_skill_by_group_per_sector_no_trans
+        )
 
     # Combine all sector data together
     all_sector_data = {}
@@ -323,13 +370,21 @@ if __name__ == "__main__":
                 "3": percentage_sector_skill_by_group_list[3][sector_name],
                 "4": percentage_sector_skill_by_group_list[4][sector_name],
             },
+            "top_skills_no_transversal": {
+                "all": top_skills_per_sector_no_trans[sector_name],
+                "0": percentage_sector_skill_by_group_list_no_trans[0][sector_name],
+                "1": percentage_sector_skill_by_group_list_no_trans[1][sector_name],
+                "2": percentage_sector_skill_by_group_list_no_trans[2][sector_name],
+                "3": percentage_sector_skill_by_group_list_no_trans[3][sector_name],
+                "4": percentage_sector_skill_by_group_list_no_trans[4][sector_name],
+            },
         }
 
     save_to_s3(
         s3,
         bucket_name,
         all_sector_data,
-        os.path.join(s3_folder, "streamlit_viz", "per_sector_sample.json"),
+        os.path.join(s3_folder, "streamlit_viz", "per_sector_sample_updated.json"),
     )
 
     # Network data
