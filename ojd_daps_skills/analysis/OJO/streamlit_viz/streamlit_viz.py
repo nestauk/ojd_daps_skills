@@ -19,6 +19,18 @@ s3 = get_s3_resource()
 s3_folder = "escoe_extension/outputs/data"
 
 
+def load_summary_data():
+
+    file_name = os.path.join(
+        s3_folder,
+        "streamlit_viz",
+        "per_skill_group_proportions_sample.json",
+    )
+    top_skills_by_skill_groups = load_s3_data(s3, bucket_name, file_name)
+
+    return top_skills_by_skill_groups
+
+
 def load_sector_data():
 
     file_name = os.path.join(
@@ -328,6 +340,45 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
     return base.configure_title(fontSize=24)
 
 
+def create_common_skills_chart_by_skill_groups(top_skills_by_skill_groups, skill_group):
+    plot_title = f"Most common skills in {skill_group} skill group"
+    if skill_group == "all":
+        plot_title += "s"
+
+    top_skills = pd.DataFrame.from_dict(
+        top_skills_by_skill_groups[skill_group],
+        orient="index",
+        columns=["percent"],
+    )
+    top_skills.sort_values(by="percent", inplace=True, ascending=False)
+    top_skills = top_skills[0:10]
+    top_skills["skill"] = top_skills.index
+
+    common_skills_chart = (
+        alt.Chart(top_skills)
+        .mark_bar(size=10, opacity=0.8, color="#0000FF")
+        .encode(
+            y=alt.Y("skill", sort=None, axis=alt.Axis(title=None)),
+            x=alt.X(
+                "percent:Q",
+                axis=alt.Axis(
+                    title="Percentage of job adverts with this skill", format="%"
+                ),
+            ),
+            tooltip=[alt.Tooltip("percent", title="Percentage", format=".1%")],
+        )
+        .properties(
+            title=plot_title,
+            # height=100,
+            width=75,
+        )
+    )
+
+    configure_plots(common_skills_chart)
+
+    return common_skills_chart.configure_title(fontSize=24)
+
+
 def create_common_skills_chart(
     all_sector_data, skill_group_level, sector, remove_trans=False
 ):
@@ -529,6 +580,22 @@ We’ve developed a number of example analyses to demonstrate the value of both 
 """
 
 st.markdown(method_text)
+
+# ----- Summary -------
+
+top_skills_by_skill_groups = load_summary_data()
+
+skill_group = st.selectbox(
+    "Select skill group", sorted(list(top_skills_by_skill_groups.keys())), index=1
+)
+
+common_skills_chart_by_skill_groups = create_common_skills_chart_by_skill_groups(
+    top_skills_by_skill_groups, skill_group
+)
+st.altair_chart(
+    common_skills_chart_by_skill_groups.configure_axis(labelLimit=500),
+    use_container_width=True,
+)
 
 # ----- National Government Use Case -----
 

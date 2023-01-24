@@ -245,6 +245,85 @@ def get_top_skills_per_group(
     return top_skills_per_group
 
 
+def esco_id_label(esco_id, hier_levels, search_for="T", just_skill_level=False):
+    if len(esco_id) > 10:
+        if search_for in str(hier_levels):
+            return True
+        else:
+            return False
+    else:
+        if just_skill_level:
+            return False
+        else:
+            if search_for in str(esco_id):
+                return True
+            else:
+                return False
+
+
+def get_most_common_skills(
+    job_id_2_skill_count, skill_id_2_ix, esco_code2name, esco_skills, top_n=20
+):
+
+    # For every skill - the proportion of job adverts its in
+    num_job_ads = len(job_id_2_skill_count)
+    skill_num_ads = Counter()
+    for skill_counts in tqdm(job_id_2_skill_count.values()):
+        skill_num_ads += Counter(skill_counts.keys())
+    skill_prop_ads = {k: v / num_job_ads for k, v in skill_num_ads.items()}
+
+    skill_prop_ads_df = pd.DataFrame.from_dict(
+        skill_prop_ads, orient="index", columns=["prop_job_ads"]
+    )
+    skill_prop_ads_df["esco_code"] = skill_prop_ads_df.index.map(
+        {v: k for k, v in skill_id_2_ix.items()}
+    )
+
+    # Separate by skills in the S1, S2, S3, ..., T parts of the taxonomy and output out the most common skills
+    # (at the skill level). Also output the most common skills from any level.
+    top_skills_by_skill_groups = {}
+    s_level_codes = [
+        esco_code
+        for esco_code in esco_code2name.keys()
+        if esco_code[0] == "S" and len(esco_code) in range(2, 4)
+    ]
+    for search_for_code in tqdm(s_level_codes + ["T", "all"]):
+        if search_for_code != "all":
+            skill_group_ids = set(
+                esco_skills[
+                    esco_skills.apply(
+                        lambda x: esco_id_label(
+                            x["id"],
+                            x["hierarchy_levels"],
+                            search_for=search_for_code,
+                            just_skill_level=True,
+                        ),
+                        axis=1,
+                    )
+                ]["id"].tolist()
+            )
+            skill_group_props = skill_prop_ads_df[
+                skill_prop_ads_df["esco_code"].isin(skill_group_ids)
+            ]
+            dict_key_name = f"{esco_code2name[search_for_code]} ({search_for_code})"
+        else:
+            skill_group_props = skill_prop_ads_df[
+                skill_prop_ads_df["esco_code"].str.len() > 10
+            ]
+            dict_key_name = search_for_code
+        top_skills_group = skill_group_props.sort_values(
+            by="prop_job_ads", ascending=False
+        )[0:top_n]
+        top_skills_group["esco_name"] = top_skills_group["esco_code"].map(
+            esco_code2name
+        )
+        top_skills_by_skill_groups[dict_key_name] = dict(
+            zip(top_skills_group["esco_name"], top_skills_group["prop_job_ads"])
+        )
+
+    return top_skills_by_skill_groups
+
+
 if __name__ == "__main__":
 
     s3 = get_s3_resource()
@@ -255,20 +334,8 @@ if __name__ == "__main__":
         s3, s3_folder, bucket_name
     )
 
-    def is_transversal(esco_id, hier_levels):
-        if len(esco_id) > 10:
-            if "T" in str(hier_levels):
-                return True
-            else:
-                return False
-        else:
-            if "T" in str(esco_id):
-                return True
-            else:
-                return False
-
     esco_skills["is_transversal"] = esco_skills.apply(
-        lambda x: is_transversal(x["id"], x["hierarchy_levels"]), axis=1
+        lambda x: esco_id_label(x["id"], x["hierarchy_levels"], search_for="T"), axis=1
     )
     esco_id_2_trans_flag = dict(zip(esco_skills["id"], esco_skills["is_transversal"]))
 
@@ -288,6 +355,19 @@ if __name__ == "__main__":
     esco_code2name["T"] = "Transversal skills and competencies"
     esco_code2name["A"] = "Attitudes"
     esco_code2name["L"] = "Language skills and Knowledge"
+
+    top_skills_by_skill_groups = get_most_common_skills(
+        job_id_2_skill_count, skill_id_2_ix, esco_code2name, esco_skills, top_n=20
+    )
+
+    save_to_s3(
+        s3,
+        bucket_name,
+        top_skills_by_skill_groups,
+        os.path.join(
+            s3_folder, "streamlit_viz", "per_skill_group_proportions_sample.json"
+        ),
+    )
 
     top_n = 100
 
