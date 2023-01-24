@@ -45,7 +45,7 @@ st.markdown(
     """
 If you would like to extract skills from many adverts, you can use our [open-source python library](https://github.com/nestauk/ojd_daps_skills) by simply `pip install ojd-daps-skills` and following the [instructions in our documentation](https://nestauk.github.io/ojd_daps_skills/build/html/about.html).
 
-If you would like to explore how the algorithm can provide new insights, check out this interactive blog that analyses extracted skills from thousands of job adverts.
+If you would like to explore how the algorithm can provide new insights, check out this interactive blog (link pending) that analyses extracted skills from thousands of job adverts.
 
 The Skills Extractor library was made possible by funding from the Economic Statistics Centre of Excellence. If you have any feedback or questions about the library or app, do get in contact with [Cath Sleeman](mailto:cath.sleeman@nesta.org.uk), [Elizabeth Gallagher](mailto:elizabeth.gallagher@nesta.org.uk) or [India Kerle](mailto:india.kerle@nesta.org.uk).
 """
@@ -57,18 +57,6 @@ app_mode = st.selectbox("🗺️ Choose a taxonomy to map onto", [esco_tax, ligh
 txt = st.text_area(
     "✨ Add your job advert text here ... or try out the phrase 'You must have strong communication skills.'",
     "",
-)
-
-
-m = st.markdown(
-    """
-<style>
-div.stButton > button:first-child {
-    background-color: #ffcccb;
-    color:#ffcccb;
-}
-</style>""",
-    unsafe_allow_html=True,
 )
 
 es = load_model(app_mode)
