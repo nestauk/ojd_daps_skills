@@ -13,11 +13,8 @@ def load_model(app_mode):
 
     if app_mode == esco_tax:
         es = ExtractSkills(config_name="extract_skills_esco", local=True)
-    elif app_mode == test_tax:
-        es = ExtractSkills(config_name="extract_skills_toy", local=True)
     elif app_mode == lightcast_tax:
         es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
-
     es.load()
     return es
 
@@ -30,49 +27,46 @@ with open("style.css") as css:
 
 st.markdown(
     """
-This demo app is using Nesta's [Skills Extractor Library](https://github.com/nestauk/ojd_daps_skills)
-to extract skills for a given job advert and map them onto a skills taxonomy of
-your choice. Multiple organisations, from private corporations to government bodies, have developed skills taxonomies to organise labour market skills in a structured way.
-By mapping extracted skills to a pre-defined taxonomy, you are able to take advantage of the additional benefits of a taxonomy, including its structure and skill definitions.
-This library was made possible via funding from the [Economic Statistics Centre of Excellence](https://esco.ec.europa.eu/en/classification/skill_main).
-We currently support three taxonomies out-of-the-box:
-1. The [European Commission's Skills Taxonomy](https://esco.ec.europa.eu/en/classification/skill_main), a multilingual classification of European Skills, Competences, Qualifications and Occupations;
-2. [Lightcast's Open Skills Taxonomy](https://skills.lightcast.io/) and;
-3. A [Toy Taxonomy](https://github.com/nestauk/ojd_daps_skills/blob/dev/ojd_daps_skills/config/extract_skills_toy.yaml) that is helpful for testing.
+This app shows how Nesta's [Skills Extractor Library](https://github.com/nestauk/ojd_daps_skills) can extract skills from a job advert and then match those terms to skills from a standard list or ‘skills taxonomy’.
+
+At present, you can choose to match extracted skills to one of two skills taxonomies that have been developed by other groups:
+
+1. The [European Commission's ESCO taxonomy v1.1.1](https://esco.ec.europa.eu/en/classification/skill_main) which is a multilingual classification of European Skills, Competences, Qualifications and Occupations and;
+2. [Lightcast's Open Skills taxonomy](https://lightcast.io/open-skills) (as of 22/11/22) which is open source library of 32,000+ skills.
 """
 )
 
 st.warning(
-    "As with any algorithm, our approach has limitations. As a result, we cannot guarantee the accuracy or completeness of every extracted or mapped skill.",
+    "As with any algorithm, our approach has limitations. As a result, we cannot guarantee the accuracy of every extracted or mapped skill. To learn more about the strengths and limitations, consult our [model cards](https://nestauk.github.io/ojd_daps_skills/build/html/model_card.html).",
     icon="🤖",
 )
 
-test_tax = "Toy"
+st.markdown(
+    """
+If you would like to extract skills from many adverts, you can use our [open-source python library](https://github.com/nestauk/ojd_daps_skills) by simply `pip install ojd-daps-skills` and following the [instructions in our documentation](https://nestauk.github.io/ojd_daps_skills/build/html/about.html).
+
+If you would like to explore how the algorithm can provide new insights, check out this interactive blog (link pending) that analyses extracted skills from thousands of job adverts.
+
+The Skills Extractor library was made possible by funding from the Economic Statistics Centre of Excellence.
+
+If you have any feedback or questions about the library or app, do reach out to dataanalytics@nesta.org.uk.
+"""
+)
+
 esco_tax = "ESCO"
 lightcast_tax = "Lightcast"
-app_mode = st.selectbox(
-    "Choose a taxonomy to map onto 🗺️", [esco_tax, lightcast_tax, test_tax]
-)
-txt = st.text_area("Add your job advert text here ✨", "")
-
-
-m = st.markdown(
-    """
-<style>
-div.stButton > button:first-child {
-    background-color: #ffcccb;
-    color:#ffcccb;
-}
-</style>""",
-    unsafe_allow_html=True,
+app_mode = st.selectbox("🗺️ Choose a taxonomy to map onto", [esco_tax, lightcast_tax])
+txt = st.text_area(
+    "✨ Add your job advert text here ... or try out the phrase 'You must have strong communication skills.'",
+    "",
 )
 
 es = load_model(app_mode)
 
-button = st.button("extract skills")
+button = st.button("Extract Skills")
 
 if button:
-    with st.spinner("🤖 Loading algorithms - this may take some time..."):
+    with st.spinner("🤖 Running algorithms..."):
 
         extracted_skills = es.extract_skills(txt)
 
