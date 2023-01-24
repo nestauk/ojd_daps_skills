@@ -47,7 +47,9 @@ If you would like to extract skills from many adverts, you can use our [open-sou
 
 If you would like to explore how the algorithm can provide new insights, check out this interactive blog (link pending) that analyses extracted skills from thousands of job adverts.
 
-The Skills Extractor library was made possible by funding from the Economic Statistics Centre of Excellence. If you have any feedback or questions about the library or app, do get in contact with [Cath Sleeman](mailto:cath.sleeman@nesta.org.uk), [Elizabeth Gallagher](mailto:elizabeth.gallagher@nesta.org.uk) or [India Kerle](mailto:india.kerle@nesta.org.uk).
+The Skills Extractor library was made possible by funding from the Economic Statistics Centre of Excellence.
+
+If you have any feedback or questions about the library or app, do reach out to dataanalytics@nesta.org.uk.
 """
 )
 
@@ -64,7 +66,7 @@ es = load_model(app_mode)
 button = st.button("Extract Skills")
 
 if button:
-    with st.spinner("🤖 Loading algorithms - this may take some time..."):
+    with st.spinner("🤖 Running algorithms..."):
 
         extracted_skills = es.extract_skills(txt)
 
