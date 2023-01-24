@@ -1,9 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Averta:wght@100&display=swap");
-
 html,
 body,
 [class*="css"] {
-  font-family: "Averta";
+  font-family: "AvertaDemo-Regular";
+  src: url("./AvertaDemo-Regular.otf") format("opentype");
   font-size: 20px;
   font-weight: 500;
   color: #000000;

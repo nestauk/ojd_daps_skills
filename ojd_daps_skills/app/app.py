@@ -22,9 +22,12 @@ def load_model(app_mode):
 image_dir = "nesta_escoe_skills.png"
 st.image(image_dir)
 
+# ----------------- streamlit config START ------------------#
+
 with open("style.css") as css:
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
+# ----------------- streamlit config END ------------------#
 st.markdown(
     """
 This app shows how Nesta's [Skills Extractor Library](https://github.com/nestauk/ojd_daps_skills) can extract skills from a job advert and then match those terms to skills from a standard list or ‘skills taxonomy’.
