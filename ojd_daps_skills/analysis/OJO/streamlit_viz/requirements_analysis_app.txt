@@ -6,3 +6,4 @@ altair==4.2.0
 altair-data-server==0.4.1
 altair-saver==0.5.0
 altair-viewer==0.4.0
+boto3==1.16.63

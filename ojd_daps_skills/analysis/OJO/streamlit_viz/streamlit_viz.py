@@ -7,13 +7,7 @@ import altair as alt
 from streamlit_agraph import agraph, Node, Edge, Config
 from colour import Color
 
-from ojd_daps_skills.getters.data_getters import (
-    get_s3_resource,
-    load_s3_data,
-)
-from ojd_daps_skills import bucket_name, PROJECT_DIR
-
-from ojd_daps_skills.utils.plotting import NESTA_COLOURS, configure_plots
+from streamlit_viz_utils import *
 
 s3 = get_s3_resource()
 s3_folder = "escoe_extension/outputs/data"
