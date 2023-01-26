@@ -31,6 +31,7 @@ def load_sector_data():
         s3_folder, "streamlit_viz", "per_sector_sample_updated.json"
     )
     all_sector_data = load_s3_data(s3, bucket_name, file_name)
+    all_sector_data = {k: v for k, v in all_sector_data.items() if k != "Other"}
 
     file_name = os.path.join(
         s3_folder,
@@ -356,7 +357,8 @@ def create_common_skills_chart_by_skill_groups(top_skills_by_skill_groups, skill
             x=alt.X(
                 "percent:Q",
                 axis=alt.Axis(
-                    title="Percentage of job adverts that mention this skill at least once", format="%"
+                    title="Percentage of job adverts that mention this skill at least once",
+                    format="%",
                 ),
             ),
             tooltip=[alt.Tooltip("percent", title="Percentage", format=".1%")],
@@ -618,7 +620,8 @@ sector = st.selectbox("Select an occupation", top_sectors)
 
 metric1, metric2 = st.columns((1, 1))
 metric1.metric(
-    label="**Number of job adverts for this occupation**", value=all_sector_data[sector]["num_ads"]
+    label="**Number of job adverts for this occupation**",
+    value=all_sector_data[sector]["num_ads"],
 )
 metric2.metric(
     label="**Percentage of all job adverts**",
@@ -672,7 +675,13 @@ st.markdown(
 sim_thresh = (
     0.4  # lower than this is either a big clump (0.3-0.4) and/or crashes things (<0.3)
 )
-high_sector_similarity = sector_similarity[sector_similarity["weight"] > sim_thresh]
+high_sector_similarity = sector_similarity[
+    (
+        (sector_similarity["weight"] > sim_thresh)
+        & (sector_similarity["target"] != "Other")
+        & (sector_similarity["source"] != "Other")
+    )
+]
 
 nodes, edges, config, legend_chart = create_sector_skill_sim_network(
     high_sector_similarity, sector_2_kd, percentage_job_adverts_per_sector
