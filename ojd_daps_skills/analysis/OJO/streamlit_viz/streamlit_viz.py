@@ -289,7 +289,7 @@ def create_similar_sectors_text_chart(all_sector_data, sector):
             "sim_type": [
                 "Very similar",
                 "Quite similar",
-                "Mid similarity",
+                "Somewhat similar",
                 "Not similar",
             ],
         }
@@ -356,7 +356,7 @@ def create_common_skills_chart_by_skill_groups(top_skills_by_skill_groups, skill
             x=alt.X(
                 "percent:Q",
                 axis=alt.Axis(
-                    title="Percentage of job adverts with this skill", format="%"
+                    title="Percentage of job adverts that mention this skill at least once", format="%"
                 ),
             ),
             tooltip=[alt.Tooltip("percent", title="Percentage", format=".1%")],
@@ -614,11 +614,11 @@ st.markdown(
 
 top_sectors = [k for k, v in all_sector_data.items() if v["num_ads"] > 500]
 
-sector = st.selectbox("Select occupation", top_sectors)
+sector = st.selectbox("Select an occupation", top_sectors)
 
 metric1, metric2 = st.columns((1, 1))
 metric1.metric(
-    label="**Number of job adverts**", value=all_sector_data[sector]["num_ads"]
+    label="**Number of job adverts for this occupation**", value=all_sector_data[sector]["num_ads"]
 )
 metric2.metric(
     label="**Percentage of all job adverts**",
