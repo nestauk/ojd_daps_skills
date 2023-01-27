@@ -18,3 +18,5 @@ A preliminary analysis app can be seen by running:
 pip install -r requirements_analysis_app.txt
 streamlit run ojd_daps_skills/analysis/OJO/streamlit_viz/streamlit_viz.py
 ```
+
+Make sure that you have the appropriate `AvertaDemo-Regular.otf` font saved to `/.fonts/` directory to ensure the app runs with Nesta brand compliant fonts.

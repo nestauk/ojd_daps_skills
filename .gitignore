@@ -26,6 +26,11 @@ metaflow.s3.*
 # Notebooks (use jupytext instead!)
 *.ipynb
 
+
+# Font files (for licensing reasons!)
+*.otf
+*.ttf
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

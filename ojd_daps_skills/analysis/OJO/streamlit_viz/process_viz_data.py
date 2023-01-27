@@ -356,6 +356,14 @@ if __name__ == "__main__":
     esco_code2name["A"] = "Attitudes"
     esco_code2name["L"] = "Language skills and Knowledge"
 
+    # here add the rest of K skills
+    k_skills = (
+        esco_skills.query('id.str.startswith("K")')
+        .set_index("id")
+        .description.to_dict()
+    )
+    esco_code2name.update(k_skills)
+
     top_skills_by_skill_groups = get_most_common_skills(
         job_id_2_skill_count, skill_id_2_ix, esco_code2name, esco_skills, top_n=20
     )
@@ -560,6 +568,7 @@ if __name__ == "__main__":
         "London",
         skill_sample_df["itl_2_name"],
     )
+    # =================================
 
     skill_levels_list = list(job_id_2_skill_hier_mentions_per_lev.values())
     job_id_len = skill_sample_df.job_id.nunique()
@@ -568,6 +577,22 @@ if __name__ == "__main__":
     for d in skill_levels_list:
         for k, v in d.items():
             skill_sums[k].append(list(v))
+
+    # fix bad level two skill sums skills
+    corrected_skill_2_sums = list()
+    for skill_sum_list in skill_sums["2"]:
+        good_skill_list = []
+        for skill in skill_sum_list:
+            if (
+                not skill.startswith("K")
+                and not skill.startswith("T")
+                and len(skill) < 6
+            ):
+                good_skill_list.append(f"{skill}.0")
+            else:
+                good_skill_list.append(skill)
+        corrected_skill_2_sums.append(good_skill_list)
+    skill_sums["2"] = corrected_skill_2_sums
 
     percentage_skills_by_skill_level = {str(_): list() for _ in range(5)}
     for group_num in ["0", "1", "2", "3", "4"]:
@@ -578,12 +603,21 @@ if __name__ == "__main__":
             {esco_code2name.get(k): v / job_id_len for k, v in skill_sum.items()}
         )
 
+    # =================================
+
     sector_2_job_ids, percentage_skill_locs_df = find_skill_proportions_per_group(
         skill_sample_df, job_id_2_skill_count, skill_id_2_ix, "itl_2_name"
     )
 
     top_skills_per_location = get_top_skills_per_group(
         percentage_skill_locs_df, esco_code2name, top_n=None
+    )
+
+    top_skills_per_location_no_trans = get_top_skills_per_group(
+        percentage_skill_locs_df,
+        esco_code2name,
+        top_n=None,
+        esco_id_2_trans_flag=esco_id_2_trans_flag,
     )
 
     number_job_adverts_per_location = (
@@ -607,7 +641,38 @@ if __name__ == "__main__":
         )
         percentage_skill_by_group_list.append(top_skill_by_group_per_group)
 
-    # Combine all sector data together
+    # ==============================================================================
+
+    percentage_skill_by_group_list = []
+    percentage_skill_by_group_list_no_trans = []
+    for group_num in ["0", "1", "2", "3", "4"]:
+        _, percentage_skill_by_group = find_skill_proportions_per_group(
+            skill_sample_df,
+            {
+                job_id: skills[group_num]
+                for job_id, skills in job_id_2_skill_hier_mentions_per_lev.items()
+            },
+            skill_id_2_ix,
+            skill_counts=False,
+            group="itl_2_name",
+        )
+        top_skill_by_group_per_group = get_top_skills_per_group(
+            percentage_skill_by_group, esco_code2name, top_n=None
+        )
+
+        top_skill_by_group_per_sector_no_trans = get_top_skills_per_group(
+            percentage_skill_by_group,
+            esco_code2name,
+            top_n=None,
+            esco_id_2_trans_flag=esco_id_2_trans_flag,
+        )
+        percentage_skill_by_group_list.append(top_skill_by_group_per_group)
+        percentage_skill_by_group_list_no_trans.append(
+            top_skill_by_group_per_sector_no_trans
+        )
+
+    # ==============================================================================
+
     all_location_data = {}
     for location_name, num_ads in number_job_adverts_per_location.items():
         all_location_data[location_name] = {
@@ -619,6 +684,14 @@ if __name__ == "__main__":
                 "2": percentage_skill_by_group_list[2][location_name],
                 "3": percentage_skill_by_group_list[3][location_name],
                 "4": percentage_skill_by_group_list[4][location_name],
+            },
+            "top_skills_no_transversal": {
+                "all": top_skills_per_location_no_trans[location_name],
+                "0": percentage_skill_by_group_list_no_trans[0][location_name],
+                "1": percentage_skill_by_group_list_no_trans[1][location_name],
+                "2": percentage_skill_by_group_list_no_trans[2][location_name],
+                "3": percentage_skill_by_group_list_no_trans[3][location_name],
+                "4": percentage_skill_by_group_list_no_trans[4][location_name],
             },
         }
 
@@ -651,16 +724,6 @@ if __name__ == "__main__":
     all_loc_df["location_change"] = all_loc_df["location_quotident"] - 1
 
     all_loc_df["absolute_location_change"] = all_loc_df.location_change.abs()
-    save_to_s3(
-        s3,
-        bucket_name,
-        percentage_skills_by_skill_level,
-        os.path.join(
-            s3_folder,
-            "streamlit_viz",
-            "skill_percents_per_level.json",
-        ),
-    )
 
     save_to_s3(
         s3,
