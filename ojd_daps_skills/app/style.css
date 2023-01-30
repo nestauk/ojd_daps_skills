@@ -3,7 +3,7 @@ body,
 [class*="css"] {
   /* Add the name of your font and local font path here*/
   font-family: "AvertaDemo-Regular";
-  src: url("./AvertaDemo-Regular.otf") format("opentype");
+  src: url("./fonts/AvertaDemo-Regular.otf") format("opentype");
   font-size: 20px;
   font-weight: 500;
   color: #000000;
