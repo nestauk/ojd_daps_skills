@@ -1,11 +1,10 @@
 import streamlit as st
 from annotated_text import annotated_text
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
-from app_utils import download_file_from_s3, PATH, download
+import app_utils as au
 
 st.set_page_config(
-    page_title="Nesta Skills Extractor",
-    page_icon="images/nesta_logo.png",
+    page_title="Nesta Skills Extractor", page_icon="images/nesta_logo.png",
 )
 
 
@@ -13,10 +12,14 @@ def hash_config_name(es):
     # custom hash function in order to use st.cache
     return es.taxonomy_name
 
+@st.cache
+def load_data():
+    au.download()
+
+load_data()
 
 @st.cache(hash_funcs={ExtractSkills: hash_config_name})
 def load_model(app_mode):
-    download()
     if app_mode == esco_tax:
         es = ExtractSkills(config_name="extract_skills_esco", local=True)
     elif app_mode == lightcast_tax:
@@ -25,16 +28,16 @@ def load_model(app_mode):
     return es
 
 
-image_dir = PATH + "/images/nesta_escoe_skills.png"
+image_dir = au.PATH + "/images/nesta_escoe_skills.png"
 
 st.image(image_dir)
 
 # ----------------- streamlit config ------------------#
 
 # download s3 file
-download_file_from_s3(local_path=PATH + "/fonts/AvertaDemo-Regular.otf")
+au.download_file_from_s3(local_path=au.PATH + "/fonts/AvertaDemo-Regular.otf")
 
-with open(PATH + "/style.css") as css:
+with open(au.PATH + "/style.css") as css:
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
 # ----------------- streamlit config ------------------#

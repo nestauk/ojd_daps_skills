@@ -1,5 +1,6 @@
 import streamlit as st
 import boto3
+import zipfile
 
 import os
 
@@ -14,6 +15,7 @@ BUCKET_NAME = "open-jobs-lake"
 FILE_NAME = "escoe_extension/inputs/data/analysis/AvertaDemo-Regular.otf"
 
 PATH = os.path.dirname(__file__)
+
 
 def download_file_from_s3(
     local_path: str, bucket_name: str = BUCKET_NAME, file_name: str = FILE_NAME
@@ -31,9 +33,11 @@ def download_file_from_s3(
 
 def download():
     """Downloads all relevant files for the library."""
-    
+
     os.system(
-        f"aws --no-sign-request --region=eu-west-1 s3 cp s3://open-jobs-indicators/escoe_extension/ojd_daps_skills_data.zip ojd_daps_skills_data.zip"
+        f"aws --no-sign-request --region=eu-west-1 s3 cp s3://open-jobs-indicators/escoe_extension/ojd_daps_skills_data.zip {PATH}/ojd_daps_skills_data.zip"
     )
-    os.system(f"unzip ojd_daps_skills_data.zip -d {PATH}")
-    os.system(f"rm ojd_daps_skills_data.zip")
+    with zipfile.ZipFile(f"{PATH}/ojd_daps_skills_data.zip","r") as zip_ref:
+        zip_ref.extractall(f"{PATH}/")
+
+    os.system(f"rm {PATH}/ojd_daps_skills_data.zip") 
