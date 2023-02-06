@@ -1,365 +1,203 @@
-<!DOCTYPE html>
+<!doctype html>
 <html class="no-js" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <link
-      rel="author"
-      title="About these documents"
-      href="../../../../about.html"
-    />
-    <link rel="index" title="Index" href="../../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../../search.html" />
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="author" title="About these documents" href="../../../../about.html" /><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29" />
-    <title>
-      ojd_daps_skills.pipeline.extract_skills.extract_skills - Skills Extractor
-      1.0.0 documentation
-    </title>
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../../../../_static/pygments.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e"
-    />
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>ojd_daps_skills.pipeline.extract_skills.extract_skills - Skills Extractor v1.1.1-beta documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
 
-    <style>
-      body {
-        --color-code-background: #f8f8f8;
-        --color-code-foreground: black;
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
       }
-      @media not print {
-        body[data-theme="dark"] {
-          --color-code-background: #202020;
-          --color-code-foreground: #d0d0d0;
-        }
-        @media (prefers-color-scheme: dark) {
-          body:not([data-theme="light"]) {
-            --color-code-background: #202020;
-            --color-code-foreground: #d0d0d0;
-          }
-        }
-      }
-    </style>
-  </head>
+    }
+  }
+</style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
+    
 
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-      <symbol id="svg-toc" viewBox="0 0 24 24">
-        <title>Contents</title>
-        <svg
-          stroke="currentColor"
-          fill="currentColor"
-          stroke-width="0"
-          viewBox="0 0 1024 1024"
-        >
-          <path
-            d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"
-          />
-        </svg>
-      </symbol>
-      <symbol id="svg-menu" viewBox="0 0 24 24">
-        <title>Menu</title>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="feather-menu"
-        >
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </symbol>
-      <symbol id="svg-arrow-right" viewBox="0 0 24 24">
-        <title>Expand</title>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="feather-chevron-right"
-        >
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </symbol>
-      <symbol id="svg-sun" viewBox="0 0 24 24">
-        <title>Light mode</title>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="feather-sun"
-        >
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-      </symbol>
-      <symbol id="svg-moon" viewBox="0 0 24 24">
-        <title>Dark mode</title>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="icon-tabler-moon"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path
-            d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"
-          />
-        </svg>
-      </symbol>
-      <symbol id="svg-sun-half" viewBox="0 0 24 24">
-        <title>Auto light/dark mode</title>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="icon-tabler-shadow"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <circle cx="12" cy="12" r="9" />
-          <path d="M13 12h5" />
-          <path d="M13 15h4" />
-          <path d="M13 18h1" />
-          <path d="M13 9h4" />
-          <path d="M13 6h1" />
-        </svg>
-      </symbol>
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
 
-    <input
-      type="checkbox"
-      class="sidebar-toggle"
-      name="__navigation"
-      id="__navigation"
-    />
-    <input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" />
-    <label class="overlay sidebar-overlay" for="__navigation">
-      <div class="visually-hidden">Hide navigation sidebar</div>
-    </label>
-    <label class="overlay toc-overlay" for="__toc">
-      <div class="visually-hidden">Hide table of contents sidebar</div>
-    </label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
 
-    <div class="page">
-      <header class="mobile-header">
-        <div class="header-left">
-          <label class="nav-overlay-icon" for="__navigation">
-            <div class="visually-hidden">Toggle site navigation sidebar</div>
-            <i class="icon"
-              ><svg><use href="#svg-menu"></use></svg
-            ></i>
-          </label>
-        </div>
-        <div class="header-center">
-          <a href="../../../../index.html"
-            ><div class="brand">Skills Extractor 1.0.0 documentation</div></a
-          >
-        </div>
-        <div class="header-right">
-          <div class="theme-toggle-container theme-toggle-header">
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">Skills Extractor v1.1.1-beta documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../../_static/nesta_escoe_transparent.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Skills Extractor v1.1.1-beta documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../about.html">Skills Extractor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../custom_usage.html">Custom Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pipeline_summary.html">Pipeline summary and metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../model_card.html">Model Cards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../labelling.html">Entity Labelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../extract_skills.html">The <code class="docutils literal notranslate"><span class="pre">ExtractSkills</span></code> class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">The MIT License (MIT)</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
-              <div class="visually-hidden">
-                Toggle Light / Dark / Auto color theme
-              </div>
-              <svg class="theme-icon-when-auto">
-                <use href="#svg-sun-half"></use>
-              </svg>
-              <svg class="theme-icon-when-dark">
-                <use href="#svg-moon"></use>
-              </svg>
-              <svg class="theme-icon-when-light">
-                <use href="#svg-sun"></use>
-              </svg>
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"
-              ><svg><use href="#svg-toc"></use></svg
-            ></i>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-      </header>
-      <aside class="sidebar-drawer">
-        <div class="sidebar-container">
-          <div class="sidebar-sticky">
-            <a class="sidebar-brand centered" href="../../../../index.html">
-              <div class="sidebar-logo-container">
-                <img
-                  class="sidebar-logo"
-                  src="../../../../_static/nesta_escoe_transparent.png"
-                  alt="Logo"
-                />
-              </div>
-
-              <span class="sidebar-brand-text"
-                >Skills Extractor 1.0.0 documentation</span
-              >
-            </a>
-            <form
-              class="sidebar-search-container"
-              method="get"
-              action="../../../../search.html"
-              role="search"
-            >
-              <input
-                class="sidebar-search"
-                placeholder="Search"
-                name="q"
-                aria-label="Search"
-              />
-              <input type="hidden" name="check_keywords" value="yes" />
-              <input type="hidden" name="area" value="default" />
-            </form>
-            <div id="searchbox"></div>
-            <div class="sidebar-scroll">
-              <div class="sidebar-tree">
-                <ul>
-                  <li class="toctree-l1">
-                    <a class="reference internal" href="../../../../about.html"
-                      >Skills Extractor</a
-                    >
-                  </li>
-                  <li class="toctree-l1">
-                    <a
-                      class="reference internal"
-                      href="../../../../custom_usage.html"
-                      >Custom Usage</a
-                    >
-                  </li>
-                  <li class="toctree-l1">
-                    <a
-                      class="reference internal"
-                      href="../../../../pipeline_summary.html"
-                      >Pipeline summary</a
-                    >
-                  </li>
-                  <li class="toctree-l1">
-                    <a
-                      class="reference internal"
-                      href="../../../../model_card.html"
-                      >Model Cards</a
-                    >
-                  </li>
-                  <li class="toctree-l1">
-                    <a
-                      class="reference internal"
-                      href="../../../../labelling.html"
-                      >Entity Labelling</a
-                    >
-                  </li>
-                  <li class="toctree-l1">
-                    <a
-                      class="reference internal"
-                      href="../../../../extract_skills.html"
-                      >The
-                      <code class="docutils literal notranslate"
-                        ><span class="pre">ExtractSkills</span></code
-                      >
-                      class</a
-                    >
-                  </li>
-                  <li class="toctree-l1">
-                    <a
-                      class="reference internal"
-                      href="../../../../license.html"
-                      >The MIT License (MIT)</a
-                    >
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
-      <div class="main">
-        <div class="content">
-          <div class="article-container">
-            <a href="#" class="back-to-top muted-link">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path
-                  d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"
-                ></path>
-              </svg>
-              <span>Back to top</span>
-            </a>
-            <div class="content-icon-container">
-              <div class="theme-toggle-container theme-toggle-content">
-                <button class="theme-toggle">
-                  <div class="visually-hidden">
-                    Toggle Light / Dark / Auto color theme
-                  </div>
-                  <svg class="theme-icon-when-auto">
-                    <use href="#svg-sun-half"></use>
-                  </svg>
-                  <svg class="theme-icon-when-dark">
-                    <use href="#svg-moon"></use>
-                  </svg>
-                  <svg class="theme-icon-when-light">
-                    <use href="#svg-sun"></use>
-                  </svg>
-                </button>
-              </div>
-              <label
-                class="toc-overlay-icon toc-content-icon no-toc"
-                for="__toc"
-              >
-                <div class="visually-hidden">
-                  Toggle table of contents sidebar
-                </div>
-                <i class="icon"
-                  ><svg><use href="#svg-toc"></use></svg
-                ></i>
-              </label>
-            </div>
-            <article role="main">
-              <h1>
-                Source code for
-                ojd_daps_skills.pipeline.extract_skills.extract_skills
-              </h1>
-              <div class="highlight">
-                <pre>
+        <article role="main">
+          <h1>Source code for ojd_daps_skills.pipeline.extract_skills.extract_skills</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Extract skills from a list of job adverts and match them to a chosen taxonomy</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -382,7 +220,7 @@
 
 
 <div class="viewcode-block" id="ExtractSkills"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills">[docs]</a><span class="k">class</span> <span class="nc">ExtractSkills</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class to extract skills from job adverts and map them to a skills taxonomy.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to extract skills from job adverts and map them to a skills taxonomy.</span>
 
 <span class="sd">    :param config_path: The file name for the config file to be used, defaults to &quot;extract_skills_toy&quot;</span>
 <span class="sd">    :type config_path: str</span>
@@ -393,9 +231,18 @@
 <span class="sd">    :param verbose: Whether to limit the number of logging messages (True) or not (False, good for debugging), defaults to True</span>
 <span class="sd">    :type verbose: bool</span>
 
+<span class="sd">    :param multi_process: Whether to use multiprocessing (True) or not (False), defaults to False</span>
+<span class="sd">    :type multi_process: bool</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;extract_skills_toy&quot;</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;extract_skills_toy&quot;</span><span class="p">,</span>
+        <span class="n">local</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">multi_process</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="c1"># Set variables from the config file</span>
         <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="n">PROJECT_DIR</span><span class="p">,</span> <span class="s2">&quot;ojd_daps_skills/config/&quot;</span><span class="p">,</span> <span class="n">config_name</span> <span class="o">+</span> <span class="s2">&quot;.yaml&quot;</span>
@@ -404,6 +251,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">local</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_process</span> <span class="o">=</span> <span class="n">multi_process</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -413,7 +261,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">base_path</span> <span class="o">=</span> <span class="n">PUBLIC_DATA_FOLDER_NAME</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PROJECT_DIR</span><span class="p">,</span> <span class="n">PUBLIC_DATA_FOLDER_NAME</span><span class="p">)):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;Neccessary files are not downloaded. Downloading &lt;1GB of neccessary files.&quot;</span>
+                    <span class="s2">&quot;Neccessary files are not downloaded. Downloading ~1GB of neccessary files.&quot;</span>
                 <span class="p">)</span>
                 <span class="n">download</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -468,7 +316,7 @@
         <span class="n">hard_labelled_skills_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">hier_name_mapper_file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads necessary datasets (formatted taxonomy, hard labelled skills, previously matched skills,</span>
 <span class="sd">        taxonomy embeddings), JobNER skills extraction class and SkillMapper skill mapper class.</span>
 
 <span class="sd">        :param taxonomy_embedding_file_name: The relative path to a taxonomy embedding file if it exists. If left unset the embeddings will be generated when the code is run. Defaults to None.</span>
@@ -533,6 +381,7 @@
             <span class="n">skill_hier_info_col</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">taxonomy_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;skill_hier_info_col&quot;</span><span class="p">),</span>
             <span class="n">skill_type_col</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">taxonomy_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;skill_type_col&quot;</span><span class="p">),</span>
             <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">multi_process</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_process</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxonomy_name</span> <span class="o">!=</span> <span class="s2">&quot;toy&quot;</span><span class="p">:</span>
@@ -577,7 +426,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">hard_coded_skills</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="ExtractSkills.format_skills"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.format_skills">[docs]</a>    <span class="k">def</span> <span class="nf">format_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skills</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Format list of skills from a single job advert to be in the format needed for mapping to a taxonomy. Also applies the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format list of skills from a single job advert to be in the format needed for mapping to a taxonomy. Also applies the</span>
 <span class="sd">        multiskill splitting to any skills predicted to be multiskills.</span>
 
 <span class="sd">        :param skills: A list of skills/multiskills from the job advert or a single skill</span>
@@ -619,7 +468,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">skill_dict</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="ExtractSkills.get_skills"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.get_skills">[docs]</a>    <span class="k">def</span> <span class="nf">get_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_adverts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
-        <span class="sd">&quot;&quot;&quot;Predict skill/multiskill/experience entities using the NER model in inputted job adverts.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Predict skill/multiskill/experience entities using the NER model in inputted job adverts.</span>
 <span class="sd">        Multiskill entities will be split up and converted into individual skill entities where possible.</span>
 
 <span class="sd">        :param job_adverts: The text of a job advert or a list of job adverts texts</span>
@@ -660,16 +509,15 @@
         <span class="k">return</span> <span class="n">predicted_skills</span></div>
 
 <div class="viewcode-block" id="ExtractSkills.map_skills"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.map_skills">[docs]</a>    <span class="k">def</span> <span class="nf">map_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicted_skills</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
-        <span class="sd">&quot;&quot;&quot;Map skills from job advert(s) to a skills taxonomy. If predicted_skills is a list of skills, it will be formatted accordingly to</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Map skills from job advert(s) to a skills taxonomy. If predicted_skills is a list of skills, it will be formatted accordingly to</span>
 <span class="sd">        be mapped to a skills taxonomy. All multiskill entities will be mapped in the same way as skill entities are.</span>
 
 <span class="sd">        :param predicted_skills: A list of skill entities either in the form of a list of strings (assumed to be from the same job advert) or a list of the dictionaries outputted from the get_skills function.</span>
 <span class="sd">        :type predicted_skills: list of strings or a list of dicts</span>
 
-<span class="sd">        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every</span>
-<span class="sd">        skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one.</span>
-<span class="sd">        Each dictionary is in the format {&#39;SKILL&#39;: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, &#39;EXPERIENCE&#39;: [...]]</span>
+<span class="sd">        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. Multi skill entities are treated as skill entities, and the output combines them together as one. Each dictionary is in the format {&#39;SKILL&#39;: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, &#39;EXPERIENCE&#39;: [...]]</span>
 <span class="sd">        :rtype: list of dictionaries for each job advert.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">predicted_skills</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">predicted_skills</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_skills</span><span class="p">(</span><span class="n">predicted_skills</span><span class="p">)</span>
@@ -686,7 +534,7 @@
                 <span class="n">skill_hashes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">skill_mapper</span><span class="o">.</span><span class="n">filter_skill_hash</span><span class="p">(</span>
                     <span class="n">skill_hashes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev_skill_matches</span>
                 <span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">orig_num</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">skill_hashes</span><span class="p">)</span><span class="si">}</span><span class="s2"> mappings previously found&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">orig_num</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">skill_hashes</span><span class="p">)</span><span class="si">}</span><span class="s2"> mappings previously found&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxonomy_skills_embeddings_loaded</span><span class="p">:</span>
                 <span class="c1"># If we didn&#39;t already load the embeddings, then calculate them</span>
@@ -731,7 +579,10 @@
                             <span class="p">],</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-                    <span class="n">experience_list</span> <span class="o">=</span> <span class="n">predicted_skills</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="s2">&quot;EXPERIENCE&quot;</span><span class="p">]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">experience_list</span> <span class="o">=</span> <span class="n">predicted_skills</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="s2">&quot;EXPERIENCE&quot;</span><span class="p">]</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">experience_list</span> <span class="o">=</span> <span class="p">[]</span>
 
                     <span class="n">job_skills_matched_formatted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="p">{</span>
@@ -777,7 +628,7 @@
 <div class="viewcode-block" id="ExtractSkills.extract_skills"><a class="viewcode-back" href="../../../../extract_skills.html#ojd_daps_skills.pipeline.extract_skills.extract_skills.ExtractSkills.extract_skills">[docs]</a>    <span class="k">def</span> <span class="nf">extract_skills</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">job_adverts_skills</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">format_skills</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Extract skills from job adverts using a trained NER model and map them to a taxonomy - combines both get_skills and extract_skills. Experiences will also be extracted, but not mapped to a taxonomy. It can also take as input a list of</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract skills from job adverts using a trained NER model and map them to a taxonomy - combines both get_skills and extract_skills. Experiences will also be extracted, but not mapped to a taxonomy. It can also take as input a list of</span>
 <span class="sd">        skills and map them to a taxonomy if format_skills is set to True.</span>
 
 <span class="sd">        :param job_adverts_skills: The text of a job advert, a list of job adverts texts, or a list of skills (if format_skills=True)</span>
@@ -786,9 +637,7 @@
 <span class="sd">        :param format_skills: If the input is a list of skills (rather than job adverts) then this needs to be set to True in order to format them correctly, default to False.</span>
 <span class="sd">        :type format_skills: bool</span>
 
-<span class="sd">        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every</span>
-<span class="sd">        skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the &quot;SKILL&quot; key.</span>
-<span class="sd">        Each dictionary is in the format {&#39;SKILL&#39;: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, &#39;EXPERIENCE&#39;: [...]]</span>
+<span class="sd">        :return: A list of dictionaries for each job advert containing the skill and experience entities, and for every skill entity where it maps to in the taxonomy. The output combines both multiskill and skill entities together in the &quot;SKILL&quot; key. Each dictionary is in the format {&#39;SKILL&#39;: [(skill_entity,(taxonomy_skill_name, taxonomy_skill_id)), ...]}, &#39;EXPERIENCE&#39;: [...]]</span>
 <span class="sd">        :rtype: list of dictionaries for each job advert.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -828,42 +677,46 @@
     <span class="n">job_skills_matched_one_step</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">extract_skills</span><span class="p">(</span><span class="n">job_adverts</span><span class="p">)</span>
     <span class="c1"># # 1 step - format then extract</span>
     <span class="n">job_skills_list</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">extract_skills</span><span class="p">(</span><span class="n">skills_list</span><span class="p">,</span> <span class="n">format_skills</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre>
-              </div>
-            </article>
-          </div>
-          <footer>
-            <div class="related-pages"></div>
-            <div class="bottom-of-page">
-              <div class="left-details">
-                <div class="copyright">
-                  Copyright &#169; 2022, Liz Gallagher, India Kerle
-                </div>
-                Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and
-                <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a
-                >'s
-
-                <a href="https://github.com/pradyunsg/furo">Furo</a>
-              </div>
-              <div class="right-details">
-                <div class="icons"></div>
-              </div>
-            </div>
-          </footer>
-        </div>
-        <aside class="toc-drawer no-toc"></aside>
+</pre></div>
+        </article>
       </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, Liz Gallagher, India Kerle
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
     </div>
-    <script
-      data-url_root="../../../../"
-      id="documentation_options"
-      src="../../../../_static/documentation_options.js"
-    ></script>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../_static/scripts/furo.js"></script>
-  </body>
+    </body>
 </html>

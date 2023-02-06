@@ -31,6 +31,7 @@ setup(
     packages=find_packages(
         exclude=["docs", "ojd_daps_skills/analysis", "ojd_daps_skills/app"]
     ),
+    classifiers=['Development Status :: 5 - Production/Stable'],
     package_data={
         # If any package contains *.yaml files, include them:
         "": [
