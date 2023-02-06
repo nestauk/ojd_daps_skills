@@ -1,7 +1,7 @@
 import streamlit as st
 from annotated_text import annotated_text
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
-import ojd_daps_skills.app.app_utils as au
+import app_utils as au
 
 st.set_page_config(
     page_title="Nesta Skills Extractor", page_icon="images/nesta_logo.png",
