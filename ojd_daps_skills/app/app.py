@@ -44,7 +44,7 @@ This app shows how Nesta's [Skills Extractor Library](https://github.com/nestauk
 At present, you can choose to match extracted skills to one of two skills taxonomies that have been developed by other groups:
 
 1. The [European Commission's ESCO taxonomy v1.1.1](https://esco.ec.europa.eu/en/classification/skill_main) which is a multilingual classification of European Skills, Competences, Qualifications and Occupations and;
-2. [Lightcast's Open Skills taxonomy](https://lightcast.io/open-skills) (as of 22/11/22) which is open source library of 32,000+ skills.
+2. [Lightcast's Open Skills taxonomy](https://lightcast.io/open-skills) (as of 22/11/22) which is an open source library of 32,000+ skills.
 """
 )
 
