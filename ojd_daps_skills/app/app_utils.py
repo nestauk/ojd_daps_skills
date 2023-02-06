@@ -1,6 +1,8 @@
 import streamlit as st
 import boto3
 
+import os
+
 session = boto3.Session(
     aws_access_key_id=st.secrets["aws_access_key_id"],
     aws_secret_access_key=st.secrets["aws_secret_access_key"],
@@ -11,6 +13,7 @@ s3 = session.resource("s3")
 BUCKET_NAME = "open-jobs-lake"
 FILE_NAME = "escoe_extension/inputs/data/analysis/AvertaDemo-Regular.otf"
 
+PATH = os.path.dirname(__file__)
 
 def download_file_from_s3(
     local_path: str, bucket_name: str = BUCKET_NAME, file_name: str = FILE_NAME
@@ -24,3 +27,13 @@ def download_file_from_s3(
     """
     bucket = s3.Bucket(bucket_name)
     bucket.download_file(file_name, local_path)
+
+
+def download():
+    """Downloads all relevant files for the library."""
+    
+    os.system(
+        f"aws --no-sign-request --region=eu-west-1 s3 cp s3://open-jobs-indicators/escoe_extension/ojd_daps_skills_data.zip ojd_daps_skills_data.zip"
+    )
+    os.system(f"unzip ojd_daps_skills_data.zip -d {PATH}")
+    os.system(f"rm ojd_daps_skills_data.zip")
