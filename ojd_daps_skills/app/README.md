@@ -4,11 +4,11 @@ This directory contains the scripts needed to generate the streamlit demo app.
 
 ## Run Locally
 
-To run the app locally:
+To run the app locally (in `ojd_daps_skills/app`):
 
 ```
-pip install -r requirements_app.py
-streamlit run ojd_daps_skills/app/app.py
+pip install -r requirements.txt
+streamlit run app.py
 ```
 
 ## Docker
