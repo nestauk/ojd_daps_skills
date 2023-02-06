@@ -8,3 +8,6 @@ body,
   font-weight: 500;
   color: #000000;
 }
+div[data-testid="stExpander"] div[role="button"] p {
+  font-size: 30px;
+}
