@@ -12,11 +12,14 @@ def hash_config_name(es):
     # custom hash function in order to use st.cache
     return es.taxonomy_name
 
+
 @st.cache
 def load_data():
     au.download()
 
+
 load_data()
+
 
 @st.cache(hash_funcs={ExtractSkills: hash_config_name})
 def load_model(app_mode):

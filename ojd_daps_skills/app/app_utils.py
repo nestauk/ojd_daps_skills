@@ -34,10 +34,12 @@ def download_file_from_s3(
 def download():
     """Downloads all relevant files for the library."""
 
-    os.system(
-        f"aws --no-sign-request --region=eu-west-1 s3 cp s3://open-jobs-indicators/escoe_extension/ojd_daps_skills_data.zip {PATH}/ojd_daps_skills_data.zip"
-    )
-    with zipfile.ZipFile(f"{PATH}/ojd_daps_skills_data.zip","r") as zip_ref:
-        zip_ref.extractall(f"{PATH}/")
+    public_data_dir = os.path.join(PATH, 'ojd_daps_skills_data')
 
-    os.system(f"rm {PATH}/ojd_daps_skills_data.zip") 
+    os.system(
+            f"aws --no-sign-request --region=eu-west-1 s3 cp s3://open-jobs-indicators/escoe_extension/ojd_daps_skills_data.zip {PATH}/ojd_daps_skills_data.zip"
+        )
+
+    os.system(f"unzip {public_data_dir}.zip -d {PATH}")
+    os.system(f"rm {public_data_dir}.zip")
+
