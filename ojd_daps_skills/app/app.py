@@ -37,7 +37,7 @@ st.image(image_dir)
 # download s3 file
 download_file_from_s3(local_path=path + "/fonts/AvertaDemo-Regular.otf")
 
-with open("style.css") as css:
+with open(path + "/style.css") as css:
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
 # ----------------- streamlit config ------------------#
