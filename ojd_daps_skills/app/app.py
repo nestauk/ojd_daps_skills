@@ -1,7 +1,7 @@
 import streamlit as st
 from annotated_text import annotated_text
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
-import app_utils as au
+import ojd_daps_skills.app.app_utils as au
 
 st.set_page_config(
     page_title="Nesta Skills Extractor", page_icon="images/nesta_logo.png",
@@ -17,9 +17,7 @@ def hash_config_name(es):
 def load_data():
     au.download()
 
-
 load_data()
-
 
 @st.cache(hash_funcs={ExtractSkills: hash_config_name})
 def load_model(app_mode):
