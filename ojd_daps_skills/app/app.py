@@ -1,7 +1,7 @@
 import streamlit as st
 from annotated_text import annotated_text
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
-import os
+from app_utils import download_file_from_s3
 
 st.set_page_config(
     page_title="Nesta Skills Extractor",
@@ -28,12 +28,15 @@ def load_model(app_mode):
 image_dir = "images/nesta_escoe_skills.png"
 st.image(image_dir)
 
-# ----------------- streamlit config START ------------------#
+# ----------------- streamlit config ------------------#
+
+# download s3 file
+download_file_from_s3(local_path="fonts/AvertaDemo-Regular.otf")
 
 with open("style.css") as css:
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
-# ----------------- streamlit config END ------------------#
+# ----------------- streamlit config ------------------#
 st.markdown(
     """
 This app shows how Nesta's [Skills Extractor Library](https://github.com/nestauk/ojd_daps_skills) can extract skills from a job advert and then match those terms to skills from a standard list or ‘skills taxonomy’.
