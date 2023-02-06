@@ -1,62 +1,12 @@
 import streamlit as st
+from annotated_text import annotated_text
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 import os
-from typing import List
-import pandas as pd
-from IPython.display import HTML
 
 st.set_page_config(
     page_title="Nesta Skills Extractor",
     page_icon="images/nesta_logo.png",
 )
-
-
-def hover(hover_color="#d3d3d3"):
-    return dict(selector="tr:hover", props=[("background-color", "%s" % hover_color)])
-
-
-styles = [
-    hover(),
-    dict(
-        selector="th",
-        props=[
-            ("font-size", "125%"),
-            ("text-align", "center"),
-            ("font-weight", "bold"),
-            ("font-style", "italic"),
-        ],
-    ),
-    dict(selector="caption", props=[("caption-side", "bottom")]),
-]
-
-# CSS to inject contained in a string
-hide_table_row_index = """
-            <style>
-            thead tr th:first-child {display:none}
-            tbody th {display:none}
-            </style>
-            """
-
-
-def format_skills_list(
-    raw_skills_list: List[str], mapped_skills_list: List[str], tax: str
-) -> pd.DataFrame:
-    """Formats raw and mapped skills into a dataframe
-
-    Args:
-        raw_skills_list (List[str]): List of raw skills extracted from job advert
-        mapped_skills_list (List[str]): List of mapped skills
-        tax (str): Taxonomy used to map skills (esco or lightcast
-
-    Returns:
-        pd.DataFrame: Dataframe of raw and mapped skills
-    """
-
-    df = pd.DataFrame(
-        {"Extracted Skill": raw_skills_list, f"Mapped {tax} Skill": mapped_skills_list}
-    ).style.set_table_styles(styles)
-
-    return df
 
 
 def hash_config_name(es):
@@ -125,17 +75,30 @@ es = load_model(app_mode)
 button = st.button("Extract Skills")
 
 if button:
+    txt = txt.replace("\n", ". ")
     with st.spinner("🤖 Running algorithms..."):
 
         extracted_skills = es.extract_skills(txt)
 
     if "SKILL" in extracted_skills[0].keys():
         st.success(f"{len(extracted_skills[0]['SKILL'])} skill(s) extracted!", icon="💃")
-        raw_skills = [s[0] for s in extracted_skills[0]["SKILL"]]
-        mapped_skills = [s[1][0] for s in extracted_skills[0]["SKILL"]]
-        skills_table = format_skills_list(raw_skills, mapped_skills, tax=app_mode)
-        st.markdown(hide_table_row_index, unsafe_allow_html=True)
-        st.table(skills_table)
+        st.markdown(f"**The extracted skills are:** ")
+        annotated_text(
+            *[
+                highlight
+                for s in extracted_skills[0]["SKILL"]
+                for highlight in [(s[0], "", "#F6A4B7"), " "]
+            ]
+        )
+        st.markdown("")  # Add a new line
+        st.markdown(f"**The _{app_mode}_ taxonomy skills are**: ")
+        annotated_text(
+            *[
+                highlight
+                for s in extracted_skills[0]["SKILL"]
+                for highlight in [(s[1][0], "", "#FDB633"), " "]
+            ]
+        )
 
     else:
         st.warning("No skills were found in the job advert", icon="⚠️")
