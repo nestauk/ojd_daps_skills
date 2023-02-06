@@ -540,51 +540,51 @@ with col1:
     st.image("images/nesta_escoe_transparent.png")
 
 st.header("", anchor="introduction")
-with st.expander("Introduction", expanded=True):
-    intro_text = """
-    Many stakeholders like policy makers, local authorities and career advisers don’t have access to information on the skill demand landscape because there is no publicly available data on the skills requested in UK job adverts. This data gap means that stakeholders have a less complete evidence base to inform labour market policy efforts, address regional skill shortages or suggest occupation transitions.
+# with st.expander("Introduction", expanded=True):
+intro_text = """
+Many stakeholders like policy makers, local authorities and career advisers don’t have access to information on the skill demand landscape because there is no publicly available data on the skills requested in UK job adverts. This data gap means that stakeholders have a less complete evidence base to inform labour market policy efforts, address regional skill shortages or suggest occupation transitions.
 
-    To address this, Nesta has released the [Open Jobs Observatory (OJO)](https://www.nesta.org.uk/data-visualisation-and-interactive/open-jobs-observatory/), a project to:
+To address this, Nesta has released the [Open Jobs Observatory (OJO)](https://www.nesta.org.uk/data-visualisation-and-interactive/open-jobs-observatory/), a project to:
 
-    1. *collect* millions of online job adverts and;
-    2. *develop* a suite of algorithms to extract insights from the text.
+1. *collect* millions of online job adverts and;
+2. *develop* a suite of algorithms to extract insights from the text.
 
-    We have recently released an [open-source skills extraction python library](https://nestauk.github.io/ojd_daps_skills/build/html/about.html) - to learn more about it, you can read our previous blog (link pending).
+We have recently released an [open-source skills extraction python library](https://nestauk.github.io/ojd_daps_skills/build/html/about.html) - to learn more about it, you can read our previous blog (link pending).
 
-    Both our suite of algorithms and ever growing database of online job adverts allow us to drill down on occupational and regional skill demand. To illustrate the types of analysis made possible by addressing this data gap, we have created a number of example interactive visualisations. All the examples are based on a static sample of 100,000 job adverts that were posted online between January 2021 and August 2022. All the skills extracted were matched to the **[European Commission’s European Skills, Competences, and Occupations (ESCO)](https://esco.ec.europa.eu/en/about-esco/what-esco) skills taxonomy**.
+Both our suite of algorithms and ever growing database of online job adverts allow us to drill down on occupational and regional skill demand. To illustrate the types of analysis made possible by addressing this data gap, we have created a number of example interactive visualisations. All the examples are based on a static sample of 100,000 job adverts that were posted online between January 2021 and August 2022. All the skills extracted were matched to the **[European Commission’s European Skills, Competences, and Occupations (ESCO)](https://esco.ec.europa.eu/en/about-esco/what-esco) skills taxonomy**.
 
-    This blog is intended as a demonstration only, to showcase what is possible with rich data and extracted insights. In the future, we hope to be able to build a real-time tool that relies on the whole database to more completely capture the UK’s skills demand landscape.
+This blog is intended as a demonstration only, to showcase what is possible with rich data and extracted insights. In the future, we hope to be able to build a real-time tool that relies on the whole database to more completely capture the UK’s skills demand landscape.
 
-    """
+"""
 
-    st.markdown(intro_text)
+st.markdown(intro_text)
 
 # ----- Summary -------
 
 st.header("", anchor="common_skills")
-with st.expander("Most Common Skills"):
+# with st.expander("Most Common Skills"):
 
-    sum_text = """ We are able to get a sense of the most common skills across regions and occupations. At the highest level, the most commonly occurring ESCO skill in the sample of job adverts is "communication" which is mentioned in *20%* of job adverts.  "Show positive attitude" features in *14%* of adverts and "show organisational abilities" appears in *10%*.
+sum_text = """ We are able to get a sense of the most common skills across regions and occupations. At the highest level, the most commonly occurring ESCO skill in the sample of job adverts is "communication" which is mentioned in *20%* of job adverts.  "Show positive attitude" features in *14%* of adverts and "show organisational abilities" appears in *10%*.
 
-    To get a more granular sense of the most common i.e. information or transversal skills, you can use the interactive visualisation below to interrogate the most commonly occuring skills in the skills taxonomy.
+To get a more granular sense of the most common i.e. information or transversal skills, you can use the interactive visualisation below to interrogate the most commonly occuring skills in the skills taxonomy.
 
-    """
+"""
 
-    st.markdown(sum_text)
+st.markdown(sum_text)
 
-    top_skills_by_skill_groups = load_summary_data()
+top_skills_by_skill_groups = load_summary_data()
 
-    skill_group = st.selectbox(
-        "Select skill group", sorted(list(top_skills_by_skill_groups.keys())), index=1
-    )
+skill_group = st.selectbox(
+    "Select skill group", sorted(list(top_skills_by_skill_groups.keys())), index=1
+)
 
-    common_skills_chart_by_skill_groups = create_common_skills_chart_by_skill_groups(
-        top_skills_by_skill_groups, skill_group
-    )
-    st.altair_chart(
-        common_skills_chart_by_skill_groups.configure_axis(labelLimit=500),
-        use_container_width=True,
-    )
+common_skills_chart_by_skill_groups = create_common_skills_chart_by_skill_groups(
+    top_skills_by_skill_groups, skill_group
+)
+st.altair_chart(
+    common_skills_chart_by_skill_groups.configure_axis(labelLimit=500),
+    use_container_width=True,
+)
 
 # ----- National Government Use Case -----
 
@@ -845,12 +845,12 @@ with st.expander("A use case for HR: _Understanding skills in a job advert_"):
 # ----- Conclusions -----
 
 st.header("", anchor="conclusions")
-with st.expander("Conclusions"):
+# with st.expander("Conclusions"):
 
-    conclusion_text = """
-    Online job adverts, and the skills mentioned within, have the potential to help a number of groups, ranging from government bodies to HR professionals to make better labour market decisions. The example analysis is based on a static sample of job adverts but they have the potential to be turned into real-time tools for the most up-to-date view on the UK skills landscape.
+conclusion_text = """
+Online job adverts, and the skills mentioned within, have the potential to help a number of groups, ranging from government bodies to HR professionals to make better labour market decisions. The example analysis is based on a static sample of job adverts but they have the potential to be turned into real-time tools for the most up-to-date view on the UK skills landscape.
 
-    If you are interested in the example analysis, our [Skills Extractor library](https://nestauk.github.io/ojd_daps_skills/build/html/index.html) or the [Open Jobs Observatory](https://www.nesta.org.uk/data-visualisation-and-interactive/open-jobs-observatory/), do get in contact with us at dataanalytics@nesta.org.uk.
+If you are interested in the example analysis, our [Skills Extractor library](https://nestauk.github.io/ojd_daps_skills/build/html/index.html) or the [Open Jobs Observatory](https://www.nesta.org.uk/data-visualisation-and-interactive/open-jobs-observatory/), do get in contact with us at dataanalytics@nesta.org.uk.
 
-    """
-    st.markdown(conclusion_text)
+"""
+st.markdown(conclusion_text)
