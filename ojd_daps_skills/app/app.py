@@ -3,6 +3,8 @@ from annotated_text import annotated_text
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 from app_utils import download_file_from_s3
 
+import os
+
 st.set_page_config(
     page_title="Nesta Skills Extractor",
     page_icon="images/nesta_logo.png",
@@ -25,13 +27,15 @@ def load_model(app_mode):
     return es
 
 
-image_dir = "images/nesta_escoe_skills.png"
+path = os.path.dirname(__file__)
+image_dir = path + "/images/nesta_escoe_skills.png"
+
 st.image(image_dir)
 
 # ----------------- streamlit config ------------------#
 
 # download s3 file
-download_file_from_s3(local_path="fonts/AvertaDemo-Regular.otf")
+download_file_from_s3(local_path=path + "/fonts/AvertaDemo-Regular.otf")
 
 with open("style.css") as css:
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
