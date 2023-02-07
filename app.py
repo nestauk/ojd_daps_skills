@@ -13,17 +13,17 @@ def hash_config_name(es):
     return es.taxonomy_name
 
 
-#@st.cache(hash_funcs={ExtractSkills: hash_config_name})
-# def load_model(app_mode):
-#     if app_mode == esco_tax:
-#         es = ExtractSkills(config_name="extract_skills_esco", local=True)
-#     elif app_mode == lightcast_tax:
-#         es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
-#     es.ner_model_path = (
-#         au.PATH + "/ojd_daps_skills_data/outputs/models/ner_model/20220825/"
-#     )
-#     es.load()
-#     return es
+@st.cache(hash_funcs={ExtractSkills: hash_config_name})
+def load_model(app_mode):
+    if app_mode == esco_tax:
+        es = ExtractSkills(config_name="extract_skills_esco", local=True)
+    elif app_mode == lightcast_tax:
+        es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
+    es.ner_model_path = (
+        au.PATH + "/ojd_daps_skills_data/outputs/models/ner_model/20220825/"
+    )
+    es.load()
+    return es
 
 @st.cache
 def load_data():
@@ -42,7 +42,7 @@ with open("style.css") as css:
 
 # download the models needed to run the library if they are not already present
 
-if not os.path.join('ojd_daps_skills_data/'):
+if not os.path.exists('ojd_daps_skills_data/'):
     load_data()
 
 # download font to local machine
@@ -85,18 +85,7 @@ txt = st.text_area(
     "✨ Add your job advert text here ... or try out the phrase 'You must have strong communication skills.'",
     "",
 )
-
-print(app_mode)
-if app_mode == esco_tax:
-    es = ExtractSkills(config_name="extract_skills_esco", local=True)
-    print(es.ner_model_path)
-elif app_mode == lightcast_tax:
-    es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
-es.ner_model_path = 'ojd_daps_skills_data/outputs/models/ner_model/20220825/'
-print(es.ner_model_path)
-es.load()
-
-#es = load_model(app_mode)
+es = load_model(app_mode)
 
 button = st.button("Extract Skills")
 
