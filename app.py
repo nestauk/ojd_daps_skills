@@ -15,20 +15,15 @@ def hash_config_name(es):
 
 @st.cache(hash_funcs={ExtractSkills: hash_config_name})
 def load_model(app_mode):
+    if not os.path.exists('ojd_daps_skills_data/'):
+        au.download()
     if app_mode == esco_tax:
         es = ExtractSkills(config_name="extract_skills_esco", local=True)
     elif app_mode == lightcast_tax:
         es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
-    es.ner_model_path = (
-        au.PATH + "/ojd_daps_skills_data/outputs/models/ner_model/20220825/"
-    )
+    es.ner_model_path = ("ojd_daps_skills_data/outputs/models/ner_model/20220825/")
     es.load()
     return es
-
-@st.cache
-def load_data():
-    """Load the data from the public data S3 folder."""
-    au.download()
 
 image_dir = "images/nesta_escoe_skills.png"
 
@@ -40,10 +35,6 @@ with open("style.css") as css:
 
 # ----------------- download relevant files ------------------#
 
-# download the models needed to run the library if they are not already present
-
-if not os.path.exists('ojd_daps_skills_data/'):
-    load_data()
 
 # download font to local machine
 au.download_file_from_s3(local_path="fonts/AvertaDemo-Regular.otf")
