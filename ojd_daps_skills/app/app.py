@@ -7,10 +7,10 @@ st.set_page_config(
     page_title="Nesta Skills Extractor", page_icon="images/nesta_logo.png",
 )
 
-
 def hash_config_name(es):
     # custom hash function in order to use st.cache
     return es.taxonomy_name
+
 
 @st.cache(hash_funcs={ExtractSkills: hash_config_name})
 def load_model(app_mode):
@@ -21,14 +21,20 @@ def load_model(app_mode):
     es.load()
     return es
 
+@st.cache
+def load_data():
+    """Load the data from the public data S3 folder."""
+    au.download()
 
 image_dir = au.PATH + "/images/nesta_escoe_skills.png"
 
 st.image(image_dir)
 
 # ----------------- streamlit config ------------------#
+#download the models needed to run the library locally
+load_data()
 
-# download s3 file
+# download font to local machine
 au.download_file_from_s3(local_path=au.PATH + "/fonts/AvertaDemo-Regular.otf")
 
 with open(au.PATH + "/style.css") as css:
