@@ -4,7 +4,7 @@ from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 import app_utils as au
 
 st.set_page_config(
-    page_title="Nesta Skills Extractor", page_icon="images/nesta_logo.png",
+    page_title="Nesta Skills Extractor", page_icon=au.PATH + "/images/nesta_logo.png",
 )
 
 def hash_config_name(es):
