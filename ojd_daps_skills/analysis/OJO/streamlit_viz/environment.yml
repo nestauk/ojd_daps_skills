@@ -1,4 +1,4 @@
 name: streamlit_viz
 dependencies:
   - boto3
-  - s3fs=2022.5.0
+  - s3fs
