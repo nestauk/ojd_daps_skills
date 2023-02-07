@@ -12,6 +12,9 @@ import streamlit as st
 
 ChartType = alt.vegalite.v4.api.Chart
 
+FILE_NAME = "escoe_extension/inputs/data/analysis/AvertaDemo-Regular.otf"
+PATH = os.path.dirname(__file__)
+
 bucket_name = "open-jobs-lake"
 
 NESTA_COLOURS = [
@@ -40,8 +43,6 @@ s3 = session.resource("s3")
 
 s3_folder = "escoe_extension/outputs/data"
 
-FILE_NAME = "escoe_extension/inputs/data/analysis/AvertaDemo-Regular.otf"
-PATH = os.path.dirname(__file__)
 
 def download_file_from_s3(
     local_path: str, bucket_name: str = bucket_name, file_name: str = FILE_NAME
@@ -79,6 +80,8 @@ def load_s3_data(s3, bucket_name, file_name):
         return json.loads(file)
     elif fnmatch(file_name, "*.csv"):
         return pd.read_csv("s3://" + bucket_name + "/" + file_name)
+
+        
     elif fnmatch(file_name, "*.pkl") or fnmatch(file_name, "*.pickle"):
         file = obj.get()["Body"].read().decode()
         return pickle.loads(file)
