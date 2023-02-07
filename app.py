@@ -22,6 +22,7 @@ def load_model(app_mode):
     es.ner_model_path = (
         au.PATH + "/ojd_daps_skills_data/outputs/models/ner_model/20220825/"
     )
+    print(es.ner_model_path)
     es.load()
     return es
 
