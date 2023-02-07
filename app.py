@@ -14,20 +14,16 @@ def hash_config_name(es):
 
 
 #@st.cache(hash_funcs={ExtractSkills: hash_config_name})
-def load_model(app_mode):
-    print(app_mode)
-    if app_mode == esco_tax:
-        es = ExtractSkills(config_name="extract_skills_esco", local=True)
-        print(es.ner_model_path)
-    elif app_mode == lightcast_tax:
-        es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
-    es.ner_model_path = (
-        au.PATH + "/ojd_daps_skills_data/outputs/models/ner_model/20220825/"
-    )
-    print(es.ner_model_path)
-    es.load()
-    return es
-
+# def load_model(app_mode):
+#     if app_mode == esco_tax:
+#         es = ExtractSkills(config_name="extract_skills_esco", local=True)
+#     elif app_mode == lightcast_tax:
+#         es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
+#     es.ner_model_path = (
+#         au.PATH + "/ojd_daps_skills_data/outputs/models/ner_model/20220825/"
+#     )
+#     es.load()
+#     return es
 
 @st.cache
 def load_data():
@@ -90,8 +86,19 @@ txt = st.text_area(
     "",
 )
 
-es = load_model(app_mode)
+print(app_mode)
+if app_mode == esco_tax:
+    es = ExtractSkills(config_name="extract_skills_esco", local=True)
+    print(es.ner_model_path)
+elif app_mode == lightcast_tax:
+    es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
+es.ner_model_path = (
+    au.PATH + "/ojd_daps_skills_data/outputs/models/ner_model/20220825/"
+)
 print(es.ner_model_path)
+es.load()
+
+es = load_model(app_mode)
 
 button = st.button("Extract Skills")
 
