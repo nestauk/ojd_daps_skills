@@ -509,7 +509,7 @@ with open(PATH + "/style.css") as css:
 # ----- Headings -----
 
 st.image(
-    "images/hansjorg-keller-puMOiZaaxWI-unsplash_crop.jpg",
+    PATH + "/images/hansjorg-keller-puMOiZaaxWI-unsplash_crop.jpg",
     width=200,
     use_column_width="always",
 )
@@ -522,7 +522,7 @@ with col1:
     )
 
 with col2:
-    st.image("images/nesta_escoe_transparent.png", width=200)
+    st.image(PATH + "/images/nesta_escoe_transparent.png", width=200)
 
 st.markdown(
     "<p class='subtitle-font'>India Kerle, Liz Gallagher and Cath Sleeman</p>",
@@ -799,7 +799,7 @@ with st.expander("A use case for HR: _Understanding skills in a job advert_"):
         st.write("")
 
     with col2:
-        st.image("images/scene_1.gif")
+        st.image(PATH + "/images/scene_1.gif")
         st.caption(
             '<p style="text-align: center;">Demo app in action.</p>',
             unsafe_allow_html=True,
@@ -819,10 +819,10 @@ with st.expander("A use case for HR: _Understanding skills in a job advert_"):
     col1, col2 = st.columns([50, 50])
     with col1:
         st.header("*_ESCO_ Skills*")
-        st.image("images/esco_extracted_skills_engineer.png")
+        st.image(PATH + "/images/esco_extracted_skills_engineer.png")
     with col2:
         st.header("*_Lightcast_ Skills*")
-        st.image("images/lightcast_extracted_skills_engineer.png")
+        st.image(PATH + "/images/lightcast_extracted_skills_engineer.png")
 
     st.caption(
         '<p style="text-align: center;">Extracted skills from a software developer role.</p>',
