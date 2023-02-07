@@ -6,5 +6,5 @@ altair==4.2.0
 altair-data-server==0.4.1
 altair-saver==0.5.0
 altair-viewer==0.4.0
-s3fs
-boto3
+boto3==1.13.11
+s3fs==0.4.2
