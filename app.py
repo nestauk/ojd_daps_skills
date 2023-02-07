@@ -1,6 +1,6 @@
 import streamlit as st
 from annotated_text import annotated_text
-#from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
+from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 import app_utils as au
 import os
 
