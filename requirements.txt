@@ -1,15 +1,6 @@
-numpy==1.22.4
-scipy==1.8.1
-pandas==1.3.5
-tqdm==4.64.0
-filelock==3.7.1
-typer==0.4.1
-sh==1.14.2
-transformers==4.20.1
-sentence-transformers==2.2.2
-scikit-learn==0.23.2
-spacy==3.4.0
-nervaluate==0.1.8
-s3fs==2022.5.0
-boto3==1.21.21
-toolz==0.12.0
+numpy==1.21.1
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.4.1/en_core_web_sm-3.4.1.tar.gz
+ojd-daps-skills
+awscli==1.27.25
+streamlit== 1.16.0
+st-annotated-text==3.0.0
