@@ -5,7 +5,7 @@ import app_utils as au
 import os
 
 st.set_page_config(
-    page_title="Nesta Skills Extractor", page_icon="images/nesta_logo.png",
+    page_title="Nesta Skills Extractor", page_icon="/images/nesta_logo.png",
 )
 
 def hash_config_name(es):
@@ -30,23 +30,23 @@ def load_data():
     """Load the data from the public data S3 folder."""
     au.download()
 
-image_dir = au.PATH + "/images/nesta_escoe_skills.png"
+image_dir = "/images/nesta_escoe_skills.png"
 
 st.image(image_dir)
 
 # ----------------- streamlit config ------------------#
-with open(au.PATH + "/style.css") as css:
+with open("style.css") as css:
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
 # ----------------- download relevant files ------------------#
 
 # download the models needed to run the library if they are not already present
 
-if not os.path.join(au.PATH, 'ojd_daps_skills_data'):
+if not os.path.join('ojd_daps_skills_data/'):
     load_data()
 
 # download font to local machine
-au.download_file_from_s3(local_path=au.PATH + "/fonts/AvertaDemo-Regular.otf")
+au.download_file_from_s3(local_path="fonts/AvertaDemo-Regular.otf")
 
 # ----------------- app ------------------ #
 
