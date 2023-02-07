@@ -5,7 +5,7 @@ import app_utils as au
 import os
 
 st.set_page_config(
-    page_title="Nesta Skills Extractor", page_icon="/images/nesta_logo.png",
+    page_title="Nesta Skills Extractor", page_icon="images/nesta_logo.png",
 )
 
 def hash_config_name(es):
@@ -30,7 +30,7 @@ def load_data():
     """Load the data from the public data S3 folder."""
     au.download()
 
-image_dir = "/images/nesta_escoe_skills.png"
+image_dir = "images/nesta_escoe_skills.png"
 
 st.image(image_dir)
 
