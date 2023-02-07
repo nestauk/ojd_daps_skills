@@ -495,49 +495,46 @@ def create_location_quotident_graph(all_location_data, location):
 with open("style.css") as css:
     st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
-st.markdown(
-    """
-<style>
-.big-font {
-    font-size:34px !important;
-    font-weight: bold;
-}
-</style>
-""",
-    unsafe_allow_html=True,
+
+# st.sidebar.markdown(
+#     """
+# [Introduction](#introduction) \n
+# [Most Common Skills](#common_skills) \n
+# [A use case for career advisers: _Enriching career advice_](#occupations) \n
+# [A use case for local authorities: _regional skill demand_](#regions) \n
+# [A use case for HR: _Understanding skills in a job advert_](#hr) \n
+# [Conclusions](#conclusions)
+# """,
+#     unsafe_allow_html=True,
+# )
+
+
+# ----- Headings -----
+
+st.image(
+    "images/hansjorg-keller-puMOiZaaxWI-unsplash_crop.jpg",
+    width=200,
+    use_column_width="always",
 )
+
+col1, col2 = st.columns([70, 30])
+with col1:
+    st.markdown(
+        "<p class='title-font'>Skills in Job Adverts</p>",
+        unsafe_allow_html=True,
+    )
+
+with col2:
+    st.image("images/nesta_escoe_transparent.png", width=200)
 
 st.markdown(
-    """
-<style>
-.medium-font {
-    font-size:26px !important;
-    font-weight: bold;
-}
-</style>
-""",
+    "<p class='subtitle-font'>India Kerle, Liz Gallagher and Cath Sleeman</p>",
     unsafe_allow_html=True,
 )
-
-
-st.sidebar.markdown(
-    """
-[Introduction](#introduction) \n
-[Most Common Skills](#common_skills) \n
-[A use case for career advisers: _Enriching career advice_](#occupations) \n
-[A use case for local authorities: _regional skill demand_](#regions) \n
-[A use case for HR: _Understanding skills in a job advert_](#hr) \n
-[Conclusions](#conclusions)
-""",
-    unsafe_allow_html=True,
-)
+st.markdown("<p class='subtitle-font'>6th Februrary 2023</p>", unsafe_allow_html=True)
 
 
 # ----- Introduction -----
-
-col1, col2 = st.columns([50, 50])
-with col1:
-    st.image("images/nesta_escoe_transparent.png")
 
 st.header("", anchor="introduction")
 # with st.expander("Introduction", expanded=True):
@@ -708,7 +705,7 @@ regions_list = list(all_region_data.keys())
 #     unsafe_allow_html=True,
 # )
 st.header("", anchor="regions")
-with st.expander("A use case for local authorities: _regional skill demand_"):
+with st.expander("A use case for local authorities: _Regional skill demand_"):
 
     local_gov_text = """ In addition to providing insights at a national level, job adverts can also give a sense of the skills landscape at a regional level.
 
@@ -854,3 +851,20 @@ If you are interested in the example analysis, our [Skills Extractor library](ht
 
 """
 st.markdown(conclusion_text)
+
+st.markdown(
+    """
+<style>
+.tiny-font {
+    font-size:14px !important;
+    color: #646363;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    "<p class='tiny-font'>Image credit: Reger Verkehr und Stau am Eingang zum Bienenhaus. Busy traffic and congestion at the entrance to the apiary.</p>",
+    unsafe_allow_html=True,
+)
