@@ -9,10 +9,6 @@ from colour import Color
 
 from streamlit_viz_utils import *
 
-s3 = get_s3_resource()
-s3_folder = "escoe_extension/outputs/data"
-
-
 def load_summary_data():
 
     file_name = os.path.join(
@@ -353,7 +349,7 @@ def create_common_skills_chart_by_skill_groups(top_skills_by_skill_groups, skill
         alt.Chart(top_skills)
         .mark_bar(size=10, opacity=0.8, color="#0000FF")
         .encode(
-            y=alt.Y("skill", sort=None, axis=alt.Axis(title=None)),
+            y=alt.Y("skill", sort=None, axis=alt.Axis(title=None, labelLimit=5000)),
             x=alt.X(
                 "percent:Q",
                 axis=alt.Axis(
@@ -406,7 +402,7 @@ def create_common_skills_chart(
         alt.Chart(top_skills)
         .mark_bar(size=10, opacity=0.8, color="#0000FF")
         .encode(
-            y=alt.Y("sector", sort=None, axis=alt.Axis(title=None)),
+            y=alt.Y("sector", sort=None, axis=alt.Axis(title=None, labelLimit=5000)),
             x=alt.X(
                 "percent:Q",
                 axis=alt.Axis(
@@ -452,7 +448,7 @@ def create_location_quotident_graph(all_location_data, location):
             ),
             size=alt.Size(
                 "skill_percent:Q",
-                title=["Percentage of job adverts", "with this skill group (%)"],
+                title=["Percentage of job adverts", " that mention at least", " 1 skill from this group (%)"]
             ),
             color=alt.Color(
                 "location_change",
@@ -467,7 +463,7 @@ def create_location_quotident_graph(all_location_data, location):
                 ),
                 alt.Tooltip(
                     "location_change",
-                    title="Location Quotident Change",
+                    title="Location Quotient Change",
                     format=",.2f",
                 ),
             ],
@@ -492,9 +488,10 @@ def create_location_quotident_graph(all_location_data, location):
 # ========================================
 # ---------- Streamlit configs ------------
 
-with open("style.css") as css:
-    st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
+download_file_from_s3(local_path=PATH + "/fonts/AvertaDemo-Regular.otf")
 
+with open(PATH + "/style.css") as css:
+    st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
 # st.sidebar.markdown(
 #     """

@@ -7,6 +7,8 @@ import pickle
 import gzip
 
 import boto3
+import os
+import streamlit as st
 
 ChartType = alt.vegalite.v4.api.Chart
 
@@ -29,10 +31,30 @@ NESTA_COLOURS = [
     "#000000",
 ]
 
+session = boto3.Session(
+    aws_access_key_id=st.secrets["aws_access_key_id"],
+    aws_secret_access_key=st.secrets["aws_secret_access_key"],
+)
 
-def get_s3_resource():
-    s3 = boto3.resource("s3")
-    return s3
+s3 = session.resource("s3")
+
+s3_folder = "escoe_extension/outputs/data"
+
+FILE_NAME = "escoe_extension/inputs/data/analysis/AvertaDemo-Regular.otf"
+PATH = os.path.dirname(__file__)
+
+def download_file_from_s3(
+    local_path: str, bucket_name: str = bucket_name, file_name: str = FILE_NAME
+):
+    """Download a file from S3 to a local path.
+    Args:
+        local_path (str): Path to save file to.
+        bucket_name (str, optional): Bucket name in s3. Defaults to BUCKET_NAME.
+        file_name (str, optional): File name in s3. Defaults to FILE_NAME.
+    """
+    bucket = s3.Bucket(bucket_name)
+    bucket.download_file(file_name, local_path)
+
 
 def load_s3_data(s3, bucket_name, file_name):
     """
