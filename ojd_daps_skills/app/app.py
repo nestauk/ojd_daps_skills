@@ -15,9 +15,9 @@ def hash_config_name(es):
 @st.cache(hash_funcs={ExtractSkills: hash_config_name})
 def load_model(app_mode):
     if app_mode == esco_tax:
-        es = ExtractSkills(config_name="extract_skills_esco", local=True)
+        es = ExtractSkills(config_name="extract_skills_esco", local=False)
     elif app_mode == lightcast_tax:
-        es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
+        es = ExtractSkills(config_name="extract_skills_lightcast", local=False)
     es.load()
     return es
 
