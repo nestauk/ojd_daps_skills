@@ -1,8 +1,6 @@
 import streamlit as st
 import boto3
 import os
-from ojd_daps_skills import PUBLIC_DATA_FOLDER_NAME
-
 
 session = boto3.Session(
     aws_access_key_id=st.secrets["aws_access_key_id"],
@@ -27,7 +25,6 @@ def download_file_from_s3(
     """
     bucket = s3.Bucket(bucket_name)
     bucket.download_file(file_name, local_path)
-
 
 def download():
     """Download public data from S3 and unzip it to the app's public data folder."""
