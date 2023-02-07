@@ -12,16 +12,16 @@ def hash_config_name(es):
     # custom hash function in order to use st.cache
     return es.taxonomy_name
 
+if not os.path.exists('ojd_daps_skills_data/'):
+    au.download()
 
 @st.cache(hash_funcs={ExtractSkills: hash_config_name})
 def load_model(app_mode):
-    if not os.path.exists('ojd_daps_skills_data/'):
-        au.download()
     if app_mode == esco_tax:
         es = ExtractSkills(config_name="extract_skills_esco", local=True)
     elif app_mode == lightcast_tax:
         es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
-    es.ner_model_path = ("ojd_daps_skills_data/outputs/models/ner_model/20220825/")
+    es.ner_model_path = ("ojd_daps_skills_data/ojd_daps_skills_data/outputs/models/ner_model/20220825/")
     es.load()
     return es
 
