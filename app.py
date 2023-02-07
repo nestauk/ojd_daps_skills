@@ -92,7 +92,7 @@ if app_mode == esco_tax:
     print(es.ner_model_path)
 elif app_mode == lightcast_tax:
     es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
-es.ner_model_path = ('ojd_daps_skills_data/outputs/models/ner_model/20220825/')
+es.ner_model_path = 'ojd_daps_skills_data/outputs/models/ner_model/20220825/'
 print(es.ner_model_path)
 es.load()
 
