@@ -3,6 +3,7 @@ from annotated_text import annotated_text
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 import app_utils as au
 import os
+import zipfile
 
 st.set_page_config(
     page_title="Nesta Skills Extractor", page_icon="images/nesta_logo.png",
@@ -13,8 +14,10 @@ def hash_config_name(es):
     return es.taxonomy_name
 
 if not os.path.exists('ojd_daps_skills_data/'):
-    au.download()
-
+    au.download_file_from_s3(bucket_name = 'open-jobs-indicators', file_name = 'escoe_extension/ojd_daps_skills_data.zip', local_path = 'ojd_daps_skills_data.zip')
+    with zipfile.ZipFile('ojd_daps_skills_data.zip') as item: # treat the file as a zip
+           item.extractall()
+    
 @st.cache(hash_funcs={ExtractSkills: hash_config_name})
 def load_model(app_mode):
     if app_mode == esco_tax:
