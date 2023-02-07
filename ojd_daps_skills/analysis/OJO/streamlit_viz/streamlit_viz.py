@@ -9,6 +9,15 @@ from colour import Color
 
 from streamlit_viz_utils import *
 
+session = boto3.Session(
+    aws_access_key_id=st.secrets["aws_access_key_id"],
+    aws_secret_access_key=st.secrets["aws_secret_access_key"],
+)
+
+s3 = session.resource("s3")
+
+s3_folder = "escoe_extension/outputs/data"
+
 def load_summary_data():
 
     file_name = os.path.join(
