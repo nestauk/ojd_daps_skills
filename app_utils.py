@@ -32,10 +32,8 @@ def download_file_from_s3(
 def download():
     """Download public data from S3 and unzip it to the app's public data folder."""
 
-    public_data_dir = os.path.join(PATH, PUBLIC_DATA_FOLDER_NAME)
-
     os.system(
-        f"aws --no-sign-request --region=eu-west-1 s3 cp s3://open-jobs-indicators/escoe_extension/{PUBLIC_DATA_FOLDER_NAME}.zip {public_data_dir}.zip"
+        f"aws --no-sign-request --region=eu-west-1 s3 cp s3://open-jobs-indicators/escoe_extension/{PUBLIC_DATA_FOLDER_NAME}.zip {PUBLIC_DATA_FOLDER_NAME}.zip"
     )
-    os.system(f"unzip {public_data_dir}.zip -d {PATH}")
-    os.system(f"rm {public_data_dir}.zip")
+    os.system(f"unzip {PUBLIC_DATA_FOLDER_NAME}.zip -d")
+    os.system(f"rm {PUBLIC_DATA_FOLDER_NAME}.zip")
