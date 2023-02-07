@@ -30,16 +30,11 @@ image_dir = "images/nesta_escoe_skills.png"
 st.image(image_dir)
 
 # ----------------- streamlit config ------------------#
-with open("style.css") as css:
-    st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
-
-# ----------------- download relevant files ------------------#
-
-
 # download font to local machine
 au.download_file_from_s3(local_path="fonts/AvertaDemo-Regular.otf")
 
-# ----------------- app ------------------ #
+with open("style.css") as css:
+    st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
 st.markdown(
     """
