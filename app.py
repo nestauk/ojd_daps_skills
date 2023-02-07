@@ -1,11 +1,11 @@
 import streamlit as st
 from annotated_text import annotated_text
-from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
+#from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 import app_utils as au
 import os
 
 st.set_page_config(
-    page_title="Nesta Skills Extractor", page_icon=au.PATH + "/images/nesta_logo.png",
+    page_title="Nesta Skills Extractor", page_icon="images/nesta_logo.png",
 )
 
 def hash_config_name(es):

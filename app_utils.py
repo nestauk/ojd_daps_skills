@@ -14,7 +14,6 @@ s3 = session.resource("s3")
 BUCKET_NAME = "open-jobs-lake"
 FILE_NAME = "escoe_extension/inputs/data/analysis/AvertaDemo-Regular.otf"
 PUBLIC_DATA_FOLDER_NAME = 'ojd_daps_skills_data'
-PATH = os.path.dirname(__file__)
 
 def download_file_from_s3(
     local_path: str, bucket_name: str = BUCKET_NAME, file_name: str = FILE_NAME

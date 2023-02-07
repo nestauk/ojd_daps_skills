@@ -1,6 +1,6 @@
 numpy==1.21.1
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.4.1/en_core_web_sm-3.4.1.tar.gz
-ojd-daps-skills
+#https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.4.1/en_core_web_sm-3.4.1.tar.gz
+#ojd-daps-skills
 awscli==1.27.25
 streamlit== 1.16.0
 st-annotated-text==3.0.0
