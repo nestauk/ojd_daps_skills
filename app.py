@@ -2,6 +2,7 @@ import streamlit as st
 from annotated_text import annotated_text
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 import app_utils as au
+import os
 
 st.set_page_config(
     page_title="Nesta Skills Extractor", page_icon=au.PATH + "/images/nesta_logo.png",
@@ -12,14 +13,14 @@ def hash_config_name(es):
     return es.taxonomy_name
 
 
-@st.cache(hash_funcs={ExtractSkills: hash_config_name})
+#@st.cache(hash_funcs={ExtractSkills: hash_config_name})
 def load_model(app_mode):
     if app_mode == esco_tax:
         es = ExtractSkills(config_name="extract_skills_esco", local=True)
     elif app_mode == lightcast_tax:
         es = ExtractSkills(config_name="extract_skills_lightcast", local=True)
     es.ner_model_path = (
-        au.PATH + "/ojd_daps_skills_data/outputs/models/ner_model/20220825"
+        au.PATH + "/ojd_daps_skills_data/outputs/models/ner_model/20220825/"
     )
     es.load()
     return es
@@ -35,16 +36,21 @@ image_dir = au.PATH + "/images/nesta_escoe_skills.png"
 st.image(image_dir)
 
 # ----------------- streamlit config ------------------#
-# download the models needed to run the library locally
-load_data()
+with open(au.PATH + "/style.css") as css:
+    st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
+
+# ----------------- download relevant files ------------------#
+
+# download the models needed to run the library if they are not already present
+
+if not os.path.join(au.PATH, 'ojd_daps_skills_data'):
+    load_data()
 
 # download font to local machine
 au.download_file_from_s3(local_path=au.PATH + "/fonts/AvertaDemo-Regular.otf")
 
-with open(au.PATH + "/style.css") as css:
-    st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
+# ----------------- app ------------------ #
 
-# ----------------- streamlit config ------------------#
 st.markdown(
     """
 This app shows how Nesta's [Skills Extractor Library](https://github.com/nestauk/ojd_daps_skills) can extract skills from a job advert and then match those terms to skills from a standard list or ‘skills taxonomy’.
@@ -82,6 +88,7 @@ txt = st.text_area(
 )
 
 es = load_model(app_mode)
+print(es.ner_model_path)
 
 button = st.button("Extract Skills")
 
