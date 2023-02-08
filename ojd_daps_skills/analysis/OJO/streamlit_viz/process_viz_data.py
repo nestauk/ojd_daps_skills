@@ -1,5 +1,3 @@
-import sys
-sys.path.append('/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills')
 """
 Script to process the skill occurences data into several outputs needed for the Streamlit viz
 For each occupation and regions:
