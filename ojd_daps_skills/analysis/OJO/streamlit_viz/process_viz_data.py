@@ -239,15 +239,31 @@ def get_top_skills_per_group(
             }
     return top_skills_per_group
 
+
 def get_only_top_transversal_skills_per_group(
-    percentage_group_skills_df, esco_code2name, esco_id_2_trans_flag, top_n=20,
+    percentage_group_skills_df,
+    esco_code2name,
+    esco_id_2_trans_flag,
+    top_n=20,
 ):
     top_skills_per_group = {}
-    for group_name, group_skill_percentages in percentage_group_skills_df.iterrows():    
-        all_trans_skills = {esco_code2name.get(skill_id, skill_id): top_skills for skill_id, top_skills in group_skill_percentages.sort_values(ascending=False).to_dict().items() if esco_id_2_trans_flag.get(skill_id) == True}
-        sorted_trans_skills = dict(sorted(all_trans_skills.items(), key=lambda item: item[1], reverse=True))
-        top_skills_per_group[group_name] = {k: sorted_trans_skills[k] for k in list(sorted_trans_skills)[:top_n]}
-    
+    for group_name, group_skill_percentages in percentage_group_skills_df.iterrows():
+        all_trans_skills = {
+            esco_code2name.get(skill_id, skill_id): top_skills
+            for skill_id, top_skills in group_skill_percentages.sort_values(
+                ascending=False
+            )
+            .to_dict()
+            .items()
+            if esco_id_2_trans_flag.get(skill_id)
+        }
+        sorted_trans_skills = dict(
+            sorted(all_trans_skills.items(), key=lambda item: item[1], reverse=True)
+        )
+        top_skills_per_group[group_name] = {
+            k: sorted_trans_skills[k] for k in list(sorted_trans_skills)[:top_n]
+        }
+
     return top_skills_per_group
 
 
@@ -424,7 +440,10 @@ if __name__ == "__main__":
     )
 
     top_trans_skills_per_sector = get_only_top_transversal_skills_per_group(
-        percentage_sector_skills_df, esco_code2name, top_n=20, esco_id_2_trans_flag=esco_id_2_trans_flag
+        percentage_sector_skills_df,
+        esco_code2name,
+        top_n=20,
+        esco_id_2_trans_flag=esco_id_2_trans_flag,
     )
 
     number_job_adverts_per_sector = (
@@ -461,7 +480,8 @@ if __name__ == "__main__":
             percentage_sector_skill_by_group,
             esco_code2name,
             top_n=20,
-            esco_id_2_trans_flag=esco_id_2_trans_flag)
+            esco_id_2_trans_flag=esco_id_2_trans_flag,
+        )
         percentage_sector_skill_by_group_list.append(top_skill_by_group_per_sector)
         percentage_sector_skill_by_group_list_no_trans.append(
             top_skill_by_group_per_sector_no_trans
@@ -490,8 +510,8 @@ if __name__ == "__main__":
                 "3": percentage_sector_skill_by_group_list_no_trans[3][sector_name],
                 "4": percentage_sector_skill_by_group_list_no_trans[4][sector_name],
             },
-            #as transversal skills appear to be either level 2 or at the skill level - don't think its
-            #useful to only have 'T' as the top level
+            # as transversal skills appear to be either level 2 or at the skill level - don't think its
+            # useful to only have 'T' as the top level
             "top_transversal_skills": {
                 "all": top_trans_skills_per_sector[sector_name],
                 "2": percentage_sector_trans_skill_by_group[2][sector_name],
@@ -580,7 +600,8 @@ if __name__ == "__main__":
         os.path.join(s3_folder, "streamlit_viz", "sector_2_kd_sample.json"),
     )
 
-    # Lightweight edge_list - only with sectors which have a decent number of job adverts
+    # Lightweight edge_list - only with sectors which have a decent number of
+    # job adverts
     top_sectors = set([k for k, v in all_sector_data.items() if v["num_ads"] > 100])
 
     edge_list_lightweight = edge_list[
@@ -598,17 +619,17 @@ if __name__ == "__main__":
         ),
     )
 
-# LOCATION
-# UNGROUPED SKILL PERCENTAGES PER LEVEL
+    # LOCATION
+    # UNGROUPED SKILL PERCENTAGES PER LEVEL
 
-    #group london together
+    # group london together
     skill_sample_df["itl_2_name"] = np.where(
         skill_sample_df["itl_2_name"].str.contains("London"),
         "London",
         skill_sample_df["itl_2_name"],
     )
 
-    #group scotland together
+    # group scotland together
     skill_sample_df["itl_2_name"] = np.where(
         skill_sample_df["itl_2_name"].str.contains("Scotland"),
         "Scotland",
@@ -748,7 +769,7 @@ if __name__ == "__main__":
                 "all": top_transversal_skills_per_location[location_name],
                 "2": percentage_trans_skill_by_group[2][location_name],
                 "4": percentage_trans_skill_by_group[4][location_name],
-            }
+            },
         }
     # final dfs to save
     loc_dfs = []
@@ -781,13 +802,15 @@ if __name__ == "__main__":
     all_loc_df["absolute_location_change"] = all_loc_df.location_change.abs()
 
     # get number of job ads per location from dictionary
-    num_job_ads_per_loc = {loc: loc_info['num_ads'] for loc, loc_info in all_location_data.items()}
-    all_loc_df['num_ads'] = all_loc_df.region.map(num_job_ads_per_loc)
-    all_loc_df['num_ads_per_skill'] = all_loc_df.num_ads * all_loc_df.skill_percent
+    num_job_ads_per_loc = {
+        loc: loc_info["num_ads"] for loc, loc_info in all_location_data.items()
+    }
+    all_loc_df["num_ads"] = all_loc_df.region.map(num_job_ads_per_loc)
+    all_loc_df["num_ads_per_skill"] = all_loc_df.num_ads * all_loc_df.skill_percent
 
-    # make sure there are at least 100 job adverts associated to a given skill and there are at least 500 job adverts 
+    # make sure there are at least 100 job adverts associated to a given skill and there are at least 500 job adverts
     # associated to a given location
-    all_loc_df = all_loc_df.query('num_ads_per_skill > 100').query('num_ads > 500')
+    all_loc_df = all_loc_df.query("num_ads_per_skill > 100").query("num_ads > 500")
 
     save_to_s3(
         s3,
