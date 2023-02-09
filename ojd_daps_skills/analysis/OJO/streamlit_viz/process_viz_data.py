@@ -250,9 +250,7 @@ def get_only_top_transversal_skills_per_group(
     for group_name, group_skill_percentages in percentage_group_skills_df.iterrows():
         all_trans_skills = {
             esco_code2name.get(skill_id, skill_id): top_skills
-            for skill_id, top_skills in group_skill_percentages.sort_values(
-                ascending=False
-            )
+            for skill_id, top_skills in group_skill_percentages
             .to_dict()
             .items()
             if esco_id_2_trans_flag.get(skill_id)
