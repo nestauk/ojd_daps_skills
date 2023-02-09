@@ -508,8 +508,7 @@ if __name__ == "__main__":
                 "3": percentage_sector_skill_by_group_list_no_trans[3][sector_name],
                 "4": percentage_sector_skill_by_group_list_no_trans[4][sector_name],
             },
-            # as transversal skills appear to be either level 2 or at the skill level - don't think its
-            # useful to only have 'T' as the top level
+            # as transversal skills appear to be either level 2 or at the skill level 
             "top_transversal_skills": {
                 "all": top_trans_skills_per_sector[sector_name],
                 "2": percentage_sector_trans_skill_by_group[2][sector_name],
