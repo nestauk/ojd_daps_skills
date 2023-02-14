@@ -14,7 +14,6 @@ tag_version = (
     subprocess.check_output(tag_cmd, shell=True).decode("ascii").replace("\n", "")
 )
 
-print(platform.system())
 
 def read_lines(path):
     """Read lines of `path`."""
