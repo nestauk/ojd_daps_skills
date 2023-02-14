@@ -4,14 +4,17 @@ from setuptools import find_packages
 from setuptools import setup
 
 import os
+import platform
 import subprocess
 
 
-tag_cmd = "echo $(git describe --tags --abbrev=0)"
+tag_cmd = "git describe --tags --abbrev=0"
+tag_cmd = tag_cmd if platform.system() == "Windows" else f"echo $({tag_cmd})"
 tag_version = (
     subprocess.check_output(tag_cmd, shell=True).decode("ascii").replace("\n", "")
 )
 
+print(platform.system())
 
 def read_lines(path):
     """Read lines of `path`."""
@@ -24,7 +27,7 @@ BASE_DIR = Path(__file__).parent
 
 setup(
     name="ojd_daps_skills",
-    long_description=open(os.path.join(BASE_DIR, "README.md")).read(),
+    long_description=open(os.path.join(BASE_DIR, "README.md"), encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     install_requires=read_lines(os.path.join(BASE_DIR, "requirements.txt")),
     extras_require={"dev": read_lines(os.path.join(BASE_DIR, "requirements_dev.txt"))},
