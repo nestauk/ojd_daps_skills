@@ -12,9 +12,10 @@ sphinx-rtd-theme
 awscli==1.27.32
 pre-commit
 pre-commit-hooks
-spacy
+spacy==3.4.0
 pytest
 sqlalchemy==1.4.37
 pymysql==1.0.2
 furo==2022.9.29
 myst_parser
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.4.1/en_core_web_sm-3.4.1.tar.gz
