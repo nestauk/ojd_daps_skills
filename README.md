@@ -30,8 +30,7 @@ You will also need to download [spaCy's](https://spacy.io/models/en) `en_core_we
 python -m spacy download en_core_web_sm
 ```
 
-Note that this package was developed on MacOS and tested on Ubuntu, as such it may not work smoothly on Windows.
-
+Note that this package was developed on MacOS and tested on Ubuntu. Changes have been made to be compatible on a Windows system but are not tested and cannot be guaranteed. 
 ### AWS CLI
 
 When the package is first used it will automatically download a folder of neccessary data and models. This file is ~ 1GB. Although you don't need to have AWS credentials for this to work, you will need to download the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
