@@ -10,11 +10,4 @@ python ojd_daps_skills/analysis/OJO/process_viz_data.py
 
 [This requires the data saved by running `python ojd_daps_skills/analysis/ojo/get_skill_occurrences_matrix.py`]
 
-## In progress
-
-A preliminary analysis app can be seen by running:
-
-```
-pip install -r requirements_analysis_app.txt
-streamlit run ojd_daps_skills/analysis/OJO/streamlit_viz/streamlit_viz.py
-```
+This app is run from the [ojd-daps-skills-analysis](https://github.com/nestauk/ojd-daps-skills-analysis) repo.
