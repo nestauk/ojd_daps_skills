@@ -1,0 +1,72 @@
+# Using Prodigy to tag entities
+
+Activate your own prodigy environment.
+
+For example:
+
+```
+conda create --name liz_prodigy pip python=3.8
+conda activate liz_prodigy
+pip install prodigy -f https://[YOUR_LICENSE_KEY]@download.prodi.gy
+```
+
+## Data
+
+Merge 5000 random job adverts plus the 375 existing labels into a format readable for Prodigy by running
+
+```
+python ojd_daps_skills/pipeline/skill_ner/prodigy/process_data.py
+
+```
+
+in the `ojd-daps-skills` conda environment.
+
+This will create `s3://open-jobs-lake/escoe_extension/outputs/labelled_job_adverts/prodigy/processed_sample_20230710.jsonl`.
+
+## Tagging skills
+
+This is all to be done in your own Prodigy environment, and the commands in this section should be runnable independently from this repo (so could be run in a new and empty EC2 instance).
+
+First download the data locally to the file location you are running prodigy from
+
+```
+aws s3 cp s3://open-jobs-lake/escoe_extension/outputs/labelled_job_adverts/prodigy/processed_sample_20230710.jsonl prodigy_data/processed_sample_20230710.jsonl
+
+```
+
+Create two empty folders for the outputs.
+
+```
+mkdir ./prodigy_data/models/
+mkdir ./prodigy_data/labelled_data/
+
+```
+
+Create a new Prodigy dataset with the new job adverts sample:
+
+```
+prodigy db-in dataset-skills ./prodigy_data/processed_sample_20230710.jsonl
+
+```
+
+Copy the original model (trained on 375 job adverts) to this location:
+
+```
+aws s3 cp --recursive s3://open-jobs-lake/escoe_extension/outputs/models/ner_model/20220825/ ./prodigy_data/models/20220825_model/
+
+```
+
+Then open up the tagging task by running.
+
+```
+prodigy ner.correct_skills dataset-skills ./prodigy_data/models/20220825_model/ prodigy_data/processed_sample_20230710.jsonl --label SKILL -F skill_recipe.py --update
+```
+
+Your task is to manually annotate all the SKILLs in the sentences you are provided with. These are job adverts cut up into lengths of 1000 characters.
+
+Output the annotations
+
+```
+prodigy db-out dataset-skills > ./prodigy_data/labelled_data/dataset_skills.jsonl
+
+```
