@@ -94,13 +94,22 @@ def ner_correct_skills(
         # Custom way to split into chunks of a certain size
         # its not ideal if these are too big (the model struggles)
         # or too small (it's hard to label)
-        def split_text(adverts, chunk_size=1000):
+        def split_text(adverts, chunk_size=5):
             for advert in adverts:
                 text = advert["text"]
                 meta = advert["meta"]
-                for i in range(0, len(text), chunk_size):
+                sentences = text.split(".")
+                sentences = [
+                    sentence.strip()
+                    for sentence in sentences
+                    if len(sentence.strip()) != 0
+                ]
+                for i in range(0, len(sentences), chunk_size):
                     meta["sent"] = i
-                    yield {"text": text[i : i + chunk_size], "meta": meta}
+                    yield {
+                        "text": ". ".join(sentences[i : i + chunk_size]),
+                        "meta": meta,
+                    }
 
         stream = split_text(list(stream))
 

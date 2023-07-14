@@ -12,7 +12,7 @@ pip install prodigy -f https://[YOUR_LICENSE_KEY]@download.prodi.gy
 
 ## Data
 
-Merge 5000 random job adverts plus the 375 existing labels into a format readable for Prodigy by running
+Merge 5000 random job adverts into a format readable for Prodigy by running
 
 ```
 python ojd_daps_skills/pipeline/skill_ner/prodigy/process_data.py
@@ -42,13 +42,6 @@ mkdir ./prodigy_data/labelled_data/
 
 ```
 
-Create a new Prodigy dataset with the new job adverts sample:
-
-```
-prodigy db-in dataset-skills ./prodigy_data/processed_sample_20230710.jsonl
-
-```
-
 Copy the original model (trained on 375 job adverts) to this location:
 
 ```
@@ -59,10 +52,10 @@ aws s3 cp --recursive s3://open-jobs-lake/escoe_extension/outputs/models/ner_mod
 Then open up the tagging task by running.
 
 ```
-prodigy ner.correct_skills dataset-skills ./prodigy_data/models/20220825_model/ prodigy_data/processed_sample_20230710.jsonl --label SKILL -F skill_recipe.py --update
+prodigy ner.correct_skills dataset-skills ./prodigy_data/models/20220825_model/ prodigy_data/processed_sample_20230710.jsonl --label SKILL,MULTISKILL,EXPERIENCE,BENEFIT -F skill_recipe.py --update
 ```
 
-Your task is to manually annotate all the SKILLs in the sentences you are provided with. These are job adverts cut up into lengths of 1000 characters.
+Your task is to manually annotate all the SKILLs, MULTISKILL,EXPERIENCE,BENEFIT in the sentences you are provided with. These are job adverts cut up into lengths of 5 sentences (separated by full stop).
 
 Output the annotations
 
