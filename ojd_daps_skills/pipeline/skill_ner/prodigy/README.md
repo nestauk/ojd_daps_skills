@@ -57,9 +57,11 @@ prodigy ner.correct_skills dataset-skills ./prodigy_data/models/20220825_model/ 
 
 Your task is to manually annotate all the SKILLs, MULTISKILL,EXPERIENCE,BENEFIT in the sentences you are provided with. These are job adverts cut up into lengths of 5 sentences (separated by full stop).
 
+You must provide the session url argument (with your name) when labelling the tasks if this is hosted on EC2, e.g. `http://18.XXX:8080/?session=liz`. This makes it so no two labellers will end up annotating the same task. Without it each time someone tried to label the stream of tasks will be exactly the same as another labeller.
+
 Output the annotations
 
 ```
 prodigy db-out dataset-skills > ./prodigy_data/labelled_data/dataset_skills.jsonl
-aws s3 cp ./prodigy_data/labelled_data/dataset_skills.jsonl s3://open-jobs-lake/escoe_extension/outputs/labelled_job_adverts/prodigy/labelled_dataset_skills_250723.jsonl
+aws s3 cp ./prodigy_data/labelled_data/dataset_skills.jsonl s3://open-jobs-lake/escoe_extension/outputs/labelled_job_adverts/prodigy/labelled_dataset_skills_010823.jsonl
 ```
