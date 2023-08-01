@@ -10,14 +10,63 @@ import boto3
 
 import json
 import random
+import re
 
 from ojd_daps_skills.getters.data_getters import load_s3_data, get_s3_resource
 from ojd_daps_skills.pipeline.skill_ner.ner_spacy_utils import detect_camelcase
+
+punctuation_replacement_rules = {
+    # old patterns: replacement pattern
+    # Convert bullet points to fullstops
+    "[\u2022\u2023\u25E6\u2043\u2219*]": ".",
+    r"[/:\\]": " ",  # Convert colon and forward and backward slashes to spaces
+}
+
+compiled_punct_patterns = {
+    re.compile(p): v for p, v in punctuation_replacement_rules.items()
+}
+
+
+def pad_out_punct(text):
+    # When punctuation is directly followed by a letter, then pad it out with a space
+    pattern = r"([,?.)!;:])([a-zA-Z])"
+    replacement = r"\1 \2"
+    result = re.sub(pattern, replacement, text)
+    return result
+
+
+def replacements(text):
+    """
+    Ampersands and bullet points need some tweaking to be most useful in the pipeline.
+    Some job adverts have different markers for a bullet pointed list. When this happens
+    we want them to be in a fullstop separated format.
+    e.g. ";• managing the grants database;• preparing financial and interna"
+    ":•\xa0NMC registration paid every year•\xa0Free train"
+    """
+    text = (
+        text.replace("&", "and")
+        .replace("\xa0", " ")
+        .replace("\n", ".")
+        .replace("[", "")
+        .replace("]", "")
+    )
+
+    for pattern, rep in compiled_punct_patterns.items():
+        text = pattern.sub(rep, text)
+
+    text = pad_out_punct(text)
+
+    return text.strip()
 
 
 def clean_text(text):
     text = text.encode("ascii", "ignore").decode()
     text = detect_camelcase(text)
+    text = replacements(text)
+
+    # clean up all multiple spaces
+    text = " ".join(text.split())
+
     return text
 
 
@@ -31,7 +80,7 @@ if __name__ == "__main__":
         "outputs/data/ojo_application/deduplicated_sample/mixed_ojo_sample.csv",
     )
 
-    output_file_dir = "escoe_extension/outputs/labelled_job_adverts/prodigy/processed_sample_20230710.jsonl"
+    output_file_dir = "escoe_extension/outputs/labelled_job_adverts/prodigy/processed_sample_20230801.jsonl"
 
     jobs_sample = jobs_sample[pd.notnull(jobs_sample["description"])]
     jobs_sample.loc[:, "description"] = jobs_sample["description"].apply(clean_text)
