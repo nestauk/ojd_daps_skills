@@ -104,11 +104,10 @@ def ner_correct_skills(
                     for sentence in sentences
                     if len(sentence.strip()) != 0
                 ]
-                for i in range(0, len(sentences), chunk_size):
-                    meta["sent"] = i
+                for sent_id, i in enumerate(range(0, len(sentences), chunk_size)):
                     yield {
                         "text": ". ".join(sentences[i : i + chunk_size]),
-                        "meta": meta,
+                        "meta": {"id": meta["id"], "chunk": sent_id},
                     }
 
         stream = split_text(list(stream))

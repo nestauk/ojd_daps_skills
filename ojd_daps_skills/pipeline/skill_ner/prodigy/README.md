@@ -61,5 +61,5 @@ Output the annotations
 
 ```
 prodigy db-out dataset-skills > ./prodigy_data/labelled_data/dataset_skills.jsonl
-
+aws s3 cp ./prodigy_data/labelled_data/dataset_skills.jsonl s3://open-jobs-lake/escoe_extension/outputs/labelled_job_adverts/prodigy/labelled_dataset_skills_250723.jsonl
 ```
