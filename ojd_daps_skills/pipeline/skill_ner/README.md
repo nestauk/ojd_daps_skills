@@ -96,7 +96,7 @@ Using the combined labelled data, we can fine-tune a Spacy model to extract skil
 The model can be trained by running:
 
 ```
-python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_date_filename "escoe_extension/outputs/labelled_job_adverts/combined_labels_20220824.json" --convert_multiskill --train_prop 0.8 --drop_out 0.1 --learn_rate 0.001 --num_its 100
+python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_date_filename "escoe_extension/outputs/labelled_job_adverts/combined_labels_20230803.json" --convert_multiskill --train_prop 0.8 --drop_out 0.1 --learn_rate 0.001 --num_its 100
 ```
 
 This will save out the model in a time stamped folder, e.g. `outputs/models/ner_model/20220825/`, it also saves out the evaluation results and some general information about the model training in the file `outputs/models/ner_model/20220825/train_details.json`.
