@@ -102,9 +102,10 @@ def fix_entity_annotations(text, ents):
 
         # If the char before the start of this span is not a space,
         # Then update from this ent onwards
-        if text[b - 1] != " ":
-            ent_additions[i:] = [ea + 1 for ea in ent_additions[i:]]
-            insert_index_space.append(b)
+        if b != 0:
+            if text[b - 1] != " ":
+                ent_additions[i:] = [ea + 1 for ea in ent_additions[i:]]
+                insert_index_space.append(b)
 
         # If the next char after this span is not a space,
         # then update the start and endings of all entities after this
