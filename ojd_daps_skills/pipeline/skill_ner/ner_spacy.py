@@ -602,6 +602,6 @@ if __name__ == "__main__":
     from datetime import datetime as date
 
     date_stamp = str(date.today().date()).replace("-", "")
-    output_folder = f"outputs/models/ner_model/{date_stamp}_3"
+    output_folder = f"outputs/models/ner_model/{date_stamp}"
     results = job_ner.evaluate(test_data)
     job_ner.save_model(output_folder, args.save_s3)
