@@ -109,14 +109,19 @@ A trained model can be used by running:
 >>> from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
 >>> job_ner = JobNER()
 >>> nlp = job_ner.load_model('outputs/models/ner_model/20230808/', s3_download=True)
->>> text = "We want someone with good communication and maths skills"
+>>> text = "We want someone with good communication and maths skills. There are job benefits such as a pension and cycle to work scheme. We would like someone with experience in marketing."
 >>> pred_ents = job_ner.predict(text)
 >>> pred_ents
-[{'label': 'SKILL', 'start': 21, 'end': 39}, {'label': 'SKILL', 'start': 44, 'end': 56}]
+[{'label': 'SKILL', 'start': 26, 'end': 39},
+ {'label': 'SKILL', 'start': 44, 'end': 56},
+ {'label': 'BENEFIT', 'start': 103, 'end': 123},
+ {'label': 'EXPERIENCE', 'start': 152, 'end': 175}]
 >>> for ent in pred_ents:
 >>>     print(text[ent['start']:ent['end']])
-good communication
+communication
 maths skills
+cycle to work scheme
+experience in marketing
 ```
 
 The `s3_download=True` argument will mean this model will be first downloaded from S3, so you don't have to have it locally to begin with.
