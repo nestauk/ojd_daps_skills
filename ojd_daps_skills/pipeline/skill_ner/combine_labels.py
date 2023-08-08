@@ -30,7 +30,7 @@ labelled_data_s3_folders = {
 
 # The Prodigy labelled data
 prodigy_labelled_data_s3_folders = [
-    "escoe_extension/outputs/labelled_job_adverts/prodigy/labelled_dataset_skills_030823.jsonl"
+    "escoe_extension/outputs/labelled_job_adverts/prodigy/labelled_dataset_skills_080823.jsonl"
 ]
 
 

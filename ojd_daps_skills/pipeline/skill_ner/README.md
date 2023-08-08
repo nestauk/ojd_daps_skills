@@ -96,19 +96,19 @@ Using the combined labelled data, we can fine-tune a Spacy model to extract skil
 The model can be trained by running:
 
 ```
-python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_date_filename "escoe_extension/outputs/labelled_job_adverts/combined_labels_20230803.json" --convert_multiskill --train_prop 0.8 --drop_out 0.1 --learn_rate 0.001 --num_its 100
+python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_date_filename "escoe_extension/outputs/labelled_job_adverts/combined_labels_20230808.json" --convert_multiskill --train_prop 0.8 --drop_out 0.1 --learn_rate 0.001 --num_its 100 --save_s3
 ```
 
-This will save out the model in a time stamped folder, e.g. `outputs/models/ner_model/20220825/`, it also saves out the evaluation results and some general information about the model training in the file `outputs/models/ner_model/20220825/train_details.json`.
+This will save out the model in a time stamped folder, e.g. `outputs/models/ner_model/20230808/`, it also saves out the evaluation results and some general information about the model training in the file `outputs/models/ner_model/20230808/train_details.json`.
 
-By default this won't sync the newly trained model to S3, but by adding `--save_s3` it will sync the `outputs/models/ner_model/20220825/` to S3.
+By default this won't sync the newly trained model to S3, but by adding `--save_s3` it will sync the `outputs/models/ner_model/20230808/` to S3.
 
-This model can be used by running:
+A trained model can be used by running:
 
 ```python
 >>> from ojd_daps_skills.pipeline.skill_ner.ner_spacy import JobNER
 >>> job_ner = JobNER()
->>> nlp = job_ner.load_model('outputs/models/ner_model/20220825/', s3_download=True)
+>>> nlp = job_ner.load_model('outputs/models/ner_model/20230808/', s3_download=True)
 >>> text = "We want someone with good communication and maths skills"
 >>> pred_ents = job_ner.predict(text)
 >>> pred_ents
@@ -126,7 +126,7 @@ The `s3_download=True` argument will mean this model will be first downloaded fr
 Running
 
 ```
-python ojd_daps_skills/pipeline/skill_ner/get_skills.py --model_path outputs/models/ner_model/20220825/ --output_file_dir escoe_extension/outputs/data/skill_ner/skill_predictions/ --job_adverts_filename escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json
+python ojd_daps_skills/pipeline/skill_ner/get_skills.py --model_path outputs/models/ner_model/20230808/ --output_file_dir escoe_extension/outputs/data/skill_ner/skill_predictions/ --job_adverts_filename escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json
 ```
 
 will make skill predictions on the data in `job_adverts_filename` (an output of `create_data_sample.py`) using the model loaded from `model_path`. By default this will look for the model on S3, but if you want to load a locally stored model just add `--use_local_model`.
