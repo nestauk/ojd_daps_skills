@@ -186,6 +186,7 @@ class JobNER(object):
             text, ent_list, self.all_labels = self.process_data(
                 label_data, self.all_labels
             )
+
             data.append(
                 (
                     text,
@@ -195,7 +196,6 @@ class JobNER(object):
                     },
                 )
             )
-
         return data
 
     def get_test_train(self, data):
@@ -249,17 +249,8 @@ class JobNER(object):
         # Getting the ner component
         ner = self.nlp.get_pipe("ner")
 
-        # Add the new labels to ner (don't train the MULTISKILL)
-        self.train_labels = self.all_labels.copy()
-        if self.convert_multiskill:
-            self.train_labels.remove("MULTISKILL")
-
-        for label in self.train_labels:
-            ner.add_label(label)
-
         # Resume training
         self.optimizer = self.nlp.resume_training()
-        move_names = list(ner.move_names)
 
     def train_multiskill_classifier(self, train_data, test_data):
         """
@@ -341,6 +332,7 @@ class JobNER(object):
         self.drop_out = drop_out
         self.num_its = num_its
         self.learn_rate = learn_rate
+
         # List of pipes you want to train
         pipe_exceptions = ["ner"]
         # List of pipes which should remain unaffected in training
@@ -489,7 +481,6 @@ class JobNER(object):
                 "ms_classifier_train_evaluation": self.ms_classifier_train_evaluation,
                 "ms_classifier_test_evaluation": self.ms_classifier_test_evaluation,
                 "seen_job_ids": self.seen_job_ids,
-                "losses": self.all_losses,
             }
         )
         save_json_dict(
@@ -586,7 +577,9 @@ if __name__ == "__main__":
         convert_multiskill=args.convert_multiskill,
         train_prop=float(args.train_prop),
     )
+
     data = job_ner.load_data()
+
     train_data, test_data = job_ner.get_test_train(data)
 
     job_ner.prepare_model()
@@ -604,4 +597,5 @@ if __name__ == "__main__":
     date_stamp = str(date.today().date()).replace("-", "")
     output_folder = f"outputs/models/ner_model/{date_stamp}"
     results = job_ner.evaluate(test_data)
+
     job_ner.save_model(output_folder, args.save_s3)
