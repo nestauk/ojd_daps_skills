@@ -96,6 +96,12 @@ Using the combined labelled data, we can fine-tune a Spacy model to extract skil
 The model can be trained by running:
 
 ```
+python -m spacy download en_core_web_lg
+```
+
+and then
+
+```
 python ojd_daps_skills/pipeline/skill_ner/ner_spacy.py --labelled_date_filename "escoe_extension/outputs/labelled_job_adverts/combined_labels_20230808.json" --convert_multiskill --train_prop 0.8 --drop_out 0.1 --learn_rate 0.001 --num_its 100 --save_s3
 ```
 
