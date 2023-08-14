@@ -12,7 +12,7 @@ sphinx-rtd-theme
 awscli==1.27.32
 pre-commit
 pre-commit-hooks
-spacy
+spacy==3.4.0
 pytest
 sqlalchemy==1.4.37
 pymysql==1.0.2
