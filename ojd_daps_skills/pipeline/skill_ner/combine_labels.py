@@ -29,9 +29,7 @@ labelled_data_s3_folders = {
 }
 
 # The Prodigy labelled data
-prodigy_labelled_data_s3_folders = [
-    "escoe_extension/outputs/labelled_job_adverts/prodigy/labelled_dataset_skills_080823.jsonl"
-]
+prodigy_labelled_data_s3_folder = "escoe_extension/outputs/labelled_job_adverts/prodigy/labelled_dataset_skills_080823.jsonl"
 
 
 def load_original_metadata(labelled_data_s3_folders):
@@ -124,7 +122,7 @@ def combine_results(labelled_data_s3_folders, keep_id_dict, metadata_jobids):
     return job_labels
 
 
-def load_format_prodigy(prodigy_labelled_data_s3_folders):
+def load_format_prodigy(prodigy_labelled_data_s3_folder):
     """
     Load all prodigy labels
     Since these were labelled in 5 sentence chunks, then sort them into a nested dict
@@ -133,13 +131,12 @@ def load_format_prodigy(prodigy_labelled_data_s3_folders):
     """
     s3 = get_s3_resource()
     prodigy_data_chunks = defaultdict(dict)
-    for prodigy_labelled_data_s3_folder in prodigy_labelled_data_s3_folders:
-        prodigy_data = load_prodigy_jsonl_s3_data(
-            s3, bucket_name, prodigy_labelled_data_s3_folder
-        )
-        for p in prodigy_data:
-            if p["answer"] == "accept":
-                prodigy_data_chunks[str(p["meta"]["id"])][p["meta"]["chunk"]] = p
+    prodigy_data = load_prodigy_jsonl_s3_data(
+        s3, bucket_name, prodigy_labelled_data_s3_folder
+    )
+    for p in prodigy_data:
+        if p["answer"] == "accept":
+            prodigy_data_chunks[str(p["meta"]["id"])][p["meta"]["chunk"]] = p
     return prodigy_data_chunks
 
 
@@ -213,7 +210,7 @@ if __name__ == "__main__":
         labelled_data_s3_folders, keep_id_dict, metadata_jobids
     )
 
-    prodigy_data = load_format_prodigy(prodigy_labelled_data_s3_folders)
+    prodigy_data = load_format_prodigy(prodigy_labelled_data_s3_folder)
     prodigy_job_labels = combine_prodigy_spans(prodigy_data)
 
     # Merge label-studio and prodigy labels
