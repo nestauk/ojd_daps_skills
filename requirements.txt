@@ -1,5 +1,5 @@
 numpy==1.22.4
-scipy==1.8.1
+scipy==1.10.0
 pandas==1.3.5
 tqdm==4.64.0
 filelock==3.7.1
