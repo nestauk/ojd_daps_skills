@@ -5,7 +5,7 @@ tqdm==4.64.0
 filelock==3.7.1
 typer==0.4.1
 sh==1.14.2
-transformers==4.20.1
+transformers==4.33.3
 sentence-transformers==2.2.2
 scikit-learn==1.3.1
 spacy==3.4.0
