@@ -16,6 +16,11 @@ We currently support three different taxonomies to map onto: the [European Commi
 
 If you'd like to learn more about the models used in the library, please refer to the [model card page](https://nestauk.github.io/ojd_daps_skills/build/html/model_card.html).
 
+You may also want to read more about the wider project by reading:
+
+1. Our [Introduction blog](https://www.escoe.ac.uk/the-skills-extractor-library)
+2. Our [interactive analysis blog](https://www.nesta.org.uk/data-visualisation-and-interactive/exploring-uk-skills-demand/)
+
 ## Installation <a name="installation"></a>
 
 You can use pip to install the library:
@@ -126,9 +131,9 @@ skills_list_matched
 
 ## App
 
-If you would like to demo the library using a front end, we have also [built a streamlit app](http://18.169.52.145:8501/) that allows you to extract skills for a given text. The app allows you to paste a job advert of your choice, extract and map skills onto any of the configurations: `extract_skills_toy`, `extract_skills_lightcast` and `extract_skills_esco`.
+If you would like to demo the library using a front end, we have also [built a streamlit app](https://www.nesta.org.uk/data-visualisation-and-interactive/skills-extractor-tool/) that allows you to extract skills for a given text. The app allows you to paste a job advert of your choice, extract and map skills onto any of the configurations: `extract_skills_lightcast` and `extract_skills_esco`.
 
-![nesta_esco](https://user-images.githubusercontent.com/46863334/206517833-fdf3c7f4-b90e-4dc9-94ca-4d6710abae6f.gif)
+![nesta_esco](https://user-images.githubusercontent.com/46863334/221819442-70829216-b763-4717-b802-2f8836ad0874.gif)
 
 ## Development <a name="development"></a>
 

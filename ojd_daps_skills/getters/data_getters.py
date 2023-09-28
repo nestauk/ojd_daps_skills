@@ -116,6 +116,20 @@ def load_s3_json(s3, bucket_name, file_name):
     return json.loads(file)
 
 
+def load_prodigy_jsonl_s3_data(s3, bucket_name, file_name):
+    """
+    Load prodigy jsonl formatted data from S3 location.
+
+    s3: S3 boto3 resource
+    bucket_name: The S3 bucket name
+    file_name: S3 key to load
+    """
+    obj = s3.Object(bucket_name, file_name)
+    if fnmatch(file_name, "*.jsonl"):
+        file = obj.get()["Body"].read().decode()
+        return [json.loads(str(item)) for item in file.strip().split("\n")]
+
+
 def load_s3_data(s3, bucket_name, file_name):
     """
     Load data from S3 location.

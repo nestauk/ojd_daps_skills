@@ -1,8 +1,6 @@
 """
 This script contains the class needed to train a simple classifier to predict whether a skill entity is a skill (1) or not a skill (0)
 """
-import sys
-sys.path.append("/Users/india.kerlenesta/Projects/ojd_daps_extension/ojd_daps_skills/")
 
 import random
 from sklearn.linear_model import LogisticRegression
