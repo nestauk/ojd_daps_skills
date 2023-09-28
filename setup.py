@@ -14,7 +14,9 @@ try:
   )
 except:
    #an error occurred, potentially an issue with git cli
-   tag_version = "V-Unknown"
+   tag_version = "v1.0.1"
+
+print(f"Tag version: {tag_version}")
 
 def read_lines(path):
     """Read lines of `path`."""
