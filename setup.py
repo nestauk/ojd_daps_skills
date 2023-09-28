@@ -10,7 +10,7 @@ import subprocess
 try:
   tag_cmd = "echo $(git describe --tags --abbrev=0)"
   tag_version = (
-      subprocess.check_output(tag_cmd, shell=True).decode("ascii").replace("\n", "")
+    subprocess.check_output(tag_cmd, shell=False).decode("ascii").replace("\n", "")
   )
 except:
    #an error occurred, potentially an issue with git cli
