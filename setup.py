@@ -17,10 +17,7 @@ try:
 except:
     #an error occurred, potentially an issue with git cli
     tag_version = "v1.0.0"
-
-if "$(" in tag_version:
-    tag_version = "v1.0.0"
-
+    
 print(f"Tag version: {tag_version}")
 
 def read_lines(path):
