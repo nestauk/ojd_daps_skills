@@ -36,7 +36,7 @@ from datetime import datetime as date
 from argparse import ArgumentParser
 import pickle
 
-from spacy.util import minibatch, compounding
+from spacy.util import minibatch, compounding, fix_random_seed
 from spacy.training.example import Example
 import spacy
 from spacy import displacy
@@ -152,7 +152,9 @@ class JobNER(object):
         # character order
         ent_list.sort(key=lambda y: y[0])
 
-        text, ent_list = clean_entities_text(text, ent_list)
+        if job_advert_labels.get("type") == "label-studio":
+            # Label-studio- specific cleaning, won't work (and not needed) for Prodigy
+            text, ent_list = clean_entities_text(text, ent_list)
 
         return text, ent_list, all_labels
 
@@ -184,6 +186,7 @@ class JobNER(object):
             text, ent_list, self.all_labels = self.process_data(
                 label_data, self.all_labels
             )
+
             data.append(
                 (
                     text,
@@ -193,7 +196,6 @@ class JobNER(object):
                     },
                 )
             )
-
         return data
 
     def get_test_train(self, data):
@@ -234,26 +236,21 @@ class JobNER(object):
         """
         Prepare a Spacy model to have it's NER component trained
         """
-        self.nlp = spacy.blank("en")
-        self.nlp.add_pipe("ner")
-        self.nlp.begin_training()
+        fix_random_seed(0)
 
-        # self.nlp = spacy.load("en_core_web_sm")
+        # Use a new model
+        # self.nlp = spacy.blank("en")
+        # self.nlp.add_pipe("ner")
+        # self.nlp.begin_training()
+
+        # Use a pre-trained model
+        self.nlp = spacy.load("en_core_web_lg")
 
         # Getting the ner component
         ner = self.nlp.get_pipe("ner")
 
-        # Add the new labels to ner (don't train the MULTISKILL)
-        self.train_labels = self.all_labels.copy()
-        if self.convert_multiskill:
-            self.train_labels.remove("MULTISKILL")
-
-        for label in self.train_labels:
-            ner.add_label(label)
-
         # Resume training
         self.optimizer = self.nlp.resume_training()
-        move_names = list(ner.move_names)
 
     def train_multiskill_classifier(self, train_data, test_data):
         """
@@ -335,6 +332,7 @@ class JobNER(object):
         self.drop_out = drop_out
         self.num_its = num_its
         self.learn_rate = learn_rate
+
         # List of pipes you want to train
         pipe_exceptions = ["ner"]
         # List of pipes which should remain unaffected in training
@@ -450,7 +448,8 @@ class JobNER(object):
 
     def save_model(self, output_folder, save_s3=False):
 
-        output_folder = os.path.join(str(PROJECT_DIR), output_folder)
+        if not save_s3:
+            output_folder = os.path.join(str(PROJECT_DIR), output_folder)
 
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
@@ -482,7 +481,6 @@ class JobNER(object):
                 "ms_classifier_train_evaluation": self.ms_classifier_train_evaluation,
                 "ms_classifier_test_evaluation": self.ms_classifier_test_evaluation,
                 "seen_job_ids": self.seen_job_ids,
-                "losses": self.all_losses,
             }
         )
         save_json_dict(
@@ -579,7 +577,9 @@ if __name__ == "__main__":
         convert_multiskill=args.convert_multiskill,
         train_prop=float(args.train_prop),
     )
+
     data = job_ner.load_data()
+
     train_data, test_data = job_ner.get_test_train(data)
 
     job_ner.prepare_model()
@@ -597,4 +597,5 @@ if __name__ == "__main__":
     date_stamp = str(date.today().date()).replace("-", "")
     output_folder = f"outputs/models/ner_model/{date_stamp}"
     results = job_ner.evaluate(test_data)
+
     job_ner.save_model(output_folder, args.save_s3)
