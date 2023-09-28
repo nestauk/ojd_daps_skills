@@ -4,12 +4,10 @@ from setuptools import find_packages
 from setuptools import setup
 
 import os
-import platform
 import subprocess
 
 
-tag_cmd = "git describe --tags --abbrev=0"
-tag_cmd = tag_cmd if platform.system() == "Windows" else f"echo $({tag_cmd})"
+tag_cmd = "echo $(git describe --tags --abbrev=0)"
 tag_version = (
     subprocess.check_output(tag_cmd, shell=True).decode("ascii").replace("\n", "")
 )
