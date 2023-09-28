@@ -5,16 +5,21 @@ from setuptools import setup
 
 import os
 import subprocess
+import platform	
 
+tag_cmd = "git describe --tags --abbrev=0"	
+tag_cmd = tag_cmd if platform.system() == "Windows" else f"echo $({tag_cmd})"
 
 try:
-  tag_cmd = "echo $(git describe --tags --abbrev=0)"
-  tag_version = (
-    subprocess.check_output(tag_cmd, shell=False).decode("ascii").replace("\n", "")
-  )
+    tag_version = (
+        subprocess.check_output(tag_cmd, shell=False).decode("ascii").replace("\n", "")
+    )
 except:
-   #an error occurred, potentially an issue with git cli
-   tag_version = "v1.0.1"
+    #an error occurred, potentially an issue with git cli
+    tag_version = "v1.0.0"
+
+if "$(" in tag_version:
+    tag_version = "v1.0.0"
 
 print(f"Tag version: {tag_version}")
 
