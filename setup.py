@@ -7,11 +7,14 @@ import os
 import subprocess
 
 
-tag_cmd = "echo $(git describe --tags --abbrev=0)"
-tag_version = (
-    subprocess.check_output(tag_cmd, shell=True).decode("ascii").replace("\n", "")
-)
-
+try:
+  tag_cmd = "echo $(git describe --tags --abbrev=0)"
+  tag_version = (
+      subprocess.check_output(tag_cmd, shell=True).decode("ascii").replace("\n", "")
+  )
+except:
+   #an error occurred, potentially an issue with git cli
+   tag_version = "V-Unknown"
 
 def read_lines(path):
     """Read lines of `path`."""
