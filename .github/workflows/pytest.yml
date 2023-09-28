@@ -16,16 +16,42 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: (ubuntu) Set up Python ${{ matrix.python-version }}
+        if: runner.os != 'windows'
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: (ubuntu) Install dependencies
+        if: runner.os != 'windows'
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements_dev.txt
+          pip install -r requirements_dev.txt
           python -m spacy download en_core_web_sm
-          python -m pip install -e ."[test]"
-      - name: Test with pytest
+          pip install -e ."[test]"
+      - name: (windows) Test with pytest
+        if: runner.os != 'windows'
+        run: |
+          pytest --verbose
+
+      - name: (windows) Test with pytest
+        if: runner.os == 'windows'
+        shell: cmd
+        run: |
+          pytest --verbose
+          - name: (ubuntu) Set up Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v4
+          with:
+            python-version: ${{ matrix.python-version }}
+      - name: (windows) Install dependencies
+        if: runner.os == 'windows'
+        shell: cmd
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements_dev.txt
+          python -m spacy download en_core_web_sm
+          pip install -e ."[test]"
+      - name: (windows) Test with pytest
+        if: runner.os == 'windows'
+        shell: cmd
         run: |
           pytest --verbose
