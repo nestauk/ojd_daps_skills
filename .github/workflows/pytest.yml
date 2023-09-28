@@ -35,18 +35,14 @@ jobs:
 
       - name: (windows) Install dependencies
         if: runner.os == 'windows'
-        shell: bash
-        env:
-          PYTHONIOENCODING: "utf-8"
+        shell: cmd
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements_dev.txt
           python -m spacy download en_core_web_sm
-          pip install -e ."[test]"
+          PYTHONIOENCODING=utf-8 pip install -e ."[test]"
       - name: (windows) Test with pytest
         if: runner.os == 'windows'
-        shell: bash
-        env:
-          PYTHONIOENCODING: "utf-8"
+        shell: cmd
         run: |
           pytest --verbose
