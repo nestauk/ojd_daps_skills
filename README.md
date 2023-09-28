@@ -35,10 +35,6 @@ You will also need to download [spaCy's](https://spacy.io/models/en) `en_core_we
 python -m spacy download en_core_web_sm
 ```
 
-### AWS CLI
-
-When the package is first used it will automatically download a folder of neccessary data and models. This file is ~ 1GB. Although you don't need to have AWS credentials for this to work, you will need to download the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
-
 ## TL;DR: Using Nesta's Skills Extractor library <a name="usage"></a>
 
 The library supports three key skills extraction functionalities :
