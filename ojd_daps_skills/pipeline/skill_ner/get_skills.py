@@ -4,7 +4,7 @@ Use a trained NER model to predict skills and experience spans in a sample of jo
 Running
 
 python ojd_daps_skills/pipeline/skill_ner/get_skills.py
-    --model_path outputs/models/ner_model/20220825/
+    --model_path outputs/models/ner_model/20230808/
     --output_file_dir escoe_extension/outputs/data/skill_ner/skill_predictions/
     --job_adverts_filename escoe_extension/inputs/data/skill_ner/data_sample/20220622_sampled_job_ads.json
 
@@ -40,7 +40,7 @@ def parse_arguments(parser):
     parser.add_argument(
         "--model_path",
         help="The path to the model you want to make predictions with",
-        default="outputs/models/ner_model/20220825/",
+        default="outputs/models/ner_model/20230808/",
     )
 
     parser.add_argument(
