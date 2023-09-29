@@ -1,6 +1,6 @@
 # Skill NER
 
-## Label data
+## Label data using label-studio
 
 ### Creating a sample of the OJO data
 
@@ -79,9 +79,13 @@ For the labelling done at the end of June 2022, we labelled the chunk of 400 job
 
 The outputs of this labelled are stored in `s3://open-jobs-lake/escoe_extension/outputs/skill_span_labels/`.
 
-### Merging labelled files
+## Label data using Prodigy
 
-Since multiple people labelled files from different locations, we merge the labelled data using the following command:
+We labelled another batch of job adverts using [Prodigy](https://prodi.gy/). This was to avail of their active learning capabilities. Details of how we labelled job adverts this way are given in [the Prodigy labelling README](./ojd_daps_skills/ojd_daps_skills/pipeline/skill_ner/prodigy/README.md).
+
+## Merging labelled files
+
+Since multiple people labelled files from different locations, and we labelled in both label-studio and Prodigy, we merge the labelled data using the following command:
 
 ```
 python ojd_daps_skills/pipeline/skill_ner/combine_labels.py

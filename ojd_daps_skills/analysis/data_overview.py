@@ -62,7 +62,7 @@ labelled_date_filename = (
     "escoe_extension/outputs/labelled_job_adverts/combined_labels_20220824.json"
 )
 train_details_file = (
-    "escoe_extension/outputs/models/ner_model/20230808/train_details.json"
+    "escoe_extension/outputs/models/ner_model/20220825/train_details.json"
 )
 sample_matches_file_name = "escoe_extension/outputs/data/extract_skills/20220901_ojo_sample_skills_extracted.json"
 manually_matches_tagged_file = (

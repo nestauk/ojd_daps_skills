@@ -16,11 +16,11 @@ This process means we can extract skills from thousands of job adverts and analy
 
 ## Labelling data
 
-To train the NER model we needed labelled data. First we created a random sample of job adverts and got them into a form needed for labelling using [Label Studio](https://labelstud.io/). More about this labelling process can be found in the `skill_ner` pipeline [README.md](./ojd_daps_skills/ojd_daps_skills/pipeline/skill_ner/README.md).
+To train the NER model we needed labelled data. First we created a random sample of job adverts and got them into a form needed for labelling using [Label Studio](https://labelstud.io/), we then did a second batch of labelled using [Prodigy](https://prodi.gy/). More about this labelling process can be found in the `skill_ner` pipeline [README.md](./ojd_daps_skills/ojd_daps_skills/pipeline/skill_ner/README.md).
 
 ![](figures/label_studio.png)
 
-As of 11th July 2022 we have labelled 3400 entities; 404 (12%) are multiskill, 2603 (77%) are skill, and 393 (12%) are experience entities.
+As of 8th August 2023 we have labelled 8971 entities; 443 (5%) are multiskill, 7313 (82%) are skill, 852 (10%) are experience entities and 363 (4%) are benefit entities.
 
 ### Multiskill labels
 
@@ -60,7 +60,7 @@ A summary of the experiments with training the model is below.
 
 | Date (model name) | Base model     | Training size   | Evaluation size | Number of iterations | Drop out rate | Learning rate | Convert multiskill? | Other info                                                                                       | Skill F1 | Experience F1 | All F1 | Multiskill test score |
 | ----------------- | -------------- | --------------- | --------------- | -------------------- | ------------- | ------------- | ------------------- | ------------------------------------------------------------------------------------------------ | -------- | ------------- | ------ | --------------------- |
-| 20230808          | en_core_web_lg | 400 (7149 ents) | 100 (1805 ents) | 100                  | 0.1           | 0.001         | True                | More data, different base model, BENEFIT label data                                              | 0.61     | 0.52          | 0.59   | 0.94                  |
+| 20230808\*\*      | en_core_web_lg | 400 (7149 ents) | 100 (1805 ents) | 100                  | 0.1           | 0.001         | True                | More data, different base model, BENEFIT label data                                              | 0.61     | 0.52          | 0.59   | 0.94                  |
 | 20220825          | blank en       | 300 (4508 ents) | 75 (1133 ents)  | 100                  | 0.1           | 0.001         | True                | Changed hyperparams, more data                                                                   | 0.59     | 0.51          | 0.56   | 0.91                  |
 | 20220729\*        | blank en       | 196 (2850 ents) | 49 (636 ents)   | 50                   | 0.3           | 0.001         | True                | More data, padding in cleaning but do fix_entity_annotations after fix_all_formatting to sort it | 0.57     | 0.44          | 0.54   | 0.87                  |
 | 20220729_nopad    | blank en       | 196             | 49              | 50                   | 0.3           | 0.001         | True                | No padding in cleaning, more data                                                                | 0.52     | 0.33          | 0.45   | 0.87                  |
@@ -123,6 +123,8 @@ More in-depth metrics for `20220714`:
 | All        | 0.540 | 0.608     | 0.486  |
 
 \* For model `20220714` we relabelled the MULTISKILL labels in the dataset - we were trying to see whether some of them should actually be single skills, or could be separated into single skills rather than (as we found) labelling a large span as a multiskill. This process increased our number of labelled skill entities (from 2603 to 2887) and decreased the number of multiskill entities (from 404 to 218), resulting in a net increase in entities labelled (from 3400 to 3498).
+
+\*\* For model `20230808` we included BENEFIT labels in some of the labelled data.
 
 ### Parameter tuning
 
