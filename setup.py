@@ -4,10 +4,6 @@ from setuptools import find_packages
 from setuptools import setup
 import setuptools_scm
 
-import os
-import subprocess
-import platform
-
 
 def read_lines(path):
     """Read lines of `path`."""
@@ -20,10 +16,10 @@ BASE_DIR = Path(__file__).parent
 
 setup(
     name="ojd_daps_skills",
-    long_description=open(os.path.join(BASE_DIR, "README.md"), encoding="utf-8").read(),
+    long_description=open(BASE_DIR / "README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
-    install_requires=read_lines(os.path.join(BASE_DIR, "requirements.txt")),
-    extras_require={"dev": read_lines(os.path.join(BASE_DIR, "requirements_dev.txt"))},
+    install_requires=read_lines(BASE_DIR / "requirements.txt"),
+    extras_require={"dev": read_lines(BASE_DIR / "requirements_dev.txt")},
     packages=find_packages(
         exclude=["docs", "ojd_daps_skills/analysis", "ojd_daps_skills/app"]
     ),
