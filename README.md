@@ -35,6 +35,7 @@ You will also need to download [spaCy's](https://spacy.io/models/en) `en_core_we
 python -m spacy download en_core_web_sm
 ```
 
+Note that this package was developed on MacOS and tested on Ubuntu. Changes have been made to be compatible on a Windows system but are not tested and cannot be guaranteed. 
 ### AWS CLI
 
 When the package is first used it will automatically download a folder of neccessary data and models. This file is ~ 1GB. Although you don't need to have AWS credentials for this to work, you will need to download the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
@@ -185,6 +186,8 @@ Various pieces of analysis are done in the [analysis folder](https://github.com/
 ### Contributor guidelines
 
 The technical and working style guidelines can be found [here](https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md).
+
+If contributing, changes will need to be pushed to a new branch in order for our code checks to be triggered.
 
 ---
 
