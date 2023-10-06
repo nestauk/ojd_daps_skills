@@ -2,23 +2,12 @@
 from pathlib import Path
 from setuptools import find_packages
 from setuptools import setup
+import setuptools_scm
 
 import os
 import subprocess
-import platform	
+import platform
 
-tag_cmd = "git describe --tags --abbrev=0"	
-tag_cmd = tag_cmd if platform.system() == "Windows" else f"echo $({tag_cmd})"
-
-try:
-    tag_version = (
-        subprocess.check_output(tag_cmd, shell=False).decode("ascii").replace("\n", "")
-    )
-except:
-    #an error occurred, potentially an issue with git cli
-    tag_version = "v1.0.0"
-    
-print(f"Tag version: {tag_version}")
 
 def read_lines(path):
     """Read lines of `path`."""
@@ -38,14 +27,14 @@ setup(
     packages=find_packages(
         exclude=["docs", "ojd_daps_skills/analysis", "ojd_daps_skills/app"]
     ),
-    classifiers=['Development Status :: 5 - Production/Stable'],
+    classifiers=["Development Status :: 5 - Production/Stable"],
     package_data={
         # If any package contains *.yaml files, include them:
         "": [
             "*.yaml",
         ],
     },
-    version=tag_version,
+    version=setuptools_scm.get_version(),
     description="Extract skills from job ads and maps them onto a skills taxonomy of your choice.",
     url="https://github.com/nestauk/ojd_daps_skills",
     project_urls={
