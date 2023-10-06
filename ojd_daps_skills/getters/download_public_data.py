@@ -7,7 +7,6 @@ from botocore import UNSIGNED
 from botocore.config import Config
 from zipfile import ZipFile
 
-
 def download():
     """Download public data. Expected to run once on first use."""
     s3 = boto3.client(
