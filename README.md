@@ -29,16 +29,9 @@ You can use pip to install the library:
 pip install ojd-daps-skills
 ```
 
-You will also need to download [spaCy's](https://spacy.io/models/en) `en_core_web_sm` model:
+Note that this package was developed on MacOS and tested on Ubuntu. Changes have been made to be compatible on a Windows system but are not tested and cannot be guaranteed.
 
-```
-python -m spacy download en_core_web_sm
-```
-
-Note that this package was developed on MacOS and tested on Ubuntu. Changes have been made to be compatible on a Windows system but are not tested and cannot be guaranteed. 
-### AWS CLI
-
-When the package is first used it will automatically download a folder of neccessary data and models. This file is ~ 1GB. Although you don't need to have AWS credentials for this to work, you will need to download the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+When the package is first used it will automatically download a folder of neccessary data and models. (~1GB)
 
 ## TL;DR: Using Nesta's Skills Extractor library <a name="usage"></a>
 
@@ -152,10 +145,6 @@ git clone git@github.com:nestauk/ojd_daps_skills.git
   - `mkdir .cookiecutter/state`
   - `touch .cookiecutter/state/conda-create.log`
 - Run `make install` to configure the development environment
-- Download spacy model:
-  - `python -m spacy download en_core_web_sm`
-
-If you don't have the AWS CLI installed - you can download a zipped folder of the data [by clicking here](https://open-jobs-indicators.s3.eu-west-1.amazonaws.com/escoe_extension/ojd_daps_skills_data.zip). After downloading and unzipping, it is important that this folder is moved to the project's parent folder - i.e. `ojd_daps_skills/`.
 
 ### Project structure
 

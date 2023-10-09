@@ -9,7 +9,6 @@ black
 Sphinx
 sphinxcontrib-napoleon
 sphinx-rtd-theme
-awscli==1.27.32
 pre-commit
 pre-commit-hooks
 spacy==3.4.0
