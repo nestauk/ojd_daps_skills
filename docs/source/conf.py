@@ -10,11 +10,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import subprocess
-
+# import subprocess
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
 
 # -- Project information -----------------------------------------------------
 
@@ -22,11 +20,9 @@ project = "Skills Extractor"
 copyright = "2022, Liz Gallagher, India Kerle"
 author = "Liz Gallagher, India Kerle"
 
-# The full version, including alpha/beta/rc tags
-tag_cmd = "echo $(git describe --tags --abbrev=0)"
-tag_release = subprocess.check_output(tag_cmd, shell=True).decode('ascii').replace('\n', '')
 
-release = tag_release
+# Get the parent directory of the directory containing conf.py
+release = "1.0.3"
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be

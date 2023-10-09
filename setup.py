@@ -30,7 +30,8 @@ setup(
             "*.yaml",
         ],
     },
-    version=setuptools_scm.get_version(),
+    # deal with pypi special characters
+    version=".".join(setuptools_scm.get_version().split(".")[:-2]),
     description="Extract skills from job ads and maps them onto a skills taxonomy of your choice.",
     url="https://github.com/nestauk/ojd_daps_skills",
     project_urls={

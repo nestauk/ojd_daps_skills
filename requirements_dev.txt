@@ -18,3 +18,4 @@ pymysql==1.0.2
 furo==2022.9.29
 myst_parser
 typing_extensions<4.6.0
+setuptools-scm
