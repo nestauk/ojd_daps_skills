@@ -13,3 +13,4 @@ nervaluate==0.1.8
 s3fs==2022.5.0
 boto3==1.21.21
 toolz==0.12.0
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.4.1/en_core_web_sm-3.4.1.tar.gz
