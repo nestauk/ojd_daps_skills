@@ -149,7 +149,7 @@ class ExtractSkills(object):
 
         self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
 
-        self.labels = self.nlp.get_pipe("ner").labels + ("MULTISKILL",)
+        self.labels = ("BENEFIT", "SKILL", "MULTISKILL", "EXPERIENCE")
 
         logger.info(f"Loading '{self.taxonomy_name}' taxonomy information")
         if self.taxonomy_name == "toy":

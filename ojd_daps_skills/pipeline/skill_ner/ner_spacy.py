@@ -514,9 +514,10 @@ class JobNER(object):
             )
             return self.nlp
         except OSError:
-            logger.info(
+            logger.warning(
                 "Model not found locally - you may need to download it from S3 (set s3_download to True)"
             )
+            return None
 
 
 def parse_arguments(parser):

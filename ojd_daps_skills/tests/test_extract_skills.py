@@ -5,8 +5,6 @@ import itertools
 from ojd_daps_skills.utils.text_cleaning import short_hash
 from ojd_daps_skills.pipeline.extract_skills.extract_skills import ExtractSkills
 
-es = ExtractSkills(local=True)
-
 job_adverts = [
     "The job involves communication and maths skills",
     "The job involves excel and presenting skills. You need good excel skills",
@@ -19,7 +17,12 @@ def test_load():
     es.load()
 
     assert isinstance(es.nlp, spacy.lang.en.English)
-    assert es.labels == ("EXPERIENCE", "SKILL", "MULTISKILL")
+    assert all(
+        [
+            label in es.labels
+            for label in ["EXPERIENCE", "SKILL", "MULTISKILL", "BENEFIT"]
+        ]
+    )
     assert es.skill_mapper
     assert (
         len(
@@ -50,6 +53,9 @@ def test_get_skills():
 
 def test_map_skills():
 
+    es = ExtractSkills(local=True)
+    es.load()
+
     predicted_skills = es.get_skills(job_adverts)
     matched_skills = es.map_skills(predicted_skills)
 
@@ -60,13 +66,17 @@ def test_map_skills():
             *[[skill[1][0] for skill in skills["SKILL"]] for skills in matched_skills]
         )
     )
-    assert (
-        set(test_skills).difference(set(es.taxonomy_info["hier_name_mapper"].values()))
-        == set()
+    tax_skills_and_hier_names = set(
+        es.taxonomy_skills["description"].tolist()
+        + list(es.taxonomy_info["hier_name_mapper"].values())
     )
+    assert set(test_skills).difference(tax_skills_and_hier_names) == set()
 
 
 def test_map_no_skills():
+    es = ExtractSkills(local=True)
+    es.load()
+
     job_adverts = ["nothing", "we want excel skills", "we want communication skills"]
     extract_matched_skills = es.extract_skills(job_adverts)
     assert len(job_adverts) == len(extract_matched_skills)
@@ -76,6 +86,8 @@ def test_hardcoded_mapping():
     """
     The mapped results using the algorithm should be the same as the hardcoded results
     """
+    es = ExtractSkills(local=True)
+    es.load()
 
     hard_coded_skills = {
         "3267542715426065": {
