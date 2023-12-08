@@ -2,6 +2,7 @@ from sentence_transformers import SentenceTransformer
 import time
 from ojd_daps_skills import logger
 import logging
+import torch
 
 
 class BertVectorizer:
@@ -13,7 +14,7 @@ class BertVectorizer:
     def __init__(
         self,
         bert_model_name="sentence-transformers/all-MiniLM-L6-v2",
-        multi_process=True,
+        multi_process=False,
         batch_size=32,
         verbose=True,
     ):
@@ -27,7 +28,8 @@ class BertVectorizer:
             logger.setLevel(logging.ERROR)
 
     def fit(self, *_):
-        self.bert_model = SentenceTransformer(self.bert_model_name)
+        device = torch.device(f"cuda:0" if torch.cuda.is_available() else "cpu")
+        self.bert_model = SentenceTransformer(self.bert_model_name, device=device)
         self.bert_model.max_seq_length = 512
         return self
 
