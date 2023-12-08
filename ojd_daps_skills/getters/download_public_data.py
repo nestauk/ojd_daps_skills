@@ -29,9 +29,9 @@ def download():
         logger.info(f"Data folder downloaded from {public_data_dir}")
 
     except ClientError as ce:
-        print(f"Error: {ce}")
+        logger.info(f"Error: {ce}")
     except FileNotFoundError as fnfe:
-        print(f"Error: {fnfe}")
+        logger.info(f"Error: {fnfe}")
 
 
 if __name__ == "__main__":
