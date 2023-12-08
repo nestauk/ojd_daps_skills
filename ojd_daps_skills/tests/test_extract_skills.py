@@ -15,6 +15,7 @@ job_adverts = [
 
 def test_load():
 
+    es = ExtractSkills(local=True)
     es.load()
 
     assert isinstance(es.nlp, spacy.lang.en.English)
@@ -30,6 +31,9 @@ def test_load():
 
 
 def test_get_skills():
+
+    es = ExtractSkills(local=True)
+    es.load()
 
     predicted_skills = es.get_skills(job_adverts)
 
