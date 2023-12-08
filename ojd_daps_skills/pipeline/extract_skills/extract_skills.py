@@ -64,9 +64,12 @@ class ExtractSkills(object):
                     "Neccessary files are not downloaded. Downloading ~1GB of neccessary files."
                 )
                 download()
+            else:
+                logger.info("Model files found locally")
         else:
             self.base_path = "escoe_extension/"
             self.s3 = True
+            logger.info("Will be downloading data and models directly from S3")
             pass
 
         self.taxonomy_name = self.config["taxonomy_name"]
