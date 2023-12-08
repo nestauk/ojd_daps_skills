@@ -1,7 +1,7 @@
 #This is a template config file - we have added definitions to parameters that you will need to modify for your own taxonomy
 
 #the relative path to the trained NER model
-ner_model_path: "outputs/models/ner_model/20220825/"
+ner_model_path: "outputs/models/ner_model/20230808/"
 #the relative path to where
 taxonomy_path: "path/to/formatted_taxonomy.csv"
 #the name of your own taxonomy

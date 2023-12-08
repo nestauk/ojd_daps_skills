@@ -512,11 +512,12 @@ class JobNER(object):
             self.ms_classifier = pickle.load(
                 open(os.path.join(model_folder, "ms_classifier.pkl"), "rb")
             )
+            return self.nlp
         except OSError:
-            logger.info(
+            logger.warning(
                 "Model not found locally - you may need to download it from S3 (set s3_download to True)"
             )
-        return self.nlp
+            return None
 
 
 def parse_arguments(parser):

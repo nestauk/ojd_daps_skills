@@ -64,9 +64,12 @@ class ExtractSkills(object):
                     "Neccessary files are not downloaded. Downloading ~1GB of neccessary files."
                 )
                 download()
+            else:
+                logger.info("Model files found locally")
         else:
             self.base_path = "escoe_extension/"
             self.s3 = True
+            logger.info("Will be downloading data and models directly from S3")
             pass
 
         self.taxonomy_name = self.config["taxonomy_name"]
@@ -146,7 +149,7 @@ class ExtractSkills(object):
 
         self.nlp = self.job_ner.load_model(self.ner_model_path, s3_download=self.s3)
 
-        self.labels = self.nlp.get_pipe("ner").labels + ("MULTISKILL",)
+        self.labels = ("BENEFIT", "SKILL", "MULTISKILL", "EXPERIENCE")
 
         logger.info(f"Loading '{self.taxonomy_name}' taxonomy information")
         if self.taxonomy_name == "toy":

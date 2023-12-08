@@ -1,4 +1,4 @@
-from ojd_daps_skills import PUBLIC_DATA_FOLDER_NAME, PROJECT_DIR
+from ojd_daps_skills import PUBLIC_DATA_FOLDER_NAME, PROJECT_DIR, logger
 
 import os
 import boto3
@@ -6,6 +6,7 @@ from botocore.exceptions import ClientError
 from botocore import UNSIGNED
 from botocore.config import Config
 from zipfile import ZipFile
+
 
 def download():
     """Download public data. Expected to run once on first use."""
@@ -25,11 +26,12 @@ def download():
             zip_ref.extractall(PROJECT_DIR)
 
         os.remove(f"{public_data_dir}.zip")
+        logger.info(f"Data folder downloaded from {public_data_dir}")
 
     except ClientError as ce:
-        print(f"Error: {ce}")
+        logger.warning(f"Error: {ce}")
     except FileNotFoundError as fnfe:
-        print(f"Error: {fnfe}")
+        logger.warning(f"Error: {fnfe}")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 This page contains information for different parts of the skills extraction and mapping pipeline. We detail the two main parts of the pipeline; the extract skills pipeline and the skills to taxonomy mapping pipeline.
 
-Developed by data scientists in Nesta’s Data Analytics Practice, (last updated on 23-11-2022).
+Developed by data scientists in Nesta’s Data Analytics Practice, (last updated on 29-09-2023).
 
 - [Model Card: Extract Skills](extract_skills_card)
 - [Model Card: Skills to Taxonomy Mapping](mapping_card)
@@ -17,15 +17,15 @@ _The extracting skills pipeline._
 
 ### Summary
 
-- Train a Named Entity Recognition (NER) spaCy component to extract skills, multiskills and experience entities from job adverts.
+- Train a Named Entity Recognition (NER) spaCy component to extract skills, multiskills, experience and benefits entities from job adverts.
 - Predict whether or not a skill is multi-skill or not using scikit learn's SVM model. Features are length of entity; if 'and' in entity; if ',' in entity.
 - Split multiskills, where possible, based on semantic rules.
 
 ### Training
 
-- For the NER model, 375 job adverts were labelled for skills, multiskills and experience.
-- As of 15th November 2022, **5641** entities in 375 job adverts from OJO were labelled;
-- **354** are multiskill, **4696** are skill, and **608** were experience entities. 20% of the labelled entities were held out as a test set to evaluate the models.
+- For the NER model, 500 job adverts were labelled for skills, multiskills, experience and benefits.
+- As of 8th August 2023, **8971** entities in 500 job adverts from OJO were labelled;
+- **443** are multiskill, **7313** are skill, **852** were experience entities, and **363** were benefit entities. 20% of the labelled entities were held out as a test set to evaluate the models.
 
 The NER model we trained used [spaCy's](https://spacy.io/) NER neural network architecture. Their NER architecture _"features a sophisticated word embedding strategy using subword features and 'Bloom' embeddings, a deep convolutional neural network with residual connections, and a novel transition-based approach to named entity parsing"_ - more about this [here](https://spacy.io/universe/project/video-spacys-ner-model).
 
@@ -33,22 +33,23 @@ You can read more about the creation of the labelling data [here](./labelling.md
 
 ### NER Metrics
 
-- A metric in the python library nerevaluate ([read more here](https://pypi.org/project/nervaluate/)) was used to calculate F1, precision and recall for the NER and SVM classifier on the held-out test set. As of 15th November 2022, the results are as follows:
+- A metric in the python library nerevaluate ([read more here](https://pypi.org/project/nervaluate/)) was used to calculate F1, precision and recall for the NER and SVM classifier on the held-out test set. As of 8th August 2023, the results are as follows:
 
 | Entity     | F1    | Precision | Recall |
 | ---------- | ----- | --------- | ------ |
-| Skill      | 0.586 | 0.679     | 0.515  |
-| Experience | 0.506 | 0.648     | 0.416  |
-| All        | 0.563 | 0.643     | 0.500  |
+| Skill      | 0.612 | 0.712     | 0.537  |
+| Experience | 0.524 | 0.647     | 0.441  |
+| Benefit    | 0.531 | 0.708     | 0.425  |
+| All        | 0.590 | 0.680     | 0.521  |
 
 - These metrics use partial entity matching.
-- More details of the evaluation performance across both the NER model and the SVM model can be found in `outputs/models/ner_model/20220825/train_details.json`
+- More details of the evaluation performance across both the NER model and the SVM model can be found in `outputs/models/ner_model/20230808/train_details.json`
 
 ### Multiskill Metrics
 
-- The same training data and held out test set used for the NER model was used to evaluate the SVM model. On a held out test set, the SVM model achieved 91% accuracy.
+- The same training data and held out test set used for the NER model was used to evaluate the SVM model. On a held out test set, the SVM model achieved 94% accuracy.
 - When evaluating the multiskill splitter algorithm rules, 253 multiskill spans were labelled as ‘good’, ‘ok’ or ‘bad’ splits. Of the 253 multiskill spans, 80 were split. Of the splits, 66% were ‘good’, 9% were ‘ok’ and 25% were ‘bad’.
-- More details of the evaluation performance across both the NER model and the SVM model can be found in `outputs/models/ner_model/20220825/train_details.json`
+- More details of the evaluation performance across both the NER model and the SVM model can be found in `outputs/models/ner_model/20230808/train_details.json`
 
 ### Caveats and Recommendations
 

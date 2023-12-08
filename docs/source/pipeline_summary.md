@@ -23,7 +23,7 @@ For further information or feedback please contact Liz Gallagher, India Kerle or
 
 ## Metrics
 
-There is no exact way to evaluate how well our pipeline works; however we have several proxies to better understand how our approach compares.
+There is no exact way to evaluate how well our pipeline works; however we have several proxies to better understand how our approach compares. The analysis in this section was performed using the results of the `20220825` model. We believe the newer `20230808` model will improve these results, but the analysis hasn't been repeated.
 
 ### Comparison 1 - Top skill groups per occupation comparison to ESCO essential skill groups per occupation
 

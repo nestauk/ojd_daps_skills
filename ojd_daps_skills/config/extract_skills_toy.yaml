@@ -1,4 +1,4 @@
-ner_model_path: "outputs/models/ner_model/20220825/"
+ner_model_path: "outputs/models/ner_model/20230808/"
 taxonomy_name: "toy"
 taxonomy_path: ""
 clean_job_ads: True
