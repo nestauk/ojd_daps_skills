@@ -29,6 +29,12 @@ You can use pip to install the library:
 pip install ojd-daps-skills
 ```
 
+You can use pip to install the spacy module
+
+```
+pip install spacy
+```
+
 You will also need to install spaCy's English language model:
 
 ```
