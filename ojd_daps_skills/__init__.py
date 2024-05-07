@@ -1,14 +1,12 @@
 """ojd_daps_skills."""
 import logging
 import logging.config
+import re
+import warnings
 from pathlib import Path
 from typing import Optional
-import re
-import sentence_transformers
-import boto3
 
 import yaml
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -27,7 +25,6 @@ error_out = str(PROJECT_DIR / "errors.log")
 
 
 class CustomFormatter(logging.Formatter):
-
     grey = "\x1b[38;20m"
     bold_yellow = "\x1b[33;20;1;1m"
     bold_red = "\x1b[31;1m"
@@ -55,7 +52,7 @@ logger = logging.getLogger(
     "SkillsExtractor"
 )  # NOTE: change logger name once we decide what library will be called
 
-prefix_re = re.compile(fr'^(?:{ "|".join(["sentence_transformers", "boto"]) })')
+prefix_re = re.compile(rf'^(?:{ "|".join(["sentence_transformers", "boto"]) })')
 for name in logging.root.manager.loggerDict:
     if re.match(prefix_re, name):
         logging.getLogger(name).setLevel(logging.ERROR)

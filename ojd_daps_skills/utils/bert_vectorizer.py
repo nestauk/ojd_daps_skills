@@ -1,8 +1,8 @@
 from sentence_transformers import SentenceTransformer
 import time
-from ojd_daps_skills import logger
+from ..ojd_daps_skills2 import logger
+
 import logging
-import torch
 
 
 class BertVectorizer:
@@ -28,7 +28,7 @@ class BertVectorizer:
             logger.setLevel(logging.ERROR)
 
     def fit(self, *_):
-        device = torch.device(f"cuda:0" if torch.cuda.is_available() else "cpu")
+        device = "cpu"
         self.bert_model = SentenceTransformer(self.bert_model_name, device=device)
         self.bert_model.max_seq_length = 512
         return self

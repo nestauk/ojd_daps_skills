@@ -1,8 +1,27 @@
-[build-system]
-requires = [
-    "setuptools>=64",
-    "setuptools_scm>=8",
-]
+[tool.poetry]
+name = "ojd-daps-skills-v2"
+version = "0.1.0"
+description = ""
+authors = ["India Kerle <india.kerle@nesta.org.uk>"]
+readme = "README.md"
+packages = [{include = "ojd_daps_skills_v2"}]
 
-[tool.setuptools_scm]
-version_scheme = "release-branch-semver"
+[tool.poetry.dependencies]
+python = "^3.9"
+pydantic = "^2.7.1"
+spacy = "^3.7.4"
+scikit-learn = "^1.4.2"
+pandas = "^2.2.2"
+pyyaml = "^6.0.1"
+skops = "^0.9.0"
+numpy = "^1.26.4"
+boto3 = "^1.34.99"
+botocore = "^1.34.99"
+toolz = "^0.12.1"
+sentence-transformers = "^2.1.0"
+torch = "^1.10.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

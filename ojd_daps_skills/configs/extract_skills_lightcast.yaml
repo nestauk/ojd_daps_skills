@@ -1,0 +1,17 @@
+taxonomy_name: "lightcast"
+min_multiskill_length: 75
+num_hier_levels: 2
+skill_type_dict:
+  { "skill_types": ["skill"], "hier_types": ["category", "subcategory"] }
+match_thresholds_dict:
+  {
+    "skill_match_thresh": 0.7,
+    "top_tax_skills": { 1: 0.8, 2: 0.4, 3: 0.5 },
+    "max_share": { 1: 0, 2: 0.2, 3: 0.2 },
+  }
+skill_name_col: "description"
+skill_id_col: "id"
+skill_hier_info_col: "hierarchy_levels"
+skill_type_col: "type"
+verbose: True
+multi_process: True
