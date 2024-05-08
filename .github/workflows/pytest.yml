@@ -54,9 +54,4 @@ jobs:
       #----------------------------------------------
       - name: Run tests
         run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            source .venv/bin/activate
-          else
-            .venv\Scripts\activate
-          fi
           pytest tests/ --verbose
