@@ -8,12 +8,6 @@ repos:
         types: [python]
         require_serial: true
 
-      - id: isort
-        name: isort
-        entry: isort
-        language: system
-        types: [python]
-
   - repo: https://github.com/prettier/pre-commit
     rev: v2.1.2
     hooks:
