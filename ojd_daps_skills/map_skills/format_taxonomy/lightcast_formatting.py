@@ -20,8 +20,7 @@ import pandas as pd
 import requests
 
 from ojd_daps_skills import bucket_name
-from ojd_daps_skills.utils.data_getters import (get_s3_resource, load_s3_data,
-                                                save_to_s3)
+from ojd_daps_skills.utils.data_getters import get_s3_resource, load_s3_data, save_to_s3
 
 
 def get_lightcast_access_token(client_id: str, client_secret: str) -> str:
