@@ -155,10 +155,10 @@ def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
     lightcast_formatted = pd.concat(
         [all_skills, category_skills, subcategory_skills]
     ).reset_index(drop=True)
-    lightcast_formatted[
-        "hierarchy_levels"
-    ] = lightcast_formatted.hierarchy_levels.apply(map_subcategory_ids).apply(
-        remove_bad_hierarchy_levels
+    lightcast_formatted["hierarchy_levels"] = (
+        lightcast_formatted.hierarchy_levels.apply(map_subcategory_ids).apply(
+            remove_bad_hierarchy_levels
+        )
     )
     lightcast_formatted = lightcast_formatted.query("description.notna()").query(
         'description != "NULL"'

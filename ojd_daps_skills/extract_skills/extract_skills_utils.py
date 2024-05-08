@@ -2,6 +2,7 @@
 Utility functions and a configuration manager for 
 extracting skills from job descriptions.
 """
+
 import os
 from typing import List, Optional
 

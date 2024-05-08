@@ -1,6 +1,7 @@
 """
 Text cleaning utilities for the skills extraction pipeline.
 """
+
 import re
 from hashlib import md5
 

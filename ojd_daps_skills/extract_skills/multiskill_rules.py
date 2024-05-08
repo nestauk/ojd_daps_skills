@@ -1,6 +1,7 @@
 """
 Phrase splitting rules for multi-skill phrases. 
 """
+
 import re
 from typing import List
 
