@@ -1,5 +1,4 @@
 taxonomy_name: "lightcast"
-min_multiskill_length: 75
 num_hier_levels: 2
 skill_type_dict:
   { "skill_types": ["skill"], "hier_types": ["category", "subcategory"] }
@@ -14,4 +13,3 @@ skill_id_col: "id"
 skill_hier_info_col: "hierarchy_levels"
 skill_type_col: "type"
 verbose: True
-multi_process: True

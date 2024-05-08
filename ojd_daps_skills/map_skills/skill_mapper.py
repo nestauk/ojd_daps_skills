@@ -1,86 +1,39 @@
 """
-The taxonomy being mapped to in the script needs to be in a specific format.
-There should be the 3 columns skill_name_col, skill_id_col, skill_type_col
-with an optional 4th column (skill_hier_info_col).
-### Example 1:
-At the most basic level your taxonomy input could be:
-"name" | "id" | "type"
----|---|---
-"driving a car" | 123 | "skill"
-"give presentations" | 333 | "skill"
-"communicating well" | 456 | "skill"
-...
-with skill_type_dict = {'skill_types': ['skill']}.
-Your output match for the OJO skill "communicate" might look like this:
-{
-'ojo_ner_skills': "communicate",
-'top_5_tax_skills': [("communicating well", 456, 0.978), ("give presentations", 333, 0.762), ..]
-}
-- the closest skill to this ojo skill is "communicating well" which is code 456 and had a cosine distance of 0.978
-### Example 2:
-A more complicated example would have hierarchy levels given too
-"name" | "id" | "type" | "hierarchy_levels"
----|---|---|---
-"driving a car" | 123 | "skill" | ['A2.1']
-"give presentations" | 333 | "skill" | ['A1.2']
-"communicating well" | 456 | "skill"| ['A1.3']
-...
-with skill_type_dict = {'skill_types': ['skill']}.
-This might give the result:
-{
-'ojo_ner_skills': "communicate",
-'top_5_tax_skills': [("communicating well", 456, 0.978), ("give presentations", 333, 0.762), ..],
-'high_tax_skills':  {'num_over_thresh': 2, 'most_common_level_0: ('A1', 1) , 'most_common_level_1': ('A1.3', 0.5)},
-}
-- 100% of the skills where the similarity is greater than the threshold are in the 'A1' skill level 0 group
-- 50% of the skills where the similarity is greater than the threshold are in the 'A1.3' skill level 1 group
-### Example 3:
-And an even more complicated example would have skill level names given too (making use
-of the 'type' column to differentiate them).
-"name" | "id" | "type" | "hierarchy_levels"
----|---|---|---
-"driving a car" | 123 | "skill" | ['A2.1']
-"give presentations" | 333 | "skill" | ['A1.2']
-"communicating well" | 456 | "skill"| ['A1.3']
-"communication" | 'A1' | "level 1"| None
-"driving" | 'A2' | "level 0"| None
-"communicate verbally" | 'A1.3' | "level 1"| None
-...
-with skill_type_dict = {'skill_types': ['skill'], 'hier_types': ["level A", "level B"]} and num_hier_levels=2
-This might give the result:
-{
-'ojo_ner_skills': "communicate",
-'top_5_tax_skills': [("communicating well", 456, 0.978), ("give presentations", 333, 0.762), ..],
-'high_tax_skills':  {'num_over_thresh': 2, 'most_common_level_0: ('A1', 1) , 'most_common_level_1': ('A1.3', 0.5)},
-"top_'level 0'_tax_level": ('communication', 'A1', 0.998),
-"top_'level 1'_tax_level": ('communicate verbally', 'A1.3', 0.98),
-}
-- the skill level 0 group 'communication' (code 'A1') is the closest to thie ojo skill with distance 0.998
-- the skill level 1 group 'communicate verbally' (code 'A1.3') is the closest to thie ojo skill with distance 0.98
+SkillsMapper class to MAP extracted skills from job ads. 
 """
 from itertools import chain
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from ..extract_skills.extract_skills_utils import MapConfig
-from .skill_ner_mapper_utils import get_most_common_code, get_top_comparisons
-from ..utils.text_cleaning import clean_text, short_hash
-
 from pydantic import BaseModel
 from spacy.tokens import Doc
 
+from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
+from ojd_daps_skills.map_skills.skill_mapper_utils import (
+    MapConfig,
+    get_most_common_code,
+    get_top_comparisons,
+)
+from ojd_daps_skills import setup_spacy_extensions
 
-class SkillMapper(BaseModel):
-    """_summary_
+setup_spacy_extensions()
 
-    Args:
-        BaseModel (_type_): _description_
 
-    Returns:
-        _type_: _description_
+class SkillsMapper(BaseModel):
+    """
+    SkillsMapper class to MAP extracted skills from job ads.
+
+    It takes a rules-based semantic similarity approach
+    to map skills to a pre-defined skills taxonomy
+    based on the hierarchy of a taxonomy and the
+    similarity of the skill embeddings.
+
+    Attributes:
+        taxonomy_name (str): The name of the taxonomy.
     """
 
-    config: MapConfig
+    taxonomy_name: str = "toy"
+    config: MapConfig = MapConfig.create(taxonomy_name)
     all_skills_unique_dict: Dict[int, str] = {}
 
     def get_top_taxonomy_skills(
@@ -169,11 +122,8 @@ class SkillMapper(BaseModel):
             Tuple[np.ndarray, Dict[int, np.array]]: A tuple of the skill embeddings
                 and a dictionary with taxonomy skill indices and embeddings.
         """
-        if not Doc.has_extension("skill_spans"):
-            Doc.set_extension("skill_spans", default=[])
-
         all_skills = list(chain.from_iterable([doc._.skill_spans for doc in job_ads]))
-        all_skills_unique = list(set([skill.text for skill in all_skills]))
+        all_skills_unique = list(set(all_skills))
 
         self.all_skills_unique_dict = {}
         for skill in all_skills_unique:
@@ -208,11 +158,14 @@ class SkillMapper(BaseModel):
 
         return skill_embeddings, taxonomy_embeddings_dict
 
-    def map_skills(self, job_ads: List[Doc]) -> None:
+    def map_skills(self, job_ads: List[Doc]) -> List[Dict[str, Any]]:
         """Map the skills extracted from the job ads to the taxonomy.
 
         Args:
             job_ads (List[Doc]): A list of spaCy Doc objects with skill spans.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries with the mapped skills.
         """
 
         skill_embeddings, taxonomy_embeddings_dict = self.get_embeddings(job_ads)
@@ -331,9 +284,7 @@ class SkillMapper(BaseModel):
             # Go through hierarchy levels from most granular to least
             # and try to find a close match first in the most common level then in
             # the level name with the closest similarity
-            for n in reversed(
-                range(len(self.config.taxonomy_config["num_hier_levels"]))
-            ):
+            for n in reversed(range(self.config.taxonomy_config["num_hier_levels"])):
                 # Look at level n most common
                 type_name = "most_common_level_" + str(n)
                 if "high_tax_skills" in v.keys():
@@ -402,6 +353,3 @@ class SkillMapper(BaseModel):
         final_match_dict = {match["ojo_skill_id"]: match for match in final_match}
 
         return final_match_dict
-
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
-        return super().__call__(*args, **kwds)

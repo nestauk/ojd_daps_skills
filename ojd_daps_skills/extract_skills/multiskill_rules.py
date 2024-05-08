@@ -1,6 +1,10 @@
-from typing import List
-from spacy.tokens import Doc
+"""
+Phrase splitting rules for multi-skill phrases. 
+"""
 import re
+from typing import List
+
+from spacy.tokens import Doc
 
 
 def _split_duplicate_object(parsed_sent: Doc) -> List[str]:
@@ -66,23 +70,21 @@ def _split_on_and(text: str) -> List[str]:
 
     # Get rid of any double spacing
     text = re.sub("\s\s+", " ", text)
-
     split_on = " and "
-
-    # Sort out any combinations of 'and' and commas/semi-colons.
+    # Normalize combinations of 'and' with commas or semicolons.
     text = text.replace(";", ",")
-    text = (
-        text.replace(", and ,", split_on)
-        .replace(", and,", split_on)
-        .replace(",and ,", split_on)
-        .replace(", and ", split_on)
-        .replace(" and ,", split_on)
-    )
-    text = (
-        text.replace(",and,", split_on)
-        .replace(" and,", split_on)
-        .replace(",and ", split_on)
-    )
+    replacements = [
+        ", and ,",
+        ", and,",
+        ",and ,",
+        ", and ",
+        " and ,",
+        ",and,",
+        " and,",
+        ",and ",
+    ]
+    for replacement in replacements:
+        text = text.replace(replacement, split_on)
 
     # Split on commas and 'and'
     text = text.replace(",", split_on).split(" and ")

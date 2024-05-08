@@ -9,21 +9,17 @@ id: A unique id for the skill/hierarchy
 description: The skill/hierarchy level description text
 type: What column name the skill/hier description is from (preferredLabel, altLabels, Level 2 preferred term, Level 3 preferred term)
 hierarchy_levels: If a skill then which hierarchy levels is it in
-
-
 """
-
-from ojd_daps_skills.getters.data_getters import (
-    get_s3_resource,
-    load_s3_data,
-    save_to_s3,
-)
-from ojd_daps_skills import bucket_name, logger
 
 import re
 from collections import defaultdict
 
 import pandas as pd
+
+from ojd_daps_skills import bucket_name
+from ojd_daps_skills.utils.data_getters import get_s3_resource, load_s3_data, save_to_s3
+
+from wasabi import msg
 
 
 def find_lev_0(code):
@@ -276,10 +272,10 @@ if __name__ == "__main__":
     alt_label_skills["type"] = ["altLabels"] * len(alt_label_skills)
     alt_label_skills.rename(columns={"altLabels": "description"}, inplace=True)
 
-    logger.info(
+    msg.info(
         f"Removing {sum(pd.isnull(pref_label_skills['hierarchy_levels']))} out of {len(pref_label_skills)} preferred label skills weren't mapped"
     )
-    logger.info(
+    msg.info(
         f"Removing {sum(pd.isnull(alt_label_skills['hierarchy_levels']))} out of {len(alt_label_skills)} alternative label skills weren't mapped"
     )
 
@@ -301,8 +297,8 @@ if __name__ == "__main__":
     alt_label_skills = alt_label_skills[
         pd.notnull(alt_label_skills["hierarchy_levels"])
     ]
-    logger.info(f"{len(pref_label_skills)} remaining preferred labels")
-    logger.info(f"{len(alt_label_skills)} remaining alternate labels")
+    msg.info(f"{len(pref_label_skills)} remaining preferred labels")
+    msg.info(f"{len(alt_label_skills)} remaining alternate labels")
 
     knowledge_groups = knowledge_groups[knowledge_groups["id"].apply(len) > 1]
     knowledge_groups["id"] = knowledge_groups["id"].apply(lambda x: "K" + x)

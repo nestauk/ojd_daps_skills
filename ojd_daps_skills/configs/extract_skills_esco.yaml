@@ -1,5 +1,4 @@
 taxonomy_name: "esco"
-min_multiskill_length: 75
 num_hier_levels: 4
 skill_type_dict:
   {
@@ -16,5 +15,4 @@ skill_name_col: "description"
 skill_id_col: "id"
 skill_hier_info_col: "hierarchy_levels"
 skill_type_col: "type"
-verbose: True
 multi_process: True

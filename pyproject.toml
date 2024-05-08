@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "ojd-daps-skills-v2"
+name = "ojd-daps-skills"
 version = "0.1.0"
 description = ""
 authors = ["India Kerle <india.kerle@nesta.org.uk>"]
 readme = "README.md"
-packages = [{include = "ojd_daps_skills_v2"}]
+packages = [{include = "ojd_daps_skills"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -20,6 +20,7 @@ botocore = "^1.34.99"
 toolz = "^0.12.1"
 sentence-transformers = "^2.1.0"
 torch = "^1.10.0"
+pytest = "^8.2.0"
 
 
 [build-system]

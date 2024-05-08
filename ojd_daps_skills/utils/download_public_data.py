@@ -1,4 +1,4 @@
-from ...ojd_daps_skills_v2 import PUBLIC_DATA_FOLDER_NAME, PROJECT_DIR, logger
+from ojd_daps_skills import PUBLIC_DATA_FOLDER_PATH, PROJECT_DIR
 
 import os
 import boto3
@@ -6,6 +6,8 @@ from botocore.exceptions import ClientError
 from botocore import UNSIGNED
 from botocore.config import Config
 from zipfile import ZipFile
+
+from wasabi import msg
 
 
 def download_data():
@@ -15,19 +17,18 @@ def download_data():
     )
 
     bucket_name = "open-jobs-indicators"
-    key = f"escoe_extension/{PUBLIC_DATA_FOLDER_NAME}.zip"
-    public_data_dir = PROJECT_DIR / PUBLIC_DATA_FOLDER_NAME
+    key = f"escoe_extension/ojd_daps_skills_data_new.zip"
 
     try:
-        s3.download_file(bucket_name, key, f"{str(public_data_dir)}.zip")
+        s3.download_file(bucket_name, key, f"{str(PUBLIC_DATA_FOLDER_PATH)}_new.zip")
 
-        with ZipFile(f"{public_data_dir}.zip", "r") as zip_ref:
+        with ZipFile(f"{PUBLIC_DATA_FOLDER_PATH}_new.zip", "r") as zip_ref:
             zip_ref.extractall(PROJECT_DIR)
 
-        os.remove(f"{public_data_dir}.zip")
-        logger.info(f"Data folder downloaded from {public_data_dir}")
+        os.remove(f"{PUBLIC_DATA_FOLDER_PATH}_new.zip")
+        msg.info(f"Data folder downloaded from {PUBLIC_DATA_FOLDER_PATH}")
 
     except ClientError as ce:
-        logger.warning(f"Error: {ce}")
+        msg.warn(f"Error: {ce}")
     except FileNotFoundError as fnfe:
-        logger.warning(f"Error: {fnfe}")
+        msg.warn(f"Error: {fnfe}")

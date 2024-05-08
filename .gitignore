@@ -3,6 +3,11 @@
 
 *.lock
 
+#ignore data files
+__MACOSX/
+ojd_daps_skills_data/
+ojd_daps_skills_models/
+
 # Proposed convention
 scratch*
 

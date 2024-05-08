@@ -1,7 +1,5 @@
 """
-Various text cleaning functions for times you aren't also trying to
-clean entity spans too (these functions are in ner_spacy_utils).
-
+Text cleaning utilities for the skills extraction pipeline.
 """
 import re
 from toolz import pipe

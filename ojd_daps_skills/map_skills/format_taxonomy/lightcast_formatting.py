@@ -13,20 +13,39 @@ To run the script,
     python ojd_daps_skills/pipeline/skill_ner_mapping/lightcast_formatting.py --client-id CLIENT_ID --client-secret CLIENT_SECRET
 """
 
-from ojd_daps_skills.getters.data_getters import (
-    get_s3_resource,
-    save_to_s3,
-)
-from .... import bucket_name
-
-from ojd_daps_skills.pipeline.evaluation.lightcast_evaluation import (
-    get_lightcast_access_token,
-)
-
-import pandas as pd
 from argparse import ArgumentParser
-import requests
+
 import numpy as np
+import pandas as pd
+import requests
+
+from ojd_daps_skills import bucket_name
+from ojd_daps_skills.utils.data_getters import get_s3_resource, load_s3_data, save_to_s3
+
+
+def get_lightcast_access_token(client_id: str, client_secret: str) -> str:
+    """Generates temporary access token needed to query lightcast skills API.
+
+    Inputs:
+        client_id (str): Client ID from generated lightcast skills API credentials.
+        client_secret (str): Client secret from generated lightcast skills API credentials.
+
+    Outputs:
+        access_token (str): Access token string valid for 1 hour.
+
+    """
+
+    url = "https://auth.emsicloud.com/connect/token"
+
+    payload = f"client_id={client_id}&client_secret={client_secret}&grant_type=client_credentials&scope=emsi_open"
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+    response = requests.request("POST", url, data=payload, headers=headers)
+
+    if response.ok:
+        return response.json()["access_token"]
+    else:
+        return response
 
 
 def get_lightcast_skills(access_code: str) -> pd.DataFrame:

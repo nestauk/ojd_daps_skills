@@ -1,43 +1,40 @@
 from sentence_transformers import SentenceTransformer
 import time
-from ..ojd_daps_skills2 import logger
 
-import logging
+from wasabi import msg
 
 
 class BertVectorizer:
     """
-    Use a pretrained transformers model to embed sentences.
-    In this form so it can be used as a step in the pipeline.
+    BertVectorizer class to embed sentences using a pretrained transformers model.
+
+    Attributes:
+        bert_model_name (str): The name of the pretrained model to use from HuggingFace Hub.
+        multi_process (bool): Whether to use multiprocessing for embedding.
+        batch_size (int): The batch size to use for embedding.
+        verbose (bool): Whether to log info messages.
     """
 
     def __init__(
         self,
-        bert_model_name="sentence-transformers/all-MiniLM-L6-v2",
-        multi_process=False,
-        batch_size=32,
-        verbose=True,
+        bert_model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
+        multi_process: bool = False,
+        batch_size: int = 32,
     ):
         self.bert_model_name = bert_model_name
         self.multi_process = multi_process
         self.batch_size = batch_size
-        self.verbose = verbose
-        if self.verbose:
-            logger.setLevel(logging.INFO)
-        else:
-            logger.setLevel(logging.ERROR)
 
     def fit(self, *_):
-        device = "cpu"
-        self.bert_model = SentenceTransformer(self.bert_model_name, device=device)
+        self.bert_model = SentenceTransformer(self.bert_model_name, device="cpu")
         self.bert_model.max_seq_length = 512
         return self
 
     def transform(self, texts):
-        logger.info(f"Getting embeddings for {len(texts)} texts ...")
+        msg.info(f"Getting embeddings for {len(texts)} texts ...")
         t0 = time.time()
         if self.multi_process:
-            logger.info(".. with multiprocessing")
+            msg.info(".. with multiprocessing")
             pool = self.bert_model.start_multi_process_pool()
             self.embedded_x = self.bert_model.encode_multi_process(
                 texts, pool, batch_size=self.batch_size
@@ -45,5 +42,5 @@ class BertVectorizer:
             self.bert_model.stop_multi_process_pool(pool)
         else:
             self.embedded_x = self.bert_model.encode(texts, batch_size=self.batch_size)
-        logger.info(f"Took {time.time() - t0} seconds")
+        msg.info(f"Took {time.time() - t0} seconds")
         return self.embedded_x

@@ -2,8 +2,6 @@
 
 #the name of your own taxonomy
 taxonomy_name: "your_taxonomy_name"
-#the minimum multiskill length the multiskill needs to be in order to be split - defaults to 75
-min_multiskill_length: 75
 #the number of hierarchy levels - should be changed to the number of levels in your own taxonomy
 num_hier_levels: 3
 #a dictionary defining skill types and hierarchy types in your own taxonomy
@@ -33,5 +31,3 @@ skill_hier_info_col: ""
 skill_type_col: "type"
 #verbose output - default is True
 verbose: True
-#multi process - default is True
-multi_process: True
