@@ -6,11 +6,8 @@ import pytest
 import spacy
 
 from ojd_daps_skills.extract_skills.multiskill_rules import (
-    _split_duplicate_object,
-    _split_duplicate_verb,
-    _split_on_and,
-    _split_skill_mentions,
-)
+    _split_duplicate_object, _split_duplicate_verb, _split_on_and,
+    _split_skill_mentions)
 
 
 @pytest.fixture

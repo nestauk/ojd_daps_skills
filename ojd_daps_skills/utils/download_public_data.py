@@ -17,7 +17,7 @@ def download_data():
     )
 
     bucket_name = "open-jobs-indicators"
-    key = f"escoe_extension/ojd_daps_skills_data_new.zip"
+    key = "escoe_extension/ojd_daps_skills_data_new.zip"
 
     try:
         s3.download_file(bucket_name, key, f"{str(PUBLIC_DATA_FOLDER_PATH)}_new.zip")

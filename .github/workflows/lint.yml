@@ -1,0 +1,38 @@
+name: Linting
+
+on:
+  push:
+
+jobs:
+  linting-python:
+    name: Lint Python
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          pip install ruff black isort
+
+      - name: Run ruff
+        if: always()
+        shell: bash
+        run: python -m ruff ojd_daps_skills tests
+
+      - name: Run black
+        if: always()
+        shell: bash
+        run: black --check ojd_daps_skills tests
+
+      - name: Run isort
+        if: always()
+        shell: bash
+        run: isort --check-only ojd_daps_skills tests

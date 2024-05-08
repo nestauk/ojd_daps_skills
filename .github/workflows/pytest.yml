@@ -49,8 +49,8 @@ jobs:
       #----------------------------------------------
       - name: Install additional dependencies
         run: |
-            poetry install --no-interaction
-            poetry run python -m spacy download en_core_web_sm
+          poetry install --no-interaction
+          poetry run python -m spacy download en_core_web_sm
       #----------------------------------------------
       #    add matrix specifics and run test suite
       #----------------------------------------------

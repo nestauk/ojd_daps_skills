@@ -20,7 +20,7 @@ import pandas as pd
 import requests
 
 from ojd_daps_skills import bucket_name
-from ojd_daps_skills.utils.data_getters import get_s3_resource, load_s3_data, save_to_s3
+from ojd_daps_skills.utils.data_getters import get_s3_resource, save_to_s3
 
 
 def get_lightcast_access_token(client_id: str, client_secret: str) -> str:
@@ -155,10 +155,10 @@ def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
     lightcast_formatted = pd.concat(
         [all_skills, category_skills, subcategory_skills]
     ).reset_index(drop=True)
-    lightcast_formatted[
-        "hierarchy_levels"
-    ] = lightcast_formatted.hierarchy_levels.apply(map_subcategory_ids).apply(
-        remove_bad_hierarchy_levels
+    lightcast_formatted["hierarchy_levels"] = (
+        lightcast_formatted.hierarchy_levels.apply(map_subcategory_ids).apply(
+            remove_bad_hierarchy_levels
+        )
     )
     lightcast_formatted = lightcast_formatted.query("description.notna()").query(
         'description != "NULL"'

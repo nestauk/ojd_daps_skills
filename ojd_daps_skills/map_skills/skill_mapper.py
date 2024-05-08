@@ -1,6 +1,7 @@
 """
 SkillsMapper class to MAP extracted skills from job ads. 
 """
+
 from itertools import chain
 from typing import Any, Dict, List, Tuple
 
@@ -10,10 +11,7 @@ from spacy.tokens import Doc
 
 from ojd_daps_skills import setup_spacy_extensions
 from ojd_daps_skills.map_skills.skill_mapper_utils import (
-    MapConfig,
-    get_most_common_code,
-    get_top_comparisons,
-)
+    MapConfig, get_most_common_code, get_top_comparisons)
 from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
 
 setup_spacy_extensions()
@@ -221,9 +219,9 @@ class SkillsMapper(BaseModel):
                             high_hier_codes += [hier_level] * round(sim_score * 10)
                 high_tax_skills_results = {}
                 for hier_level in range(self.config.taxonomy_config["num_hier_levels"]):
-                    high_tax_skills_results[
-                        "most_common_level_" + str(hier_level)
-                    ] = get_most_common_code(high_hier_codes, hier_level)
+                    high_tax_skills_results["most_common_level_" + str(hier_level)] = (
+                        get_most_common_code(high_hier_codes, hier_level)
+                    )
 
                 if high_tax_skills_results:
                     match_results["high_tax_skills"] = high_tax_skills_results
