@@ -53,5 +53,4 @@ jobs:
       #    add matrix specifics and run test suite
       #----------------------------------------------
       - name: Run tests
-        run: |
-          pytest tests/ --verbose
+        run: poetry run pytest tests/ --verbose
