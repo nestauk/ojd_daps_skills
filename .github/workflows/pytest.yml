@@ -1,17 +1,13 @@
 name: Unit Tests
 
-on:
-  push:
-    branches:
-      - main # or any other branches you want to include
+on: [push]
 
 jobs:
   build:
     runs-on: ${{ matrix.os.host }}
     strategy:
-      fail-fast: false
       matrix:
-        python-version: [3.9, 3.10]
+        python-version: ["3.9", "3.10"]
         os:
           - name: ubuntu
             host: ubuntu-latest
