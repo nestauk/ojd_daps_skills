@@ -1,13 +1,17 @@
 name: Unit Tests
 
-on: [push]
+on: 
+  push:
+    branches: 
+      - main  # or any other branches you want to include
 
 jobs:
   build:
     runs-on: ${{ matrix.os.host }}
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9"]
+        python-version: [3.9, 3.10]
         os:
           - name: ubuntu
             host: ubuntu-latest
@@ -15,7 +19,8 @@ jobs:
             host: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -24,24 +29,15 @@ jobs:
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
-
-      - name: Cache Poetry virtualenv
-        uses: actions/cache@v1
-        id: cache
         with:
-          path: ~/.virtualenvs
-          key: poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            poetry-${{ hashFiles('**/poetry.lock') }}
+          version: 1.1.13  # Specify the version of Poetry you want to use
 
-      - name: Set Poetry config
+      - name: Configure Poetry
         run: |
-          poetry config settings.virtualenvs.in-project false
-          poetry config settings.virtualenvs.path ~/.virtualenvs
+          poetry config virtualenvs.create false
 
       - name: Install Dependencies
         run: poetry install
-        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Test with pytest
         run: |
