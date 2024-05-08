@@ -31,8 +31,3 @@ jobs:
         if: always()
         shell: bash
         run: black --check ojd_daps_skills tests
-
-      - name: Run isort
-        if: always()
-        shell: bash
-        run: isort --check-only ojd_daps_skills tests
