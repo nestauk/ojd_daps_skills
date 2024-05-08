@@ -8,10 +8,9 @@ import boto3
 import numpy
 import pandas as pd
 from pandas import DataFrame
+from wasabi import msg
 
 from ojd_daps_skills import PROJECT_DIR, bucket_name
-
-from wasabi import msg
 
 
 class CustomJsonEncoder(json.JSONEncoder):

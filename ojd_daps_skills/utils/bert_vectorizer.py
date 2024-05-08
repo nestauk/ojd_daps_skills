@@ -1,6 +1,6 @@
-from sentence_transformers import SentenceTransformer
 import time
 
+from sentence_transformers import SentenceTransformer
 from wasabi import msg
 
 

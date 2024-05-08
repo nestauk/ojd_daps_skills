@@ -2,8 +2,9 @@
 Text cleaning utilities for the skills extraction pipeline.
 """
 import re
-from toolz import pipe
 from hashlib import md5
+
+from toolz import pipe
 
 compiled_missing_space_pattern = re.compile("([a-z])([A-Z])")
 exception_camelcases = [

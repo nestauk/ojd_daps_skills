@@ -8,13 +8,10 @@ import numpy as np
 from pydantic import BaseModel
 from spacy.tokens import Doc
 
-from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
-from ojd_daps_skills.map_skills.skill_mapper_utils import (
-    MapConfig,
-    get_most_common_code,
-    get_top_comparisons,
-)
 from ojd_daps_skills import setup_spacy_extensions
+from ojd_daps_skills.map_skills.skill_mapper_utils import (
+    MapConfig, get_most_common_code, get_top_comparisons)
+from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
 
 setup_spacy_extensions()
 

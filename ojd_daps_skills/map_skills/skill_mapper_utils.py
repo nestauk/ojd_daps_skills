@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from sklearn.metrics.pairwise import cosine_similarity
 from wasabi import msg
 
-from ojd_daps_skills import PUBLIC_DATA_FOLDER_PATH, PROJECT_DIR
+from ojd_daps_skills import PROJECT_DIR, PUBLIC_DATA_FOLDER_PATH
 from ojd_daps_skills.utils.bert_vectorizer import BertVectorizer
 from ojd_daps_skills.utils.download_public_data import download_data
 

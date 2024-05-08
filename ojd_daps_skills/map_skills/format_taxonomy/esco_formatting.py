@@ -15,11 +15,11 @@ import re
 from collections import defaultdict
 
 import pandas as pd
+from wasabi import msg
 
 from ojd_daps_skills import bucket_name
-from ojd_daps_skills.utils.data_getters import get_s3_resource, load_s3_data, save_to_s3
-
-from wasabi import msg
+from ojd_daps_skills.utils.data_getters import (get_s3_resource, load_s3_data,
+                                                save_to_s3)
 
 
 def find_lev_0(code):

@@ -1,13 +1,13 @@
-from ojd_daps_skills import PUBLIC_DATA_FOLDER_PATH, PROJECT_DIR
-
 import os
-import boto3
-from botocore.exceptions import ClientError
-from botocore import UNSIGNED
-from botocore.config import Config
 from zipfile import ZipFile
 
+import boto3
+from botocore import UNSIGNED
+from botocore.config import Config
+from botocore.exceptions import ClientError
 from wasabi import msg
+
+from ojd_daps_skills import PROJECT_DIR, PUBLIC_DATA_FOLDER_PATH
 
 
 def download_data():

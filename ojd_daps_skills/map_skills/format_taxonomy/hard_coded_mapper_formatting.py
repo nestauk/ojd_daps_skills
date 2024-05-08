@@ -4,7 +4,8 @@ in format for prev_skills_lookup_sample.json
 import pandas as pd
 
 from ojd_daps_skills import bucket_name
-from ojd_daps_skills.utils.data_getters import get_s3_resource, load_s3_data, save_to_s3
+from ojd_daps_skills.utils.data_getters import (get_s3_resource, load_s3_data,
+                                                save_to_s3)
 from ojd_daps_skills.utils.text_cleaning import short_hash
 
 if __name__ == "__main__":
