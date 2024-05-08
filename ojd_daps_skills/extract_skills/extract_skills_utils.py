@@ -75,7 +75,7 @@ class ExtractConfig(BaseModel):
 
     @classmethod
     def create(
-        cls, ner_model_name: Optional[str] = None, ms_model_name: Optional[str] = None
+        cls, ner_model_name: str, ms_model_name: str
     ) -> "ExtractConfig":
         """
         Creates an instance of ExtractConfig by loading configurations.
@@ -94,9 +94,6 @@ class ExtractConfig(BaseModel):
         """
         # set Doc extension here
         # Use default values if none provided
-        ner_model_name = ner_model_name or cls.ner_model_name
-        ms_model_name = ms_model_name or cls.ms_model_name
-
         Doc.set_extension("skill_spans", default=[], force=True)
 
         if "/" in ner_model_name:
