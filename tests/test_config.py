@@ -1,6 +1,7 @@
 """
 Test cases for configuration managers.
 """
+
 import pandas as pd
 import pytest
 from sklearn.pipeline import Pipeline

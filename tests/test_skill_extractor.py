@@ -1,6 +1,7 @@
 """
 Test cases for the SkillExtractor class.
 """
+
 import pytest
 from spacy.tokens import Doc
 

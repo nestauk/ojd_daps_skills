@@ -7,7 +7,10 @@ from wasabi import msg
 from ojd_daps_skills import setup_spacy_extensions
 from ojd_daps_skills.extract_skills.extract_skills_utils import ExtractConfig
 from ojd_daps_skills.extract_skills.multiskill_rules import (
-    _split_duplicate_object, _split_duplicate_verb, _split_skill_mentions)
+    _split_duplicate_object,
+    _split_duplicate_verb,
+    _split_skill_mentions,
+)
 from ojd_daps_skills.map_skills.skill_mapper import SkillsMapper
 from ojd_daps_skills.map_skills.skill_mapper_utils import MapConfig
 from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
