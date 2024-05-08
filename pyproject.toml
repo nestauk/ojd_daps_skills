@@ -2,7 +2,8 @@
 name = "ojd-daps-skills"
 version = "0.1.0"
 description = ""
-authors = ["Nesta <"dataanalytics@nesta.org.uk">"]
+authors = ["Nesta <dataanalytics@nesta.org.uk>"]
+
 readme = "README.md"
 packages = [{include = "ojd_daps_skills"}]
 
