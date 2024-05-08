@@ -9,6 +9,7 @@ from ojd_daps_skills.extract_skills.extract_skills_utils import ExtractConfig
 from ojd_daps_skills.extract_skills.multiskill_rules import (
     _split_duplicate_object, _split_duplicate_verb, _split_skill_mentions)
 from ojd_daps_skills.map_skills.skill_mapper import SkillsMapper
+from ojd_daps_skills.map_skills.skill_mapper_utils import MapConfig
 from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
 
 setup_spacy_extensions()
@@ -30,15 +31,22 @@ class SkillsExtractor(BaseModel):
 
     def __init__(
         self,
+        taxonomy_name: str = "toy",
+        ner_model_name: str = "nestauk/en_skillner",
+        ms_model_name: str = "nestauk/multiskill-classifier",
     ):
-        super().__init__()
-        self._extract_config: ExtractConfig = ExtractConfig.create(
+        super().__init__(
+            taxonomy_name=taxonomy_name,
+            ner_model_name=ner_model_name,
+            ms_model_name=ms_model_name,
+        )
+        # Initialize additional properties if needed
+        self._extract_config = ExtractConfig.create(
             ner_model_name=self.ner_model_name,
             ms_model_name=self.ms_model_name,
         )
-        self._skill_mapper: SkillsMapper = SkillsMapper(
-            taxonomy_name=self.taxonomy_name
-        )
+        self._map_config = MapConfig.create(taxonomy_name=self.taxonomy_name)
+        self._skill_mapper = SkillsMapper(config=self._map_config)
 
     def extract_skills(self, job_ads: Union[str, List[str]]) -> List[Doc]:
         """Return a list of spaCy Doc objects with entities

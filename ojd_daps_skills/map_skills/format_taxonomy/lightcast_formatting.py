@@ -5,7 +5,7 @@ Lightcast- specific formating function to get lightcast data in the format neede
 |---|---|---|---|
 
 id: A unique id for the skill/hierarchy
-description: The skill/hierarchy level description text
+description: The skill/hierarchy level description texts
 type: What column name the skill/hier description is from (category, subcategory)
 hierarchy_levels: If a skill then which hierarchy levels is it in
 
@@ -155,10 +155,10 @@ def format_lightcast_skills(lightcast_skills: pd.DataFrame) -> pd.DataFrame:
     lightcast_formatted = pd.concat(
         [all_skills, category_skills, subcategory_skills]
     ).reset_index(drop=True)
-    lightcast_formatted["hierarchy_levels"] = (
-        lightcast_formatted.hierarchy_levels.apply(map_subcategory_ids).apply(
-            remove_bad_hierarchy_levels
-        )
+    lightcast_formatted[
+        "hierarchy_levels"
+    ] = lightcast_formatted.hierarchy_levels.apply(map_subcategory_ids).apply(
+        remove_bad_hierarchy_levels
     )
     lightcast_formatted = lightcast_formatted.query("description.notna()").query(
         'description != "NULL"'

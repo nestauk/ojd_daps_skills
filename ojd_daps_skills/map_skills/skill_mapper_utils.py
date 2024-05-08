@@ -161,8 +161,8 @@ class MapConfig(BaseModel):
     taxonomy_data: pd.DataFrame
     taxonomy_embeddings: Optional[Dict[int, np.array]]
     hier_mapper: Dict[str, str]
-    hard_coded_taxonomy: Optional[Dict[int, dict]]
-    previous_skill_matches: Optional[Dict[int, str]]
+    hard_coded_taxonomy: Union[Dict[int, Any], None]
+    previous_skill_matches: Union[Dict[int, Any], None]
 
     class Config:
         arbitrary_types_allowed = True

@@ -219,9 +219,9 @@ class SkillsMapper(BaseModel):
                             high_hier_codes += [hier_level] * round(sim_score * 10)
                 high_tax_skills_results = {}
                 for hier_level in range(self.config.taxonomy_config["num_hier_levels"]):
-                    high_tax_skills_results["most_common_level_" + str(hier_level)] = (
-                        get_most_common_code(high_hier_codes, hier_level)
-                    )
+                    high_tax_skills_results[
+                        "most_common_level_" + str(hier_level)
+                    ] = get_most_common_code(high_hier_codes, hier_level)
 
                 if high_tax_skills_results:
                     match_results["high_tax_skills"] = high_tax_skills_results
