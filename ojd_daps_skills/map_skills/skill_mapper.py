@@ -11,10 +11,7 @@ from spacy.tokens import Doc
 
 from ojd_daps_skills import setup_spacy_extensions
 from ojd_daps_skills.map_skills.skill_mapper_utils import (
-    MapConfig,
-    get_most_common_code,
-    get_top_comparisons,
-)
+    MapConfig, get_most_common_code, get_top_comparisons)
 from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
 
 setup_spacy_extensions()
@@ -30,11 +27,15 @@ class SkillsMapper(BaseModel):
     similarity of the skill embeddings.
 
     Attributes:
-        taxonomy_name (str): The name of the taxonomy.
+        taxonomy_name (str): The name of the taxonomy. Default is "toy".
+        config (MapConfig): A configuration manager for mapping skills.
+            It is initiated with the taxonomy name.
+        all_skills_unique_dict (Dict[int, str]): A dictionary with unique skill
+            hashes as keys and the corresponding skill text as values. It is
+            created during the get_embeddings method.
     """
 
-    taxonomy_name: str = "toy"
-    config: MapConfig = MapConfig.create(taxonomy_name)
+    config: MapConfig
     all_skills_unique_dict: Dict[int, str] = {}
 
     def get_top_taxonomy_skills(
@@ -125,20 +126,17 @@ class SkillsMapper(BaseModel):
         """
         all_skills = list(chain.from_iterable([doc._.skill_spans for doc in job_ads]))
         all_skills_unique = list(set(all_skills))
-
+        
+        if not isinstance(self.config.hard_coded_taxonomy, dict):
+            self.config.hard_coded_taxonomy = {}
+        
         self.all_skills_unique_dict = {}
         for skill in all_skills_unique:
             skill_clean = clean_text(skill)
             skill_hash = short_hash(skill_clean)
-            self.all_skills_unique_dict[skill_hash] = skill_clean
-
-        if self.config.previous_skill_matches:
-            self.all_skills_unique_dict = {
-                skill_hash: skill
-                for skill_hash, skill in self.all_skills_unique_dict.items()
-                if skill_hash not in self.config.previous_skill_matches.keys()
-            }
-
+            if not self.config.hard_coded_taxonomy.get(skill_hash):
+                self.all_skills_unique_dict[skill_hash] = skill_clean
+                        
         skill_embeddings = self.config.bert_model.transform(
             list(self.all_skills_unique_dict.values())
         )
@@ -171,11 +169,17 @@ class SkillsMapper(BaseModel):
 
         skill_embeddings, taxonomy_embeddings_dict = self.get_embeddings(job_ads)
 
+
         (
             top_skill_indxs,
             top_skill_scores,
             tax_skills_ix,
         ) = self.get_top_taxonomy_skills(skill_embeddings, taxonomy_embeddings_dict)
+        
+        print("top_skill_indxs", top_skill_indxs)
+        print("top_skill_scores", top_skill_scores)
+        print("tax_skills_ix", tax_skills_ix)
+        
 
         if self.config.taxonomy_config.get("skill_hier_info_col"):
             top_hier_skills, hier_types = self.get_top_hierarchy_skills(
@@ -185,6 +189,7 @@ class SkillsMapper(BaseModel):
         # Output the top matches (using the different metrics) for each OJO skill
         # Need to match indexes back correctly (hence all the ix variables)
         skill_mapper_list = []
+
         for i, (match_i, match_text) in enumerate(self.all_skills_unique_dict.items()):
             # Top highest matches (any threshold)
             match_results = {
@@ -242,7 +247,7 @@ class SkillsMapper(BaseModel):
                 )
 
             skill_mapper_list.append(match_results)
-
+        
         return skill_mapper_list
 
     def match_skills(self, job_ads: List[Doc]) -> Dict[int, dict]:
@@ -352,5 +357,8 @@ class SkillsMapper(BaseModel):
                 final_match.append(final_match_dict)
 
         final_match_dict = {match["ojo_skill_id"]: match for match in final_match}
+
+        if self.config.hard_coded_taxonomy:
+            final_match_dict = {**final_match_dict, **self.config.hard_coded_taxonomy}
 
         return final_match_dict

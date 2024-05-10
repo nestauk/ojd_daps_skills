@@ -31,13 +31,19 @@ def get_top_comparisons(ojo_embs: np.array, taxonomy_embs: np.array) -> Tuple[li
         Tuple[list]: List of top 10 most similar taxonomy skills
         for each extracted skill and their corresponding scores.
     """
+    if ojo_embs.size > 0:
+        emb_sims = cosine_similarity(ojo_embs, taxonomy_embs)
 
-    emb_sims = cosine_similarity(ojo_embs, taxonomy_embs)
+        top_sim_indxs = [list(np.argsort(sim)[::-1][:10]) for sim in emb_sims]
+        top_sim_scores = [
+            [float(s) for s in np.sort(sim)[::-1][:10]] for sim in emb_sims
+        ]
 
-    top_sim_indxs = [list(np.argsort(sim)[::-1][:10]) for sim in emb_sims]
-    top_sim_scores = [[float(s) for s in np.sort(sim)[::-1][:10]] for sim in emb_sims]
+        return top_sim_indxs, top_sim_scores
 
-    return top_sim_indxs, top_sim_scores
+    else:
+
+        return None, None
 
 
 def get_most_common_code(
@@ -155,20 +161,20 @@ class MapConfig(BaseModel):
             skills to taxonomy skills.
     """
 
-    taxonomy_name: str
-    taxonomy_config: Dict[str, Any]
-    bert_model: BertVectorizer
-    taxonomy_data: pd.DataFrame
-    taxonomy_embeddings: Optional[Dict[int, np.array]]
-    hier_mapper: Dict[str, str]
-    hard_coded_taxonomy: Union[Dict[int, Any], None]
-    previous_skill_matches: Union[Dict[int, Any], None]
+    taxonomy_name: Optional[str] = None
+    taxonomy_config: Optional[Dict[str, Any]] = None
+    bert_model: Optional[BertVectorizer] = None
+    taxonomy_data: Optional[pd.DataFrame] = None
+    taxonomy_embeddings: Optional[Dict[int, np.array]] = None
+    hier_mapper: Optional[Dict[str, str]] = None
+    hard_coded_taxonomy: Optional[Dict[int, Any]] = None
+    previous_skill_matches: Optional[Dict[int, Any]] = None
 
     class Config:
         arbitrary_types_allowed = True
 
     @classmethod
-    def create(cls, taxonomy_name: str) -> "MapConfig":
+    def create(cls, taxonomy_name: Optional[str] = "toy") -> "MapConfig":
         """
         Creates an instance of MapConfig by loading configurations.
 
@@ -183,7 +189,6 @@ class MapConfig(BaseModel):
             msg.fail: If the configuration file or data is not loaded locally, this error
                 is raised.
         """
-
         config_path = PROJECT_DIR / "ojd_daps_skills/configs"
         config_file = config_path / f"extract_skills_{taxonomy_name}.yaml"
 

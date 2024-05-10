@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from skops.hub_utils import download
+from spacy.language import Language
 from spacy.tokens import Doc
 from wasabi import msg
 
@@ -61,41 +62,42 @@ class ExtractConfig(BaseModel):
             You can use your own NER model if you have a custom NER model to extract skills.
         ms_model_name (str): The name of the Multi-Skill model to use. Current configurations
             supports "nestauk/multiskill-classifier".
-        nlp (spacy.Language): spaCy NLP model.
-        ms_model (Pipeline): Multi-Skill model pipeline.
+        nlp (Optional[Language]): The NLP model to use for Named Entity Recognition. This
+            is set during creation.
+        ms_model (Optional[Pipeline]): The SVM model to use for Multi-Skill classification.
+            This is set during creation.
     """
 
     ner_model_name: str = "nestauk/en_skillner"
     ms_model_name: str = "nestauk/multiskill-classifier"
-    nlp: spacy.Language
-    ms_model: Pipeline
+    nlp: Optional[Language] = None  # Optional, since it's set during creation
+    ms_model: Optional[Pipeline] = None  # Optional for the same reason
 
     class Config:
         arbitrary_types_allowed = True
 
     @classmethod
     def create(
-        cls, ner_model_name: str, ms_model_name: str
+        cls,
+        ner_model_name: Optional[str] = ner_model_name,
+        ms_model_name: Optional[str] = ms_model_name,
     ) -> "ExtractConfig":
         """
         Creates an instance of ExtractConfig by loading configurations.
 
         Parameters:
-            ner_model_name (str): The name of the NER model to use.
-            ms_model_name (str): The name of the Multi-Skill model to use.
+            ner_model_name (Optional[str]): The name of the NER model to use. Defaults
+                to "nestauk/en_skillner".
+            ms_model_name (Optional[str]): The name of the Multi-Skill model to use.
+                Defaults to "nestauk/multiskill-classifier".
 
         Returns:
             ExtractConfig: An initialized instance of this configuration class.
 
         Raises:
-            msg.fail: If the data or Multi-Skill models are not loaded
-            locally, this error is raised.
+            msg.fail: If the models are not loaded locally, this error is raised.
             OSError: If the NER model is not loaded, this error is raised.
         """
-        # set Doc extension here
-        # Use default values if none provided
-        Doc.set_extension("skill_spans", default=[], force=True)
-
         if "/" in ner_model_name:
             namespace, ner_name = ner_model_name.split("/")
         else:
@@ -107,11 +109,17 @@ class ExtractConfig(BaseModel):
             nlp = spacy.load(ner_name)
 
         except OSError:
-            msg.fail(f"{ner_model_name} NER model not loaded. Downloading model...")
-            os.system(
-                f"pip install https://huggingface.co/{namespace}/{ner_name}/resolve/main/{ner_name}-any-py3-none-any.whl"
-            )
-            nlp = spacy.load(ner_name)
+            if ner_model_name == "nestauk/en_skillner":
+                msg.info(f"{ner_model_name} NER model not loaded. Downloading model...")
+                os.system(
+                    f"pip install https://huggingface.co/{namespace}/{ner_name}/resolve/main/{ner_name}-any-py3-none-any.whl"
+                )
+                nlp = spacy.load(ner_name)
+            else:
+                msg.fail(
+                    f"{ner_model_name} NER model not loaded: {ner_model_name} Please install accordingly.",
+                    exit=1,
+                )
 
         # Load multi-skill model
         ms_model_path = PUBLIC_MODEL_FOLDER_PATH / "ms_model"
