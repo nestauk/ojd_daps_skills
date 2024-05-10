@@ -11,7 +11,10 @@ from spacy.tokens import Doc
 
 from ojd_daps_skills import setup_spacy_extensions
 from ojd_daps_skills.map_skills.skill_mapper_utils import (
-    MapConfig, get_most_common_code, get_top_comparisons)
+    MapConfig,
+    get_most_common_code,
+    get_top_comparisons,
+)
 from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
 
 setup_spacy_extensions()
@@ -126,17 +129,17 @@ class SkillsMapper(BaseModel):
         """
         all_skills = list(chain.from_iterable([doc._.skill_spans for doc in job_ads]))
         all_skills_unique = list(set(all_skills))
-        
+
         if not isinstance(self.config.hard_coded_taxonomy, dict):
             self.config.hard_coded_taxonomy = {}
-        
+
         self.all_skills_unique_dict = {}
         for skill in all_skills_unique:
             skill_clean = clean_text(skill)
             skill_hash = short_hash(skill_clean)
             if not self.config.hard_coded_taxonomy.get(skill_hash):
                 self.all_skills_unique_dict[skill_hash] = skill_clean
-                        
+
         skill_embeddings = self.config.bert_model.transform(
             list(self.all_skills_unique_dict.values())
         )
@@ -169,17 +172,15 @@ class SkillsMapper(BaseModel):
 
         skill_embeddings, taxonomy_embeddings_dict = self.get_embeddings(job_ads)
 
-
         (
             top_skill_indxs,
             top_skill_scores,
             tax_skills_ix,
         ) = self.get_top_taxonomy_skills(skill_embeddings, taxonomy_embeddings_dict)
-        
+
         print("top_skill_indxs", top_skill_indxs)
         print("top_skill_scores", top_skill_scores)
         print("tax_skills_ix", tax_skills_ix)
-        
 
         if self.config.taxonomy_config.get("skill_hier_info_col"):
             top_hier_skills, hier_types = self.get_top_hierarchy_skills(
@@ -247,7 +248,7 @@ class SkillsMapper(BaseModel):
                 )
 
             skill_mapper_list.append(match_results)
-        
+
         return skill_mapper_list
 
     def match_skills(self, job_ads: List[Doc]) -> Dict[int, dict]:
