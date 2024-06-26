@@ -27,51 +27,54 @@ neccessary data files to
 ℹ Data folder downloaded from
 /Users/india.kerlenesta/Projects/nesta/ojd_daps/ojd_daps_extension/ojd_daps_skills/ojd_daps_skills_data
 
-job_ad = "You should be skilled in Python, Java and R."
-job_ad_with_skills = sm(job_ad)
+job_ads = [
+    "The job involves communication skills and maths skills",
+    "The job involves Excel skills. You will also need good presentation skills",
+    "You will need experience in the IT sector.",
+]
+job_ad_with_skills = sm(job_ads)
 
 ℹ Getting embeddings for 3 texts ...
 ℹ Took 0.018199920654296875 seconds
 ```
 
-To access the extracted and mapped skills:
+To access the extracted and mapped skills for each inputted job advert:
 
 ```
-job_ad_with_skills_doc = job_ad_with_skills[0]
+for job_ad_with_skills_doc in job_ad_with_skills:
+  print(f"Job advert: {job_ad_with_skills_doc}")
+  # print raw ents (i.e. multiskills are not split, also include 'BENEFIT' and 'EXPERIENCE' spans)
+  print(f"Entities found: {[(ent.text, ent.label_) for ent in job_ad_with_skills_doc.ents]}")
+  # print SKILL spans (where SKILL spans are predicted as multiskills, split them)
+  print(f"Skill spans: {job_ad_with_skills_doc._.skill_spans}")
+  # print mapped skills to the "toy" taxonomy
+  print(f"Skills mapped: {job_ad_with_skills_doc._.mapped_skills}")
+  print("\n")
+```
 
-#print raw ents (i.e. multiskills are not split, also include 'BENEFIT' and 'EXPERIENCE' spans)
-job_ad_with_skills_doc.ents
->> (Python, Java, R.)
+Which returns:
 
-#print SKILL spans (where SKILL spans are predicted as multiskills, split them)
+```
+Job advert: The job involves communication skills and maths skills
+Entities found: [('communication skills', 'SKILL'), ('maths', 'SKILL')]
+Skill spans: [communication skills, maths]
+Skills mapped: [{'ojo_skill': 'communication skills', 'ojo_skill_id': 3144285826919113, 'match_skill': 'communication, collaboration and creativity', 'match_score': 0.75, 'match_type': 'most_common_level_1', 'match_id': 'S1'}, {'ojo_skill': 'maths', 'ojo_skill_id': 2887431344496880, 'match_skill': 'working with computers', 'match_score': 0.75, 'match_type': 'most_common_level_1', 'match_id': 'S5'}]
 
-job_ad_with_skills._.skill_spans
->> [Python, Java, R.]
 
-#print mapped skills to the "toy" taxonomy
-job_ad_with_skills._.mapped_skills
->> [{'ojo_skill': 'Python',
-  'ojo_skill_id': 2232581233191055,
-  'match_skill': 'working with computers',
-  'match_score': 0.75,
-  'match_type': 'most_common_level_1',
-  'match_id': 'S5'},
- {'ojo_skill': 'Java',
-  'ojo_skill_id': 2833100423969322,
-  'match_skill': 'working with computers',
-  'match_score': 0.6666666666666666,
-  'match_type': 'most_common_level_1',
-  'match_id': 'S5'},
- {'ojo_skill': 'R.',
-  'ojo_skill_id': 8622187230313821,
-  'match_skill': 'working with computers',
-  'match_score': 0.6666666666666666,
-  'match_type': 'most_common_level_1',
-  'match_id': 'S5'}]
+Job advert: The job involves Excel skills. You will also need good presentation skills
+Entities found: [('Excel', 'SKILL'), ('presentation skills', 'SKILL')]
+Skill spans: [Excel, presentation skills]
+Skills mapped: [{'ojo_skill': 'Excel', 'ojo_skill_id': 2576630861021310, 'match_skill': 'use spreadsheets software', 'match_score': 0.7379249448453751, 'match_type': 'skill', 'match_id': 'abcd'}, {'ojo_skill': 'presentation skills', 'ojo_skill_id': 1846141317334203, 'match_skill': 'communication, collaboration and creativity', 'match_score': 0.5, 'match_type': 'most_common_level_1', 'match_id': 'S1'}]
+
+
+Job advert: You will need experience in the IT sector.
+Entities found: [('experience in the IT sector', 'EXPERIENCE')]
+Skill spans: []
+Skills mapped: []
 ```
 
 To run tests:
 
 ```
-pytest tests/
+poetry run pytest tests/
 ```

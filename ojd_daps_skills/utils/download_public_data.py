@@ -17,15 +17,15 @@ def download_data():
     )
 
     bucket_name = "open-jobs-indicators"
-    key = "escoe_extension/ojd_daps_skills_data_new.zip"
+    key = "escoe_extension/ojd_daps_skills_data_refactor.zip"
 
     try:
-        s3.download_file(bucket_name, key, f"{str(PUBLIC_DATA_FOLDER_PATH)}_new.zip")
+        s3.download_file(bucket_name, key, f"{str(PUBLIC_DATA_FOLDER_PATH)}_refactor.zip")
 
-        with ZipFile(f"{PUBLIC_DATA_FOLDER_PATH}_new.zip", "r") as zip_ref:
+        with ZipFile(f"{PUBLIC_DATA_FOLDER_PATH}_refactor.zip", "r") as zip_ref:
             zip_ref.extractall(PROJECT_DIR)
 
-        os.remove(f"{PUBLIC_DATA_FOLDER_PATH}_new.zip")
+        os.remove(f"{PUBLIC_DATA_FOLDER_PATH}_refactor.zip")
         msg.info(f"Data folder downloaded from {PUBLIC_DATA_FOLDER_PATH}")
 
     except ClientError as ce:

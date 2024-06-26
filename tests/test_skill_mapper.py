@@ -7,12 +7,14 @@ import pandas as pd
 import pytest
 
 from ojd_daps_skills.extract_skills.extract_skills_utils import ExtractConfig
+from ojd_daps_skills.map_skills.skill_mapper_utils import MapConfig
 from ojd_daps_skills.map_skills.skill_mapper import SkillsMapper
 
 
 @pytest.fixture
 def skill_mapper():
-    sm = SkillsMapper(taxonomy_name="toy")
+    map_config = MapConfig.create(taxonomy_name="toy")
+    sm = SkillsMapper(config=map_config)
     return sm
 
 

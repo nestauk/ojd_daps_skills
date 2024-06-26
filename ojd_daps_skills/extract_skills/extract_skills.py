@@ -99,7 +99,7 @@ class SkillsExtractor(BaseModel):
                         for rule in rules:
                             split_ent = rule(ent)
                             if split_ent:
-                                all_skill_ents.append(split_ent)
+                                all_skill_ents += split_ent # Add the list of split skills
                         # else, if no split, append the original entity
                         all_skill_ents.append(ent)
                     else:

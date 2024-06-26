@@ -178,10 +178,6 @@ class SkillsMapper(BaseModel):
             tax_skills_ix,
         ) = self.get_top_taxonomy_skills(skill_embeddings, taxonomy_embeddings_dict)
 
-        print("top_skill_indxs", top_skill_indxs)
-        print("top_skill_scores", top_skill_scores)
-        print("tax_skills_ix", tax_skills_ix)
-
         if self.config.taxonomy_config.get("skill_hier_info_col"):
             top_hier_skills, hier_types = self.get_top_hierarchy_skills(
                 skill_embeddings, taxonomy_embeddings_dict
