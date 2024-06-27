@@ -124,11 +124,11 @@ class ExtractConfig(BaseModel):
         # Load multi-skill model
         ms_model_path = PUBLIC_MODEL_FOLDER_PATH / "ms_model"
         try:
-            clf = joblib.load(ms_model_path / "multiskill-classifier8lnyq0he.pkl")
+            clf = joblib.load(ms_model_path / "multiskill-classifiert4_v38_0.pkl")
         except Exception:
             msg.fail("Multi-skill classifier not loaded. Downloading model...")
             download(repo_id=ms_model_name, dst=ms_model_path)
-            clf = joblib.load(ms_model_path / "multiskill-classifier8lnyq0he.pkl")
+            clf = joblib.load(ms_model_path / "multiskill-classifiert4_v38_0.pkl")
 
         ms_model = Pipeline(
             [("transformer", MultiSkillTransformer()), ("classifier", clf)]
