@@ -13,7 +13,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from skops.hub_utils import download
 from spacy.language import Language
-from spacy.tokens import Doc
 from wasabi import msg
 
 from ojd_daps_skills import PUBLIC_MODEL_FOLDER_PATH

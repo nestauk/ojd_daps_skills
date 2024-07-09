@@ -66,7 +66,7 @@ def test_get_top_taxonomy_skills(
     assert len(top_taxonomy_skills) == 3
     assert isinstance(top_taxonomy_skills[0], list)
     assert isinstance(top_taxonomy_skills[1], list)
-    assert type(top_taxonomy_skills[2]) == pd.core.indexes.base.Index
+    assert type(top_taxonomy_skills[2]) is pd.core.indexes.base.Index
     assert len(top_taxonomy_skills[1][0]) == 2
 
 

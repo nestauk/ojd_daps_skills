@@ -13,10 +13,10 @@ from ojd_daps_skills import PROJECT_DIR, PUBLIC_DATA_FOLDER_PATH
 def download_data():
     """Download public data. Expected to run once on first use."""
     s3 = boto3.client(
-        "s3", region_name="eu-west-1", config=Config(signature_version=UNSIGNED)
+        "s3", region_name="eu-west-2", config=Config(signature_version=UNSIGNED)
     )
 
-    bucket_name = "open-jobs-indicators"
+    bucket_name = "nesta-open-data"
     key = "escoe_extension/ojd_daps_skills_data_refactor.zip"
 
     try:
