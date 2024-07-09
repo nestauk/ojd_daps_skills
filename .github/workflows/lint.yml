@@ -25,7 +25,7 @@ jobs:
       - name: Run ruff
         if: always()
         shell: bash
-        run: python -m ruff ojd_daps_skills tests
+        run: python -m ruff check ojd_daps_skills tests
 
       - name: Run black
         if: always()
