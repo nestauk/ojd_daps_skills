@@ -73,7 +73,7 @@ class SkillsExtractor(BaseModel):
 
     # map skills function
 
-    def get_skills(self, job_ad: str, min_length: int=75) -> Doc:
+    def get_skills(self, job_ad: str, min_length: int = 75) -> Doc:
         """Return a spaCy Doc object with entities
             and split 'SKILL' spans.
 
@@ -103,9 +103,11 @@ class SkillsExtractor(BaseModel):
                             for rule in rules:
                                 split_ent = rule(ent)
                                 if split_ent:
-                                    all_skill_ents += split_ent # Add the list of split skills
+                                    all_skill_ents += (
+                                        split_ent  # Add the list of split skills
+                                    )
                                     split_found = True
-                                    break # stop going through rules
+                                    break  # stop going through rules
                         if not split_found:
                             # else, if no split, append the original entity
                             all_skill_ents.append(ent)

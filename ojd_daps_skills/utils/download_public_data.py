@@ -20,7 +20,9 @@ def download_data():
     key = "escoe_extension/ojd_daps_skills_data_refactor.zip"
 
     try:
-        s3.download_file(bucket_name, key, f"{str(PUBLIC_DATA_FOLDER_PATH)}_refactor.zip")
+        s3.download_file(
+            bucket_name, key, f"{str(PUBLIC_DATA_FOLDER_PATH)}_refactor.zip"
+        )
 
         with ZipFile(f"{PUBLIC_DATA_FOLDER_PATH}_refactor.zip", "r") as zip_ref:
             zip_ref.extractall(PROJECT_DIR)
