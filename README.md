@@ -1,3 +1,25 @@
+# Skills Extractor
+
+- [Installation](#installation)
+- [Development](#development)
+
+## Welcome to Nesta's Skills Extractor Library
+
+Welcome to the documentation of Nesta's skills extractor library.
+
+This page contains information on how to install and use Nesta's skills extraction library. The skills library allows you to extract skills phrases from job advertisement texts and maps them onto a skills taxonomy of your choice.
+
+We currently support three different taxonomies to map onto: the [European Commission’s European Skills, Competences, and Occupations (ESCO)](https://esco.ec.europa.eu/en/about-esco/what-esco), [Lightcast’s Open Skills](https://skills.lightcast.io/) and a “toy” taxonomy developed internally for the purpose of testing.
+
+If you'd like to learn more about the models used in the library, please refer to the [model card page](https://nestauk.github.io/ojd_daps_skills/build/html/model_card.html).
+
+You may also want to read more about the wider project by reading:
+
+1. Our [Introduction blog](https://www.escoe.ac.uk/the-skills-extractor-library)
+2. Our [interactive analysis blog](https://www.nesta.org.uk/data-visualisation-and-interactive/exploring-uk-skills-demand/)
+
+## Installation <a name="installation"></a>
+
 To install as a package:
 
 ```
@@ -78,3 +100,17 @@ To run tests:
 ```
 poetry run pytest tests/
 ```
+
+### Contributor guidelines
+
+The technical and working style guidelines can be found [here](https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md).
+
+If contributing, changes will need to be pushed to a new branch in order for our code checks to be triggered.
+
+---
+
+<small><p>This project was made possible via funding from the <a target="_blank" href="https://www.escoe.ac.uk/">Economic Statistics Centre of Excellence</a></p></small>
+
+<small><p>Project template is based on <a target="_blank" href="https://github.com/nestauk/ds-cookiecutter">Nesta's data science project template</a>
+(<a href="http://nestauk.github.io/ds-cookiecutter">Read the docs here</a>).
+</small>
