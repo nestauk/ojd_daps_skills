@@ -2,11 +2,10 @@
 Test cases for configuration managers.
 """
 
-import pandas as pd
 import pytest
 from sklearn.pipeline import Pipeline
 
-from ojd_daps_skills import PUBLIC_DATA_FOLDER_PATH, PUBLIC_MODEL_FOLDER_PATH
+from ojd_daps_skills import PUBLIC_MODEL_FOLDER_PATH
 from ojd_daps_skills.extract_skills.extract_skills_utils import ExtractConfig
 from ojd_daps_skills.map_skills.skill_mapper_utils import MapConfig
 

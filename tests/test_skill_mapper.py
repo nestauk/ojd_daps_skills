@@ -2,8 +2,6 @@
 Test cases for the SkillsMapper class.
 """
 
-import numpy as np
-import pandas as pd
 import pytest
 
 from ojd_daps_skills.extract_skills.extract_skills_utils import ExtractConfig
