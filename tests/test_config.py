@@ -31,6 +31,7 @@ def test_extract_config(extract_config):
 
     assert ms_model_path.exists()
 
+
 # def test_map_config(map_config):
 #     assert PUBLIC_DATA_FOLDER_PATH.exists()
 #     assert map_config.taxonomy_name == "toy"
