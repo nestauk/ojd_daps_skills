@@ -1,0 +1,33 @@
+name: Deploy docs to gh-pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Deploy docs to gh-pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      # - name: Install dependencies
+      #   run: |
+      #     $CONDA/bin/python -m pip install --upgrade pip
+      #     $CONDA/bin/python -m pip install mkdocs-material
+
+      - name: Deploy
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFIG_FILE: mkdocs.yml
+          REQUIREMENTS: requirements.txt

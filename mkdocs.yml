@@ -1,0 +1,40 @@
+site_name: OJD DAPS Skills Extraction
+site_description: Extracting skill descriptions from job adverts and mapping to standardised hierarchies.
+site_url: https://nestauk.github.io/ojd_daps_skills
+repo_name: nestauk/ojd_daps_skills
+repo_url: https://github.com/nestauk/ojd_daps_skills
+extra:
+  homepage: https://nestauk.github.io/ojd_daps_skills
+docs_dir: .
+extra_css:
+  - docs/style.css
+theme:
+  name: material
+  logo: docs/images/favicon.ico
+  favicon: docs/images/favicon.ico
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+  font:
+    text: Century Gothic
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: amber
+      accent: pink
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+nav:
+  - Home: docs/index.md
+plugins:
+  - same-dir
