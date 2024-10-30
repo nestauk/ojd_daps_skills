@@ -7,11 +7,11 @@ extra:
   homepage: https://nestauk.github.io/ojd_daps_skills
 docs_dir: .
 extra_css:
-  - docs/style.css
+  - styles.css
 theme:
   name: material
-  logo: docs/images/favicon.ico
-  favicon: docs/images/favicon.ico
+  logo: images/favicon.png
+  favicon: images/favicon.png
   features:
     - navigation.instant
     - navigation.tracking
@@ -35,6 +35,9 @@ theme:
         icon: material/weather-sunny
         name: Switch to light mode
 nav:
-  - Home: docs/index.md
+  - Home: index.md
+  - Model cards: source/model_card.md
+  - Pipeline summary and metrics: source/pipeline_summary.md
+  - Entity labelling: source/labelling.md
 plugins:
   - same-dir
