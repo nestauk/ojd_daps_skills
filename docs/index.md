@@ -114,4 +114,3 @@ If you would like to demo the library using a front end, we have also built a st
 The technical and working style guidelines can be found [here](https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md).
 
 If contributing, changes will need to be pushed to a new branch in order for our code checks to be triggered.
-
