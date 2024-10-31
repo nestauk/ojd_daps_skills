@@ -23,9 +23,7 @@ You may also want to read more about the wider project by reading:
 To install as a package:
 
 ```
-pipx install poetry
-poetry shell
-poetry install
+pip install ojd-daps-skills
 ```
 
 To extract skills from a job advert:
@@ -93,6 +91,14 @@ Job advert: You will need experience in the IT sector.
 Entities found: [('experience in the IT sector', 'EXPERIENCE')]
 Skill spans: []
 Skills mapped: []
+```
+
+### Development
+
+```
+pipx install poetry
+poetry shell
+poetry install
 ```
 
 To run tests:
