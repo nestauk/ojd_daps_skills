@@ -113,7 +113,7 @@ class ExtractConfig(BaseModel):
                 os.system(
                     f'pip install "{ner_name} @ https://huggingface.co/{namespace}/{ner_name}/resolve/main/{ner_name}-any-py3-none-any.whl"'
                 )
-                msg.info(f"Model downloaded")
+                msg.info("Model downloaded")
                 nlp = spacy.load(ner_name)
             else:
                 msg.fail(
