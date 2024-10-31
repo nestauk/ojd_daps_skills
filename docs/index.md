@@ -26,9 +26,7 @@ You can use pip to install the library:
 
 `pip install ojd-daps-skills`
 
-You will also need to install spaCy’s English language model:
-
-`python -m spacy download en_core_web_sm`
+Note: If you are using a conda environment you may need to do `conda install scipy` before pip installing this library.
 
 Note that this package was developed on MacOS and tested on Ubuntu. Changes have been made to be compatible on a Windows system but are not tested and cannot be guaranteed.
 
