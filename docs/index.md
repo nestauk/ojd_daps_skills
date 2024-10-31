@@ -2,7 +2,6 @@
 
 - [Installation](#installation)
 - [Using Nesta’s Skills Extractor library](#tldr-using-nestas-skills-extractor-library)
-- Development
 
 ## Welcome to Nesta’s Skills Extractor Library
 
@@ -14,7 +13,7 @@ This page contains information on how to install and use Nesta’s skills extrac
 
 We currently support three different taxonomies to map onto: the European Commission’s European Skills, Competences, and Occupations (ESCO), Lightcast’s Open Skills and a “toy” taxonomy developed internally for the purpose of testing.
 
-If you’d like to learn more about the models used in the library, please refer to the model card page.
+If you’d like to learn more about the models used in the library, please refer to [the model card page](source/model_card.md). For more information on how we labelled the training data for the models see [the labelling page](source/labelling.md). A more in depth discussion of the pipeline and evaluation of it can be found in [the pipeline summary and metrics page](source/pipeline_summary.md).
 
 You may also want to read more about the wider project by reading:
 
@@ -33,7 +32,7 @@ You will also need to install spaCy’s English language model:
 
 Note that this package was developed on MacOS and tested on Ubuntu. Changes have been made to be compatible on a Windows system but are not tested and cannot be guaranteed.
 
-When the package is first used it will automatically download a folder of neccessary data and models. (~1GB)
+When the package is first used it will automatically download a folder of neccessary data and models (~1GB).
 
 ## TL;DR: Using Nesta’s Skills Extractor library
 
@@ -115,4 +114,3 @@ If you would like to demo the library using a front end, we have also built a st
 The technical and working style guidelines can be found [here](https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md).
 
 If contributing, changes will need to be pushed to a new branch in order for our code checks to be triggered.
-

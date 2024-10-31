@@ -111,8 +111,9 @@ class ExtractConfig(BaseModel):
             if ner_model_name == "nestauk/en_skillner":
                 msg.info(f"{ner_model_name} NER model not loaded. Downloading model...")
                 os.system(
-                    f"pip install https://huggingface.co/{namespace}/{ner_name}/resolve/main/{ner_name}-any-py3-none-any.whl"
+                    f'pip install "{ner_name} @ https://huggingface.co/{namespace}/{ner_name}/resolve/main/{ner_name}-any-py3-none-any.whl"'
                 )
+                msg.info("Model downloaded")
                 nlp = spacy.load(ner_name)
             else:
                 msg.fail(
