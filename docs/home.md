@@ -13,7 +13,7 @@ This page contains information on how to install and use Nesta’s skills extrac
 
 We currently support three different taxonomies to map onto: the European Commission’s European Skills, Competences, and Occupations (ESCO), Lightcast’s Open Skills and a “toy” taxonomy developed internally for the purpose of testing.
 
-If you’d like to learn more about the models used in the library, please refer to [the model card page](source/model_card.md). For more information on how we labelled the training data for the models see [the labelling page](source/labelling.md). A more in depth discussion of the pipeline and evaluation of it can be found in [the pipeline summary and metrics page](source/pipeline_summary.md).
+If you’d like to learn more about the models used in the library, please refer to [the model card page](model_card.md). For more information on how we labelled the training data for the models see [the labelling page](labelling.md). A more in depth discussion of the pipeline and evaluation of it can be found in [the pipeline summary and metrics page](pipeline_summary.md).
 
 You may also want to read more about the wider project by reading:
 

@@ -35,9 +35,9 @@ theme:
         icon: material/weather-sunny
         name: Switch to light mode
 nav:
-  - Home: index.md
-  - Model cards: source/model_card.md
-  - Pipeline summary and metrics: source/pipeline_summary.md
-  - Entity labelling: source/labelling.md
+  - Home: home.md
+  - Model cards: model_card.md
+  - Pipeline summary and metrics: pipeline_summary.md
+  - Entity labelling: labelling.md
 plugins:
   - same-dir
