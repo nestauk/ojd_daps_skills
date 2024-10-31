@@ -26,6 +26,8 @@ To install as a package:
 pip install ojd-daps-skills
 ```
 
+Note: If you are using a conda environment you may need to do `conda install scipy` before pip installing this library.
+
 To extract skills from a job advert:
 
 ```
