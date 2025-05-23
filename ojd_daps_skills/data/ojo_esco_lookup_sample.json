@@ -1,0 +1,802 @@
+{
+  "5383823806271199": {
+    "ojo_skill": "analyse data",
+    "ojo_job_skill_hash": 5383823806271199,
+    "match_skill": "analyse data",
+    "match_score": 1.0000000000000004,
+    "match_type": "skill",
+    "match_id": "f2d57f41-43b4-4f5b-8100-3df5c21eda50"
+  },
+  "2430239839433804": {
+    "ojo_skill": "Able to build effective and positive relationships",
+    "ojo_job_skill_hash": 2430239839433804,
+    "match_skill": "developing professional relationships or networks",
+    "match_score": 0.35714285714285715,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.2.3"
+  },
+  "2511534173816521": {
+    "ojo_skill": "numerate",
+    "ojo_job_skill_hash": 2511534173816521,
+    "match_skill": "numeracy",
+    "match_score": 0.7987767047457117,
+    "match_type": "skill",
+    "match_id": "4339176e-3acd-4f7f-a5d9-445bee3d23f2"
+  },
+  "2110314254782785": {
+    "ojo_skill": "collating large data sets",
+    "ojo_job_skill_hash": 2110314254782785,
+    "match_skill": "managing and analysing digital data",
+    "match_score": 0.4090909090909091,
+    "match_type": "most_common_level_3",
+    "match_id": "S5.5.2"
+  },
+  "3267022640743417": {
+    "ojo_skill": "Preparation - As smart buildings   ",
+    "ojo_job_skill_hash": 3267022640743417,
+    "match_skill": "designing structures or facilities",
+    "match_score": 0.3287671232876712,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.11.4"
+  },
+  "9286079035321237": {
+    "ojo_skill": "motivate self",
+    "ojo_job_skill_hash": 9286079035321237,
+    "match_skill": "motivate others",
+    "match_score": 0.8693496536647762,
+    "match_type": "skill",
+    "match_id": "e2d44a9b-f28c-489e-9861-b654b5ded507"
+  },
+  "2435106861176899": {
+    "ojo_skill": "enthusiastic",
+    "ojo_job_skill_hash": 2435106861176899,
+    "match_skill": "demonstrating enthusiasm",
+    "match_score": 0.7197271924088601,
+    "match_type": "skill",
+    "match_id": "22b7d99d-252f-4572-8e3c-438ea87607eb"
+  },
+  "1029469258111984": {
+    "ojo_skill": "Work closely with key customer contracts to understand requirements",
+    "ojo_job_skill_hash": 1029469258111984,
+    "match_skill": "satisfy customer requirements",
+    "match_score": 0.7219917884785771,
+    "match_type": "skill",
+    "match_id": "8330c86e-63cf-4be6-849f-4f77628cc5c5"
+  },
+  "5907085115439321": {
+    "ojo_skill": "creation and management of data analysis",
+    "ojo_job_skill_hash": 5907085115439321,
+    "match_skill": "implement data analysis",
+    "match_score": 0.8055924808326855,
+    "match_type": "skill",
+    "match_id": "2b92a5b2-6758-4ee3-9fb4-b6387a55cc8f"
+  },
+  "5579980628405288": {
+    "ojo_skill": "Solve product-related problems",
+    "ojo_job_skill_hash": 5579980628405288,
+    "match_skill": "wholesale and retail sales",
+    "match_score": 0.4189189189189189,
+    "match_type": "most_common_level_3",
+    "match_id": "K0416"
+  },
+  "1040567189272255": {
+    "ojo_skill": "Microsoft office",
+    "ojo_job_skill_hash": 1040567189272255,
+    "match_skill": "use microsoft office",
+    "match_score": 0.9096666049354979,
+    "match_type": "skill",
+    "match_id": "f683ae1d-cb7c-4aa1-b9fe-205e1bd23535"
+  },
+  "4453577281219007": {
+    "ojo_skill": "Analyse business problems",
+    "ojo_job_skill_hash": 4453577281219007,
+    "match_skill": "business analyses",
+    "match_score": 0.7742490391621116,
+    "match_type": "skill",
+    "match_id": "633a3637-2c6b-40ae-ac38-289eb2a62aa6"
+  },
+  "1792384537390989": {
+    "ojo_skill": "personable",
+    "ojo_job_skill_hash": 1792384537390989,
+    "match_skill": "working in teams",
+    "match_score": 0.4,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.8.1"
+  },
+  "2013391810572062": {
+    "ojo_skill": "SQL",
+    "ojo_job_skill_hash": 2013391810572062,
+    "match_skill": "SQL",
+    "match_score": 1.0000000000000009,
+    "match_type": "skill",
+    "match_id": "598de5b0-5b58-4ea7-8058-a4bc4d18c742"
+  },
+  "3593037790061871": {
+    "ojo_skill": "setting core data metrics",
+    "ojo_job_skill_hash": 3593037790061871,
+    "match_skill": "directing operational activities",
+    "match_score": 0.21739130434782608,
+    "match_type": "most_common_level_3",
+    "match_id": "S4.2.1"
+  },
+  "2252507947984728": {
+    "ojo_skill": "modelling techniques",
+    "ojo_job_skill_hash": 2252507947984728,
+    "match_skill": "developing models",
+    "match_score": 0.7774368197994677,
+    "match_type": "skill",
+    "match_id": "e2887d71-8ff4-4188-9926-22bdaefa7713"
+  },
+  "1282462987067479": {
+    "ojo_skill": "Analytical",
+    "ojo_job_skill_hash": 1282462987067479,
+    "match_skill": "impart analytical insights",
+    "match_score": 0.7884572244945516,
+    "match_type": "skill",
+    "match_id": "f263da7f-0708-42c2-b1a9-39083416f632"
+  },
+  "2198682268113986": {
+    "ojo_skill": "Willingness to learn and adapt to new challenges",
+    "ojo_job_skill_hash": 2198682268113986,
+    "match_skill": "show willingness to learn",
+    "match_score": 0.7341744891476267,
+    "match_type": "skill",
+    "match_id": "9bf266a6-188b-4d17-a22f-2f266d76832b"
+  },
+  "1990901524501881": {
+    "ojo_skill": "Willingness to travel occasionally",
+    "ojo_job_skill_hash": 1990901524501881,
+    "match_skill": "advising on products and services",
+    "match_score": 0.20652173913043478,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.5.3"
+  },
+  "1863216366180278": {
+    "ojo_skill": "Design and develop prototype models to test business solutions before committing resources",
+    "ojo_job_skill_hash": 1863216366180278,
+    "match_skill": "technical or academic writing",
+    "match_score": 0.3469387755102041,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.13.3"
+  },
+  "2639148365857933": {
+    "ojo_skill": "computer skills",
+    "ojo_job_skill_hash": 2639148365857933,
+    "match_skill": "computer literacy",
+    "match_score": 0.7332890550508839,
+    "match_type": "skill",
+    "match_id": "d15ce60f-ddab-41ce-ba56-398451b77b60"
+  },
+  "2807182022854578": {
+    "ojo_skill": "Drive to achieve continuous improvement",
+    "ojo_job_skill_hash": 2807182022854578,
+    "match_skill": "continuous improvement strategies",
+    "match_score": 0.8284038280423867,
+    "match_type": "skill",
+    "match_id": "0550431f-9c8b-4204-9c45-59bc5feacf06"
+  },
+  "8487344631144917": {
+    "ojo_skill": "maintain clear communication channels",
+    "ojo_job_skill_hash": 8487344631144917,
+    "match_skill": "handle specific communication channels",
+    "match_score": 0.7957005684890331,
+    "match_type": "skill",
+    "match_id": "415abd43-e8e5-4643-b5da-5f11307af57a"
+  },
+  "2015212180889965": {
+    "ojo_skill": "communication",
+    "ojo_job_skill_hash": 2015212180889965,
+    "match_skill": "communication",
+    "match_score": 1.0000000000000007,
+    "match_type": "skill",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "1489327299838821": {
+    "ojo_skill": "Good understanding of the FM",
+    "ojo_job_skill_hash": 1489327299838821,
+    "match_skill": "FM in the organisation",
+    "match_score": 0.768528537273605,
+    "match_type": "skill",
+    "match_id": "50f5e41d-7ce3-481b-aed7-ee9484545bc4"
+  },
+  "1019043409398763": {
+    "ojo_skill": "Draft strategies",
+    "ojo_job_skill_hash": 1019043409398763,
+    "match_skill": "draft rules",
+    "match_score": 0.8005921911777898,
+    "match_type": "skill",
+    "match_id": "b1d8b079-135d-4ebc-a1b4-e5d7db8af679"
+  },
+  "2576630861021310": {
+    "ojo_skill": "Excel",
+    "ojo_job_skill_hash": 2576630861021310,
+    "match_skill": "use spreadsheets",
+    "match_score": 0.7810063362368972,
+    "match_type": "skill",
+    "match_id": "db77825e-0f3e-47d0-abdb-356794484272"
+  },
+  "2829685616048621": {
+    "ojo_skill": "assess a varying range of data points around energy, people, assets, systems + others Main roles and responsibilities",
+    "ojo_job_skill_hash": 2829685616048621,
+    "match_skill": "analysing and evaluating information and data",
+    "match_score": 0.5533861152880534,
+    "match_type": "top_level_3_tax_level",
+    "match_id": "S2.7.0"
+  },
+  "1465746349739273": {
+    "ojo_skill": "Draft results",
+    "ojo_job_skill_hash": 1465746349739273,
+    "match_skill": "assess drafts",
+    "match_score": 0.7784250621473184,
+    "match_type": "skill",
+    "match_id": "f41f8ff8-b3c6-4f83-9e17-bfa857a01c94"
+  },
+  "2974171605367816": {
+    "ojo_skill": "Adaptability - Being methodological in approach",
+    "ojo_job_skill_hash": 2974171605367816,
+    "match_skill": "adapt to change",
+    "match_score": 0.22388059701492538,
+    "match_type": "most_common_level_3",
+    "match_id": "A1.1.0"
+  },
+  "4945593499378589": {
+    "ojo_skill": "enable effective project delivery",
+    "ojo_job_skill_hash": 4945593499378589,
+    "match_skill": "management and administration",
+    "match_score": 0.21739130434782608,
+    "match_type": "most_common_level_3",
+    "match_id": "K0413"
+  },
+  "2778787364661408": {
+    "ojo_skill": "Interpret and present concise analysis to business leaders",
+    "ojo_job_skill_hash": 2778787364661408,
+    "match_skill": "analysing business operations",
+    "match_score": 0.4,
+    "match_type": "most_common_level_3",
+    "match_id": "S2.7.4"
+  },
+  "3117002652710469": {
+    "ojo_skill": "Develop partnership relationships",
+    "ojo_job_skill_hash": 3117002652710469,
+    "match_skill": "create partnership modalities",
+    "match_score": 0.7722781869187987,
+    "match_type": "skill",
+    "match_id": "6f9ac146-8bbd-4b9d-9514-d85586caf17a"
+  },
+  "1656880231401514": {
+    "ojo_skill": "problem solving skills",
+    "ojo_job_skill_hash": 1656880231401514,
+    "match_skill": "solve problems",
+    "match_score": 0.7688028600401018,
+    "match_type": "skill",
+    "match_id": "334e3e49-fb02-4051-809a-f06adfdc1c40"
+  },
+  "2338980584549589": {
+    "ojo_skill": "tracking performance and informing current   future strategic shifts to satisfy the needs of  our customers",
+    "ojo_job_skill_hash": 2338980584549589,
+    "match_skill": "monitoring operational activities",
+    "match_score": 0.2,
+    "match_type": "most_common_level_3",
+    "match_id": "S2.8.2"
+  },
+  "2304941419788200": {
+    "ojo_skill": "Attention to detail",
+    "ojo_job_skill_hash": 2304941419788200,
+    "match_skill": "attend to detail",
+    "match_score": 0.7607519993478076,
+    "match_type": "skill",
+    "match_id": "83e6510b-ffeb-4aec-959c-4265fd0ff7b7"
+  },
+  "1969263575350592": {
+    "ojo_skill": "approachable",
+    "ojo_job_skill_hash": 1969263575350592,
+    "match_skill": "communication, collaboration and creativity",
+    "match_score": 0.3125,
+    "match_type": "most_common_level_1",
+    "match_id": "S1"
+  },
+  "1521072375623152": {
+    "ojo_skill": "communicate effectively",
+    "ojo_job_skill_hash": 1521072375623152,
+    "match_skill": "communicate efficiently and effectively",
+    "match_score": 0.902953212420593,
+    "match_type": "skill",
+    "match_id": "6d56955d-2b6c-471f-890d-8c17ab16053b"
+  },
+  "3702929214399907": {
+    "ojo_skill": "Close attention to detail",
+    "ojo_job_skill_hash": 3702929214399907,
+    "match_skill": "attend to detail",
+    "match_score": 0.21296296296296297,
+    "match_type": "most_common_level_3",
+    "match_id": "A1.2.0"
+  },
+  "2248429396786595": {
+    "ojo_skill": "analysing large data sets",
+    "ojo_job_skill_hash": 2248429396786595,
+    "match_skill": "analysing big data",
+    "match_score": 0.7179981330209901,
+    "match_type": "skill",
+    "match_id": "47a49cd6-097d-457a-9f7b-c290c14930d5"
+  },
+  "3904299899588344": {
+    "ojo_skill": "analysis, acting",
+    "ojo_job_skill_hash": 3904299899588344,
+    "match_skill": "acting methods",
+    "match_score": 0.7399148211092277,
+    "match_type": "skill",
+    "match_id": "74be20a7-fcfe-4715-bb62-8937a547a982"
+  },
+  "2481609707662616": {
+    "ojo_skill": "Draft key objectives",
+    "ojo_job_skill_hash": 2481609707662616,
+    "match_skill": "giving feedback",
+    "match_score": 0.2597402597402597,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.8.3"
+  },
+  "1391233268464308": {
+    "ojo_skill": "Develop clear communication channels",
+    "ojo_job_skill_hash": 1391233268464308,
+    "match_skill": "utilise specific communication channels",
+    "match_score": 0.8008316276255498,
+    "match_type": "skill",
+    "match_id": "415abd43-e8e5-4643-b5da-5f11307af57a"
+  },
+  "1230353504472240": {
+    "ojo_skill": "organisational skills",
+    "ojo_job_skill_hash": 1230353504472240,
+    "match_skill": "employ organisational techniques",
+    "match_score": 0.767757152660536,
+    "match_type": "skill",
+    "match_id": "d3eccb86-f02d-4950-bfbd-20b9510774a1"
+  },
+  "2396570783054645": {
+    "ojo_skill": "work under pressure",
+    "ojo_job_skill_hash": 2396570783054645,
+    "match_skill": "work under pressure",
+    "match_score": 1.0000000000000004,
+    "match_type": "skill",
+    "match_id": "7a147904-22b3-498a-b4d9-7bceeb86b45d"
+  },
+  "2988890180773465": {
+    "ojo_skill": "planning skills",
+    "ojo_job_skill_hash": 2988890180773465,
+    "match_skill": "performing planning",
+    "match_score": 0.8361393682252155,
+    "match_type": "skill",
+    "match_id": "e49f4158-9d4c-425d-bf32-dfe89b19840a"
+  },
+  "2394542354652820": {
+    "ojo_skill": "Working to agreed timescales",
+    "ojo_job_skill_hash": 2394542354652820,
+    "match_skill": "planning and scheduling events and activities",
+    "match_score": 0.3684210526315789,
+    "match_type": "most_common_level_3",
+    "match_id": "S4.2.2"
+  },
+  "1641137417475143": {
+    "ojo_skill": "organised",
+    "ojo_job_skill_hash": 1641137417475143,
+    "match_skill": "be organised",
+    "match_score": 0.9071220086159999,
+    "match_type": "skill",
+    "match_id": "1258cc12-37bb-4a12-b219-9c3d6b294533"
+  },
+  "1317581776211315": {
+    "ojo_skill": "planning work for numerous technicians",
+    "ojo_job_skill_hash": 1317581776211315,
+    "match_skill": "arrange advice to technicians",
+    "match_score": 0.7071511859594501,
+    "match_type": "skill",
+    "match_id": "8c474534-707f-46f3-b356-810bbfe8b693"
+  },
+  "1937830081438584": {
+    "ojo_skill": "work on your initiative",
+    "ojo_job_skill_hash": 1937830081438584,
+    "match_skill": "planning and scheduling events and activities",
+    "match_score": 0.2247191011235955,
+    "match_type": "most_common_level_3",
+    "match_id": "S4.2.2"
+  },
+  "1681087589862555": {
+    "ojo_skill": "communicating positive working relationships",
+    "ojo_job_skill_hash": 1681087589862555,
+    "match_skill": "developing professional relationships or networks",
+    "match_score": 0.2803738317757009,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.2.3"
+  },
+  "3160165828975491": {
+    "ojo_skill": "enjoy planning",
+    "ojo_job_skill_hash": 3160165828975491,
+    "match_skill": "planning",
+    "match_score": 0.7891290385247974,
+    "match_type": "skill",
+    "match_id": "e36c1f47-3913-4d35-a6ae-fd9a7243483f"
+  },
+  "5440617737264099": {
+    "ojo_skill": "forming positive working relationships",
+    "ojo_job_skill_hash": 5440617737264099,
+    "match_skill": "developing professional relationships or networks",
+    "match_score": 0.7272727272727273,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.2.3"
+  },
+  "1629369449227167": {
+    "ojo_skill": "be comfortable taking responsibility for your decisions",
+    "ojo_job_skill_hash": 1629369449227167,
+    "match_skill": "making decisions",
+    "match_score": 0.34782608695652173,
+    "match_type": "most_common_level_3",
+    "match_id": "S4.9.0"
+  },
+  "3125263395496226": {
+    "ojo_skill": "Planning and organising their day-to-day activities",
+    "ojo_job_skill_hash": 3125263395496226,
+    "match_skill": "planning and scheduling events and activities",
+    "match_score": 0.9142857142857143,
+    "match_type": "most_common_level_3",
+    "match_id": "S4.2.2"
+  },
+  "1243358890998808": {
+    "ojo_skill": "team player",
+    "ojo_job_skill_hash": 1243358890998808,
+    "match_skill": "leading and motivating",
+    "match_score": 0.21910112359550563,
+    "match_type": "most_common_level_3",
+    "match_id": "S4.5.0"
+  },
+  "1052854709274254": {
+    "ojo_skill": "Flexibility in work times due to nature of the job",
+    "ojo_job_skill_hash": 1052854709274254,
+    "match_skill": "adapt to change",
+    "match_score": 0.28125,
+    "match_type": "most_common_level_3",
+    "match_id": "A1.1.0"
+  },
+  "1917490743297814": {
+    "ojo_skill": "minutes of meetings",
+    "ojo_job_skill_hash": 1917490743297814,
+    "match_skill": "schedule meetings",
+    "match_score": 0.7441414137095779,
+    "match_type": "skill",
+    "match_id": "906c9e66-bdee-4f8e-93d7-88d9fcf39a0a"
+  },
+  "3144285826919113": {
+    "ojo_skill": "communication skills",
+    "ojo_job_skill_hash": 3144285826919113,
+    "match_skill": "teach communication skills",
+    "match_score": 0.8456482321855425,
+    "match_type": "skill",
+    "match_id": "f5122357-c3f7-4f3e-b0cc-25173199d554"
+  },
+  "4212003503648994": {
+    "ojo_skill": "command of the English language",
+    "ojo_job_skill_hash": 4212003503648994,
+    "match_skill": "mastering languages",
+    "match_score": 0.4380952380952381,
+    "match_type": "most_common_level_2",
+    "match_id": "T1.1"
+  },
+  "2141195750456057": {
+    "ojo_skill": "organisational",
+    "ojo_job_skill_hash": 2141195750456057,
+    "match_skill": "an organisational structure",
+    "match_score": 0.8513701808080683,
+    "match_type": "skill",
+    "match_id": "c4272323-cce6-4535-ac71-4f6841f4f89a"
+  },
+  "3105049980630805": {
+    "ojo_skill": "Attending board meetings",
+    "ojo_job_skill_hash": 3105049980630805,
+    "match_skill": "leading board meetings",
+    "match_score": 0.8813170412379281,
+    "match_type": "skill",
+    "match_id": "8c82dc9c-4e3c-4b22-b177-bf84abb14465"
+  },
+  "8611139707150705": {
+    "ojo_skill": "Creating draft documentation",
+    "ojo_job_skill_hash": 8611139707150705,
+    "match_skill": "draft health documentation",
+    "match_score": 0.7474286961882268,
+    "match_type": "skill",
+    "match_id": "80fd3515-01bf-44ac-aa49-41e865296277"
+  },
+  "6017603361661341": {
+    "ojo_skill": "Windows 10",
+    "ojo_job_skill_hash": 6017603361661341,
+    "match_skill": "installing and assembling building fixtures",
+    "match_score": 0.42424242424242425,
+    "match_type": "most_common_level_3",
+    "match_id": "S7.1.7"
+  },
+  "1349157477814362": {
+    "ojo_skill": "Agile",
+    "ojo_job_skill_hash": 1349157477814362,
+    "match_skill": "agile",
+    "match_score": 1.0000000000000013,
+    "match_type": "skill",
+    "match_id": "bec4359e-cb92-468f-a997-8fb28e32fba9"
+  },
+  "2521575300167148": {
+    "ojo_skill": "ensuring that service level agreements are met",
+    "ojo_job_skill_hash": 2521575300167148,
+    "match_skill": "reach agreement for logistical services",
+    "match_score": 0.7106824969068479,
+    "match_type": "skill",
+    "match_id": "5d00929a-7124-488a-91c1-324bd75bf8ba"
+  },
+  "4853021444608314": {
+    "ojo_skill": "Microsoft Office",
+    "ojo_job_skill_hash": 4853021444608314,
+    "match_skill": "use microsoft office",
+    "match_score": 0.9096666049354979,
+    "match_type": "skill",
+    "match_id": "f683ae1d-cb7c-4aa1-b9fe-205e1bd23535"
+  },
+  "1664700798489857": {
+    "ojo_skill": "produce technical documentation",
+    "ojo_job_skill_hash": 1664700798489857,
+    "match_skill": "providing technical documentation",
+    "match_score": 0.9327455676616778,
+    "match_type": "skill",
+    "match_id": "d3db0350-dcfd-4a36-b5a8-f9e6cd1ef6f5"
+  },
+  "1412876876926625": {
+    "ojo_skill": "knowledge of Windows 10 O",
+    "ojo_job_skill_hash": 1412876876926625,
+    "match_skill": "developing solutions",
+    "match_score": 0.23232323232323232,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.9.1"
+  },
+  "1299193978434516": {
+    "ojo_skill": "Microsoft systems",
+    "ojo_job_skill_hash": 1299193978434516,
+    "match_skill": "use computer systems",
+    "match_score": 0.7202155417877232,
+    "match_type": "skill",
+    "match_id": "31d35d3d-2bf2-49aa-9c20-92566ef80277"
+  },
+  "6566745206089999": {
+    "ojo_skill": "Office 365",
+    "ojo_job_skill_hash": 6566745206089999,
+    "match_skill": "using digital tools for collaboration and productivity",
+    "match_score": 0.5588235294117647,
+    "match_type": "most_common_level_3",
+    "match_id": "S5.6.1"
+  },
+  "1875633427678862": {
+    "ojo_skill": "provide support",
+    "ojo_job_skill_hash": 1875633427678862,
+    "match_skill": "support people",
+    "match_score": 0.7827474938347234,
+    "match_type": "skill",
+    "match_id": "a584a638-a2c0-4b3c-bdf3-a64f87225be9"
+  },
+  "3074609811694606": {
+    "ojo_skill": "Avaya telephone system",
+    "ojo_job_skill_hash": 3074609811694606,
+    "match_skill": "accessing and analysing digital data",
+    "match_score": 0.4375,
+    "match_type": "most_common_level_3",
+    "match_id": "S5.5.0"
+  },
+  "2730728679108686": {
+    "ojo_skill": "ITIL",
+    "ojo_job_skill_hash": 2730728679108686,
+    "match_skill": "complying with legal and organisational guidelines",
+    "match_score": 0.8545454545454545,
+    "match_type": "most_common_level_3",
+    "match_id": "S3.3.3"
+  },
+  "9359316533416496": {
+    "ojo_skill": "provide telephone support answering",
+    "ojo_job_skill_hash": 9359316533416496,
+    "match_skill": "support individuals over the phone",
+    "match_score": 0.7522890305531651,
+    "match_type": "skill",
+    "match_id": "efc6ffdd-529a-4045-992f-a8dffcce0d9c"
+  },
+  "3078656710998404": {
+    "ojo_skill": "take responsibility for leading or providing technical assistance on projects",
+    "ojo_job_skill_hash": 3078656710998404,
+    "match_skill": "providing support to resolve problems",
+    "match_score": 0.5231748153381237,
+    "match_type": "top_level_3_tax_level",
+    "match_id": "S3.1.2"
+  },
+  "2393610613311597": {
+    "ojo_skill": "produce management information",
+    "ojo_job_skill_hash": 2393610613311597,
+    "match_skill": "manage details",
+    "match_score": 0.7151649340126636,
+    "match_type": "skill",
+    "match_id": "83e6510b-ffeb-4aec-959c-4265fd0ff7b7"
+  },
+  "2876770955587073": {
+    "ojo_skill": "produce services",
+    "ojo_job_skill_hash": 2876770955587073,
+    "match_skill": "produce sales details",
+    "match_score": 0.7005390530851897,
+    "match_type": "skill",
+    "match_id": "b0565bd9-29c8-42f6-b174-702970fc2f4f"
+  },
+  "1646909308468294": {
+    "ojo_skill": "knowledge to working in Prince2",
+    "ojo_job_skill_hash": 1646909308468294,
+    "match_skill": "management and administration",
+    "match_score": 0.453125,
+    "match_type": "most_common_level_3",
+    "match_id": "K0413"
+  },
+  "2614363192111616": {
+    "ojo_skill": "follow Service Desk, Problem, Incident and Change control processes and procedures",
+    "ojo_job_skill_hash": 2614363192111616,
+    "match_skill": "complying with health and safety procedures",
+    "match_score": 0.2,
+    "match_type": "most_common_level_3",
+    "match_id": "S3.3.1"
+  },
+  "2454005522912878": {
+    "ojo_skill": "troubleshoot Service Desk tickets",
+    "ojo_job_skill_hash": 2454005522912878,
+    "match_skill": "providing general assistance to people",
+    "match_score": 0.2523364485981308,
+    "match_type": "most_common_level_3",
+    "match_id": "S3.4.4"
+  },
+  "1437730791077693": {
+    "ojo_skill": "prioritising Service Desk tickets",
+    "ojo_job_skill_hash": 1437730791077693,
+    "match_skill": "providing general assistance to people",
+    "match_score": 0.2459016393442623,
+    "match_type": "most_common_level_3",
+    "match_id": "S3.4.4"
+  },
+  "6637376881320559": {
+    "ojo_skill": "Ivanti",
+    "ojo_job_skill_hash": 6637376881320559,
+    "match_skill": "mastering languages",
+    "match_score": 0.4470588235294118,
+    "match_type": "most_common_level_2",
+    "match_id": "T1.1"
+  },
+  "1981189422423914": {
+    "ojo_skill": "providing users with remote and desk side technical support",
+    "ojo_job_skill_hash": 1981189422423914,
+    "match_skill": "fitting assistive devices",
+    "match_score": 0.29411764705882354,
+    "match_type": "most_common_level_3",
+    "match_id": "S3.2.6"
+  },
+  "3025109410719515": {
+    "ojo_skill": "Office 365 suite",
+    "ojo_job_skill_hash": 3025109410719515,
+    "match_skill": "using digital tools for collaboration and productivity",
+    "match_score": 0.6226415094339622,
+    "match_type": "most_common_level_3",
+    "match_id": "S5.6.1"
+  },
+  "3096815770825175": {
+    "ojo_skill": "produce statistics for systems",
+    "ojo_job_skill_hash": 3096815770825175,
+    "match_skill": "create statistical software",
+    "match_score": 0.7122510359710105,
+    "match_type": "skill",
+    "match_id": "bb165899-d95f-4433-95f2-173fefd716d2"
+  },
+  "1639520808414111": {
+    "ojo_skill": "providing technical support",
+    "ojo_job_skill_hash": 1639520808414111,
+    "match_skill": "providing ICT support",
+    "match_score": 0.7286518130638773,
+    "match_type": "skill",
+    "match_id": "c2296e2e-5fef-4f24-a24f-e5b3792268be"
+  },
+  "1615028934584862": {
+    "ojo_skill": "provide training, mentoring and support for team colleagues",
+    "ojo_job_skill_hash": 1615028934584862,
+    "match_skill": "provide mentorship",
+    "match_score": 0.7145705464304629,
+    "match_type": "skill",
+    "match_id": "28722c99-68b7-4b7b-808f-53f343299935"
+  },
+  "4869419908490926": {
+    "ojo_skill": "escalate tickets to the Infrastructure team or third parties",
+    "ojo_job_skill_hash": 4869419908490926,
+    "match_skill": "coordinating activities with others",
+    "match_score": 0.29577464788732394,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.2.1"
+  },
+  "3334964870222454": {
+    "ojo_skill": "fitting around your needs",
+    "ojo_job_skill_hash": 3334964870222454,
+    "match_skill": "assembling and fabricating products",
+    "match_score": 0.21052631578947367,
+    "match_type": "most_common_level_2",
+    "match_id": "S6.5"
+  },
+  "2438435649102450": {
+    "ojo_skill": "working of working with young people",
+    "ojo_job_skill_hash": 2438435649102450,
+    "match_skill": "advocating for individual or community needs",
+    "match_score": 0.3333333333333333,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.2.4"
+  },
+  "2893985290062407": {
+    "ojo_skill": "working exclusively",
+    "ojo_job_skill_hash": 2893985290062407,
+    "match_skill": "independently working",
+    "match_score": 0.7196643649047171,
+    "match_type": "skill",
+    "match_id": "c29aa9d2-4da8-4bdd-831c-8d4a2fb51730"
+  },
+  "2868105700453473": {
+    "ojo_skill": "Prospero Teaching is acting as an employment business education recruitment agency",
+    "ojo_job_skill_hash": 2868105700453473,
+    "match_skill": "training on operational procedures",
+    "match_score": 0.2222222222222222,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.3.3"
+  },
+  "1449514471789613": {
+    "ojo_skill": "Provide two professional child related references",
+    "ojo_job_skill_hash": 1449514471789613,
+    "match_skill": "coordinating activities with others",
+    "match_score": 0.3114754098360656,
+    "match_type": "most_common_level_3",
+    "match_id": "S1.2.1"
+  },
+  "2296583813162235": {
+    "ojo_skill": "maintaining a safe and secure environment",
+    "ojo_job_skill_hash": 2296583813162235,
+    "match_skill": "maintain public security and safety",
+    "match_score": 0.7519354135967729,
+    "match_type": "skill",
+    "match_id": "499c05a2-6f36-4407-83c1-dc3448d35818"
+  },
+  "9416935332477596": {
+    "ojo_skill": "hardware repair skills",
+    "ojo_job_skill_hash": 9416935332477596,
+    "match_skill": "computer hardware repairing",
+    "match_score": 0.8337619324046303,
+    "match_type": "skill",
+    "match_id": "c77db25e-bb51-4a10-b2ad-99b48b1b4a37"
+  },
+  "2491989619129726": {
+    "ojo_skill": "Microsoft Windows",
+    "ojo_job_skill_hash": 2491989619129726,
+    "match_skill": "installing and assembling building fixtures",
+    "match_score": 0.4,
+    "match_type": "most_common_level_3",
+    "match_id": "S7.1.7"
+  },
+  "1673154976882449": {
+    "ojo_skill": "monitoring and maintenance of IT hardware and providing",
+    "ojo_job_skill_hash": 1673154976882449,
+    "match_skill": "computer hardware maintaining",
+    "match_score": 0.7207360286601505,
+    "match_type": "skill",
+    "match_id": "c77db25e-bb51-4a10-b2ad-99b48b1b4a37"
+  },
+  "2517257882174588": {
+    "ojo_skill": "software troubleshooting skills",
+    "ojo_job_skill_hash": 2517257882174588,
+    "match_skill": "perform troubleshooting",
+    "match_score": 0.7313121564818788,
+    "match_type": "skill",
+    "match_id": "334e3e49-fb02-4051-809a-f06adfdc1c40"
+  },
+  "1949336875775939": {
+    "ojo_skill": "Good communication skills",
+    "ojo_job_skill_hash": 1949336875775939,
+    "match_skill": "teach communication skills",
+    "match_score": 0.7803432142869435,
+    "match_type": "skill",
+    "match_id": "f5122357-c3f7-4f3e-b0cc-25173199d554"
+  }
+}

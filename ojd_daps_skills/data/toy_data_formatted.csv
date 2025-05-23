@@ -1,0 +1,6 @@
+type,description,id,hierarchy_levels,cleaned skills
+skill,use spreadsheets software,abcd,"[['S', 'S5', 'S5.6', 'S5.6.1'], ['S', 'S5', 'S5.5', 'S5.5.2']]",use spreadsheets software
+skill,use communication techniques,cdef,"[['S', 'S1', 'S1.0', 'S1.0.0']]",use communication techniques
+skill_group_3,"communication, collaboration and creativity",S1.0.0,,"communication, collaboration and creativity"
+skill_group_3,mathematics,S1.2.1,,mathematics
+skill_group_2,presenting information,S1.4,,presenting information

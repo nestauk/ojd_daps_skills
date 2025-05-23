@@ -1,0 +1,440 @@
+{
+  "3230985760181893": {
+    "ojo_skill": "analytical",
+    "ojo_job_skill_hash": 3230985760181893,
+    "match_skill": "analytical thinking",
+    "match_id": "4707da90-9cfc-46ca-8de0-38a0b7bfb137"
+  },
+  "1282462987067479": {
+    "ojo_skill": "Analytical",
+    "ojo_job_skill_hash": 1282462987067479,
+    "match_skill": "analytical thinking",
+    "match_id": "4707da90-9cfc-46ca-8de0-38a0b7bfb137"
+  },
+  "3267542715426065": {
+    "ojo_skill": "caring",
+    "ojo_job_skill_hash": 3267542715426065,
+    "match_skill": "assisting and caring",
+    "match_id": "S3.0.0"
+  },
+  "7484130419793540": {
+    "ojo_skill": "Caring",
+    "ojo_job_skill_hash": 7484130419793540,
+    "match_skill": "assisting and caring",
+    "match_id": "S3.0.0"
+  },
+  "7755245171031009": {
+    "ojo_skill": "Azure",
+    "ojo_job_skill_hash": 7755245171031009,
+    "match_skill": "cloud technologies",
+    "match_id": "bd14968e-e409-45af-b362-3495ed7b10e0"
+  },
+  "9607761621097177": {
+    "ojo_skill": "AWS",
+    "ojo_job_skill_hash": 9607761621097177,
+    "match_skill": "cloud technologies",
+    "match_id": "bd14968e-e409-45af-b362-3495ed7b10e0"
+  },
+  "1949336875775939": {
+    "ojo_skill": "Good communication skills",
+    "ojo_job_skill_hash": 1949336875775939,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "1106236024434025": {
+    "ojo_skill": "good communication skills",
+    "ojo_job_skill_hash": 1106236024434025,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "3144285826919113": {
+    "ojo_skill": "communication skills",
+    "ojo_job_skill_hash": 3144285826919113,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "4389530528035784": {
+    "ojo_skill": "Communication skills",
+    "ojo_job_skill_hash": 4389530528035784,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "5962153746963389": {
+    "ojo_skill": "written communication skills",
+    "ojo_job_skill_hash": 5962153746963389,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "1533476525435367": {
+    "ojo_skill": "Written communication skills",
+    "ojo_job_skill_hash": 1533476525435367,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "2148124324254530": {
+    "ojo_skill": "excellent communication skills",
+    "ojo_job_skill_hash": 2148124324254530,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "1327662530443823": {
+    "ojo_skill": "Excellent communication skills",
+    "ojo_job_skill_hash": 1327662530443823,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "5564302397066144": {
+    "ojo_skill": "verbal communication skills",
+    "ojo_job_skill_hash": 5564302397066144,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "3142771525261933": {
+    "ojo_skill": "Verbal communication skills",
+    "ojo_job_skill_hash": 3142771525261933,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "1660812750879208": {
+    "ojo_skill": "strong communication skills",
+    "ojo_job_skill_hash": 1660812750879208,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "7177197245192076": {
+    "ojo_skill": "Strong communication skills",
+    "ojo_job_skill_hash": 7177197245192076,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "1609695824542938": {
+    "ojo_skill": "verbal skills",
+    "ojo_job_skill_hash": 1609695824542938,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "2329628028303081": {
+    "ojo_skill": "Verbal skills",
+    "ojo_job_skill_hash": 2329628028303081,
+    "match_skill": "communication",
+    "match_id": "15d76317-c71a-4fa2-aadc-2ecc34e627b7"
+  },
+  "1141921601399845": {
+    "ojo_skill": "Resilient",
+    "ojo_job_skill_hash": 1141921601399845,
+    "match_skill": "cope with uncertainty",
+    "match_id": "5cd1930c-278d-4929-b413-27352f5b3687"
+  },
+  "2659564317717195": {
+    "ojo_skill": "resilient",
+    "ojo_job_skill_hash": 2659564317717195,
+    "match_skill": "cope with uncertainty",
+    "match_id": "5cd1930c-278d-4929-b413-27352f5b3687"
+  },
+  "2593977146596968": {
+    "ojo_skill": "resilience",
+    "ojo_job_skill_hash": 2593977146596968,
+    "match_skill": "cope with uncertainty",
+    "match_id": "5cd1930c-278d-4929-b413-27352f5b3687"
+  },
+  "1955793597650064": {
+    "ojo_skill": "Resilience",
+    "ojo_job_skill_hash": 1955793597650064,
+    "match_skill": "cope with uncertainty",
+    "match_id": "5cd1930c-278d-4929-b413-27352f5b3687"
+  },
+  "1602507025395298": {
+    "ojo_skill": "customer service skills",
+    "ojo_job_skill_hash": 1602507025395298,
+    "match_skill": "customer service",
+    "match_id": "15a33d76-4640-438d-ae64-fdc0c1d3eebc"
+  },
+  "2120182638357038": {
+    "ojo_skill": "Customer service skills",
+    "ojo_job_skill_hash": 2120182638357038,
+    "match_skill": "customer service",
+    "match_id": "15a33d76-4640-438d-ae64-fdc0c1d3eebc"
+  },
+  "1969263575350592": {
+    "ojo_skill": "approachable",
+    "ojo_job_skill_hash": 1969263575350592,
+    "match_skill": "demonstrate good manners",
+    "match_id": "A2.2.0"
+  },
+  "1792203880229822": {
+    "ojo_skill": "Approachable",
+    "ojo_job_skill_hash": 1792203880229822,
+    "match_skill": "demonstrate good manners",
+    "match_id": "A2.2.0"
+  },
+  "2530951066852304": {
+    "ojo_skill": "friendly",
+    "ojo_job_skill_hash": 2530951066852304,
+    "match_skill": "demonstrate good manners",
+    "match_id": "A2.2.0"
+  },
+  "5305210528300404": {
+    "ojo_skill": "Friendly",
+    "ojo_job_skill_hash": 5305210528300404,
+    "match_skill": "demonstrate good manners",
+    "match_id": "A2.2.0"
+  },
+  "1792384537390989": {
+    "ojo_skill": "personable",
+    "ojo_job_skill_hash": 1792384537390989,
+    "match_skill": "demonstrate good manners",
+    "match_id": "A2.2.0"
+  },
+  "5849877137959224": {
+    "ojo_skill": "Personable",
+    "ojo_job_skill_hash": 5849877137959224,
+    "match_skill": "demonstrate good manners",
+    "match_id": "A2.2.0"
+  },
+  "3154965480627705": {
+    "ojo_skill": "build relationships",
+    "ojo_job_skill_hash": 3154965480627705,
+    "match_skill": "developing professional relationships or networks",
+    "match_id": "S1.2.3"
+  },
+  "1274674381809618": {
+    "ojo_skill": "Build relationships",
+    "ojo_job_skill_hash": 1274674381809618,
+    "match_skill": "developing professional relationships or networks",
+    "match_id": "S1.2.3"
+  },
+  "3075136614748662": {
+    "ojo_skill": "ship our customer orders",
+    "ojo_job_skill_hash": 3075136614748662,
+    "match_skill": "dispatch order processing",
+    "match_id": "4ad83664-21a9-4f96-8834-0fc8f671be9c"
+  },
+  "8491052391143501": {
+    "ojo_skill": "Ship our customer orders",
+    "ojo_job_skill_hash": 8491052391143501,
+    "match_skill": "dispatch order processing",
+    "match_id": "4ad83664-21a9-4f96-8834-0fc8f671be9c"
+  },
+  "7441567003566169": {
+    "ojo_skill": "Accurately read instructions",
+    "ojo_job_skill_hash": 7441567003566169,
+    "match_skill": "following instructions and procedures",
+    "match_id": "S1.8.5"
+  },
+  "2440207245142268": {
+    "ojo_skill": "accurately read instructions",
+    "ojo_job_skill_hash": 2440207245142268,
+    "match_skill": "following instructions and procedures",
+    "match_id": "S1.8.5"
+  },
+  "1846141317334203": {
+    "ojo_skill": "presentation skills",
+    "ojo_job_skill_hash": 1846141317334203,
+    "match_skill": "give a presentation",
+    "match_id": "f79b4e88-864f-4d59-ae1c-077af72a76dd"
+  },
+  "1103851162429781": {
+    "ojo_skill": "Presentation skills",
+    "ojo_job_skill_hash": 1103851162429781,
+    "match_skill": "give a presentation",
+    "match_id": "f79b4e88-864f-4d59-ae1c-077af72a76dd"
+  },
+  "1272665738393378": {
+    "ojo_skill": "Handling the full range of goods",
+    "ojo_job_skill_hash": 1272665738393378,
+    "match_skill": "handling and moving",
+    "match_id": "S6"
+  },
+  "3336690100005309": {
+    "ojo_skill": "handling the full range of goods",
+    "ojo_job_skill_hash": 3336690100005309,
+    "match_skill": "handling and moving",
+    "match_id": "S6"
+  },
+  "3240839938934676": {
+    "ojo_skill": "leadership skills",
+    "ojo_job_skill_hash": 3240839938934676,
+    "match_skill": "leading and motivating",
+    "match_id": "S4.5.0"
+  },
+  "2604016884470513": {
+    "ojo_skill": "Leadership skills",
+    "ojo_job_skill_hash": 2604016884470513,
+    "match_skill": "leading and motivating",
+    "match_id": "S4.5.0"
+  },
+  "1494143576518307": {
+    "ojo_skill": "manage",
+    "ojo_job_skill_hash": 1494143576518307,
+    "match_skill": "management skills",
+    "match_id": "S4.0.0"
+  },
+  "7030005401228831": {
+    "ojo_skill": "Manage",
+    "ojo_job_skill_hash": 7030005401228831,
+    "match_skill": "management skills",
+    "match_id": "S4.0.0"
+  },
+  "6267621693964518": {
+    "ojo_skill": "achieve targets",
+    "ojo_job_skill_hash": 6267621693964518,
+    "match_skill": "meet targets",
+    "match_id": "113b4428-0a31-4199-8496-070af7854b91"
+  },
+  "1223410173217771": {
+    "ojo_skill": "Achieve targets",
+    "ojo_job_skill_hash": 1223410173217771,
+    "match_skill": "meet targets",
+    "match_id": "113b4428-0a31-4199-8496-070af7854b91"
+  },
+  "5311901315903145": {
+    "ojo_skill": "pack our customer orders",
+    "ojo_job_skill_hash": 5311901315903145,
+    "match_skill": "pack goods",
+    "match_id": "667cbbaf-f377-46d8-8f2d-1f6d8a55d74a"
+  },
+  "1241536361776704": {
+    "ojo_skill": "Pack our customer orders",
+    "ojo_job_skill_hash": 1241536361776704,
+    "match_skill": "pack goods",
+    "match_id": "667cbbaf-f377-46d8-8f2d-1f6d8a55d74a"
+  },
+  "2117099281546302": {
+    "ojo_skill": "pick our customer orders",
+    "ojo_job_skill_hash": 2117099281546302,
+    "match_skill": "picking orders for dispatching",
+    "match_id": "ee5e2297-39cc-4ed6-89e5-d58016118a7f"
+  },
+  "1165254491575083": {
+    "ojo_skill": "Pick our customer orders",
+    "ojo_job_skill_hash": 1165254491575083,
+    "match_skill": "picking orders for dispatching",
+    "match_id": "ee5e2297-39cc-4ed6-89e5-d58016118a7f"
+  },
+  "2964660849910053": {
+    "ojo_skill": "prioritise",
+    "ojo_job_skill_hash": 2964660849910053,
+    "match_skill": "prioritise tasks",
+    "match_id": "d9013e0e-e937-43d5-ab71-0e917ee882b8"
+  },
+  "1119510649408528": {
+    "ojo_skill": "Prioritise",
+    "ojo_job_skill_hash": 1119510649408528,
+    "match_skill": "prioritise tasks",
+    "match_id": "d9013e0e-e937-43d5-ab71-0e917ee882b8"
+  },
+  "2041807193492926": {
+    "ojo_skill": "SAP",
+    "ojo_job_skill_hash": 2041807193492926,
+    "match_skill": "SAP data services",
+    "match_id": "f8e3425c-fe44-4ffb-bafe-0e20d91dadf4"
+  },
+  "2882221812035368": {
+    "ojo_skill": "ambitious",
+    "ojo_job_skill_hash": 2882221812035368,
+    "match_skill": "show ambition",
+    "match_id": "22b7d99d-252f-4572-8e3c-438ea87607eb"
+  },
+  "1112383112021875": {
+    "ojo_skill": "Ambitious",
+    "ojo_job_skill_hash": 1112383112021875,
+    "match_skill": "show ambition",
+    "match_id": "22b7d99d-252f-4572-8e3c-438ea87607eb"
+  },
+  "5306317875464216": {
+    "ojo_skill": "driven",
+    "ojo_job_skill_hash": 5306317875464216,
+    "match_skill": "taking a proactive approach",
+    "match_id": "T3.2"
+  },
+  "2905721315572240": {
+    "ojo_skill": "Driven",
+    "ojo_job_skill_hash": 2905721315572240,
+    "match_skill": "taking a proactive approach",
+    "match_id": "T3.2"
+  },
+  "2141195750456057": {
+    "ojo_skill": "organisational",
+    "ojo_job_skill_hash": 2141195750456057,
+    "match_skill": "show organisational abilities",
+    "match_id": "1258cc12-37bb-4a12-b219-9c3d6b294533"
+  },
+  "2508538975431778": {
+    "ojo_skill": "Organisational",
+    "ojo_job_skill_hash": 2508538975431778,
+    "match_skill": "show organisational abilities",
+    "match_id": "1258cc12-37bb-4a12-b219-9c3d6b294533"
+  },
+  "1337518877426873": {
+    "ojo_skill": "proactive",
+    "ojo_job_skill_hash": 1337518877426873,
+    "match_skill": "taking a proactive approach",
+    "match_id": "T3.2"
+  },
+  "5229249709709609": {
+    "ojo_skill": "Proactive",
+    "ojo_job_skill_hash": 5229249709709609,
+    "match_skill": "taking a proactive approach",
+    "match_id": "T3.2"
+  },
+  "2709107888174265": {
+    "ojo_skill": "IT skills",
+    "ojo_job_skill_hash": 2709107888174265,
+    "match_skill": "use IT tools",
+    "match_id": "83e6510b-ffeb-4aec-959c-4265fd0ff7b7"
+  },
+  "1013837810454206": {
+    "ojo_skill": "Word",
+    "ojo_job_skill_hash": 1013837810454206,
+    "match_skill": "use microsoft office",
+    "match_id": "f683ae1d-cb7c-4aa1-b9fe-205e1bd23535"
+  },
+  "4727029744565692": {
+    "ojo_skill": "Outlook",
+    "ojo_job_skill_hash": 4727029744565692,
+    "match_skill": "use microsoft office",
+    "match_id": "f683ae1d-cb7c-4aa1-b9fe-205e1bd23535"
+  },
+  "1074087786945015": {
+    "ojo_skill": "React",
+    "ojo_job_skill_hash": 1074087786945015,
+    "match_skill": "use scripting programming",
+    "match_id": "5ef0c719-5bcb-49f8-b8eb-824388225333"
+  },
+  "2576630861021310": {
+    "ojo_skill": "Excel",
+    "ojo_job_skill_hash": 2576630861021310,
+    "match_skill": "use spreadsheets program",
+    "match_id": "1973c966-f236-40c9-b2d4-5d71a89019be"
+  },
+  "2543383543388333": {
+    "ojo_skill": "excel",
+    "ojo_job_skill_hash": 2543383543388333,
+    "match_skill": "use spreadsheets program",
+    "match_id": "1973c966-f236-40c9-b2d4-5d71a89019be"
+  },
+  "1243358890998808": {
+    "ojo_skill": "team player",
+    "ojo_job_skill_hash": 1243358890998808,
+    "match_skill": "work in team",
+    "match_id": "cab119c5-ff95-4499-b91a-54e9f6c5cde1"
+  },
+  "1215038488516737": {
+    "ojo_skill": "Team player",
+    "ojo_job_skill_hash": 1215038488516737,
+    "match_skill": "work in team",
+    "match_id": "cab119c5-ff95-4499-b91a-54e9f6c5cde1"
+  },
+  "3583720958073267": {
+    "ojo_skill": "interpersonal skills",
+    "ojo_job_skill_hash": 3583720958073267,
+    "match_skill": "working with others",
+    "match_id": "S1.8.0"
+  },
+  "2409766397748630": {
+    "ojo_skill": "Interpersonal skills",
+    "ojo_job_skill_hash": 2409766397748630,
+    "match_skill": "working with others",
+    "match_id": "S1.8.0"
+  }
+}
