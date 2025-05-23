@@ -10,7 +10,7 @@ packages = [{include = "ojd_daps_skills"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 pydantic = "^2.7.1"
-spacy = "^3.7.4"
+spacy = "~3.7.4"
 scikit-learn = "^1.4.2"
 pandas = "^2.2.2"
 pyyaml = "^6.0.1"
@@ -22,6 +22,7 @@ toolz = "^0.12.1"
 sentence-transformers = "^2.1.0"
 torch = "^1.13.1"
 pytest = "^8.2.0"
+transformers = "4.41.2"
 
 
 [build-system]
