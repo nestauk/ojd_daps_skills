@@ -161,10 +161,22 @@ class SkillsMapper(BaseModel):
                     taxonomy_embeddings,
                 )
             )
+            self.config.taxonomy_embeddings = taxonomy_embeddings_dict
             msg.info(f"Embeddings calculated in {time.time() - t0} seconds")
             # Save taxonomy embeddings for future use
             taxonomy_embeddings_path = PACKAGE_PATH.joinpath(
-                "data", f"{self.config.taxonomy_name}_embeddings.json"
+                "data",
+                "_".join(
+                    [
+                        i
+                        for i in [
+                            self.config.taxonomy_name,
+                            self.config.taxonomy_config.get("taxonomy_version"),
+                            "embeddings.json",
+                        ]
+                        if i
+                    ]
+                ),
             )
             save_json_dict(
                 {k: v.tolist() for k, v in taxonomy_embeddings_dict.items()},

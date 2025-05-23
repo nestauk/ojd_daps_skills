@@ -203,9 +203,19 @@ class MapConfig(BaseModel):
 
         # taxonomy information
 
+        taxonomy_version = config_data.get("taxonomy_version")
+
         taxonomy_data_path = PACKAGE_PATH.joinpath(
-            "data", f"{taxonomy_name}_data_formatted.csv"
+            "data",
+            "_".join(
+                [
+                    i
+                    for i in [taxonomy_name, taxonomy_version, "data_formatted.csv"]
+                    if i
+                ]
+            ),
         )
+
         if taxonomy_data_path.exists():
             taxonomy_data = pd.read_csv(taxonomy_data_path)
             taxonomy_data = taxonomy_data[
@@ -221,7 +231,10 @@ class MapConfig(BaseModel):
             raise msg.fail(f"Taxonomy data not found: {taxonomy_data_path}", exits=1)
 
         taxonomy_embeddings_path = PACKAGE_PATH.joinpath(
-            "data", f"{taxonomy_name}_embeddings.json"
+            "data",
+            "_".join(
+                [i for i in [taxonomy_name, taxonomy_version, "embeddings.json"] if i]
+            ),
         )
         if taxonomy_embeddings_path.exists():
             taxonomy_embeddings = srsly.read_json(taxonomy_embeddings_path)
@@ -232,7 +245,10 @@ class MapConfig(BaseModel):
             taxonomy_embeddings = None
 
         hier_mapper_path = PACKAGE_PATH.joinpath(
-            "data", f"{taxonomy_name}_hier_mapper.json"
+            "data",
+            "_".join(
+                [i for i in [taxonomy_name, taxonomy_version, "hier_mapper.json"] if i]
+            ),
         )
         if hier_mapper_path.exists():
             hier_mapper = srsly.read_json(hier_mapper_path)
