@@ -15,9 +15,8 @@ from pydantic import BaseModel
 from sklearn.metrics.pairwise import cosine_similarity
 from wasabi import msg
 
-from ojd_daps_skills import PROJECT_DIR, PUBLIC_DATA_FOLDER_PATH
+from ojd_daps_skills import PROJECT_DIR, PACKAGE_PATH
 from ojd_daps_skills.utils.bert_vectorizer import BertVectorizer
-from ojd_daps_skills.utils.download_public_data import download_data
 
 
 def get_top_comparisons(ojo_embs: np.array, taxonomy_embs: np.array) -> Tuple[list]:
@@ -199,26 +198,16 @@ class MapConfig(BaseModel):
         with open(config_file, "r") as file:
             config_data = yaml.safe_load(file)
 
-        # Load data
-        if not PUBLIC_DATA_FOLDER_PATH.exists():
-            msg.fail(
-                f"Neccessary data files are not downloaded. Downloading ~0.5GB of neccessary data files to {PUBLIC_DATA_FOLDER_PATH}."
-            )
-            download_data()
-        else:
-            msg.good(f"Data files are already downloaded to {PUBLIC_DATA_FOLDER_PATH}.")
-
         multi_process = False
         bert_model = BertVectorizer(multi_process=multi_process).fit()
 
         # taxonomy information
-        taxonomy_data_path = (
-            PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_data_formatted.csv"
+
+        taxonomy_data_path = PACKAGE_PATH.joinpath(
+            "data", f"{taxonomy_name}_data_formatted.csv"
         )
         if taxonomy_data_path.exists():
-            taxonomy_data = pd.read_csv(
-                PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_data_formatted.csv"
-            )
+            taxonomy_data = pd.read_csv(taxonomy_data_path)
             taxonomy_data = taxonomy_data[
                 taxonomy_data[config_data["skill_name_col"]].notna()
             ].reset_index(drop=True)
@@ -231,33 +220,33 @@ class MapConfig(BaseModel):
         else:
             raise msg.fail(f"Taxonomy data not found: {taxonomy_data_path}", exits=1)
 
-        taxonomy_embeddings_path = (
-            PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_embeddings.json"
+        taxonomy_embeddings_path = PACKAGE_PATH.joinpath(
+            "data", f"{taxonomy_name}_embeddings.json"
         )
         if taxonomy_embeddings_path.exists():
-            taxonomy_embeddings = srsly.read_json(
-                PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_embeddings.json"
-            )
+            taxonomy_embeddings = srsly.read_json(taxonomy_embeddings_path)
             taxonomy_embeddings = {
                 int(k): np.array(v) for k, v in taxonomy_embeddings.items()
             }
         else:
             taxonomy_embeddings = None
 
-        hier_mapper_path = PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_hier_mapper.json"
+        hier_mapper_path = PACKAGE_PATH.joinpath(
+            "data", f"{taxonomy_name}_hier_mapper.json"
+        )
         if hier_mapper_path.exists():
-            hier_mapper = srsly.read_json(
-                PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_hier_mapper.json"
-            )
+            hier_mapper = srsly.read_json(hier_mapper_path)
         else:
             msg.fail(f"Hierarchical mapper not found: {hier_mapper_path}", exits=1)
         # here, let's download the hard-coded taxonomy if it's for escoe
         if taxonomy_name == "esco":
             hard_coded_taxonomy = srsly.read_json(
-                PUBLIC_DATA_FOLDER_PATH / f"hardcoded_ojo_{taxonomy_name}_lookup.json"
+                PACKAGE_PATH.joinpath(
+                    "data", f"hardcoded_ojo_{taxonomy_name}_lookup.json"
+                )
             )
             previous_skill_matches = srsly.read_json(
-                PUBLIC_DATA_FOLDER_PATH / f"ojo_{taxonomy_name}_lookup_sample.json"
+                PACKAGE_PATH.joinpath("data", f"ojo_{taxonomy_name}_lookup_sample.json")
             )
 
         else:

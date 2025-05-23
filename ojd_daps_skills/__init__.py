@@ -3,6 +3,7 @@
 import warnings
 from pathlib import Path
 from typing import Optional
+import importlib.resources
 
 import yaml
 from spacy.tokens import Doc
@@ -27,8 +28,8 @@ config = get_yaml_config(_base_config_path)
 
 bucket_name = "open-jobs-lake"
 
-PUBLIC_DATA_FOLDER_PATH = PROJECT_DIR / "ojd_daps_skills_data"
 PUBLIC_MODEL_FOLDER_PATH = PROJECT_DIR / "ojd_daps_skills_models"
+PACKAGE_PATH = importlib.resources.files("ojd_daps_skills")
 
 
 def setup_spacy_extensions():

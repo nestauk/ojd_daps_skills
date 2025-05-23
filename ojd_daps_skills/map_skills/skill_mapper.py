@@ -4,18 +4,21 @@ SkillsMapper class to MAP extracted skills from job ads.
 
 from itertools import chain
 from typing import Any, Dict, List, Tuple
+import time
 
 import numpy as np
 from pydantic import BaseModel
 from spacy.tokens import Doc
+from wasabi import msg
 
-from ojd_daps_skills import setup_spacy_extensions
+from ojd_daps_skills import setup_spacy_extensions, PACKAGE_PATH
 from ojd_daps_skills.map_skills.skill_mapper_utils import (
     MapConfig,
     get_most_common_code,
     get_top_comparisons,
 )
 from ojd_daps_skills.utils.text_cleaning import clean_text, short_hash
+from ojd_daps_skills.utils.data_getters import save_json_dict
 
 setup_spacy_extensions()
 
@@ -145,8 +148,12 @@ class SkillsMapper(BaseModel):
         )
 
         if not self.config.taxonomy_embeddings:
+            msg.info(f"No taxonomy embeddings found, calculating ...")
+            t0 = time.time()
             taxonomy_embeddings = self.config.bert_model.transform(
-                self.config.taxonomy_data[self.config.skill_name_col].to_list()
+                self.config.taxonomy_data[
+                    self.config.taxonomy_config["skill_name_col"]
+                ].to_list()
             )
             taxonomy_embeddings_dict = dict(
                 zip(
@@ -154,7 +161,15 @@ class SkillsMapper(BaseModel):
                     taxonomy_embeddings,
                 )
             )
-
+            msg.info(f"Embeddings calculated in {time.time() - t0} seconds")
+            # Save taxonomy embeddings for future use
+            taxonomy_embeddings_path = PACKAGE_PATH.joinpath(
+                "data", f"{self.config.taxonomy_name}_embeddings.json"
+            )
+            save_json_dict(
+                {k: v.tolist() for k, v in taxonomy_embeddings_dict.items()},
+                taxonomy_embeddings_path,
+            )
         else:
             taxonomy_embeddings_dict = self.config.taxonomy_embeddings
 
@@ -224,9 +239,9 @@ class SkillsMapper(BaseModel):
                             high_hier_codes += [hier_level] * round(sim_score * 10)
                 high_tax_skills_results = {}
                 for hier_level in range(self.config.taxonomy_config["num_hier_levels"]):
-                    high_tax_skills_results["most_common_level_" + str(hier_level)] = (
-                        get_most_common_code(high_hier_codes, hier_level)
-                    )
+                    high_tax_skills_results[
+                        "most_common_level_" + str(hier_level)
+                    ] = get_most_common_code(high_hier_codes, hier_level)
 
                 if high_tax_skills_results:
                     match_results["high_tax_skills"] = high_tax_skills_results
