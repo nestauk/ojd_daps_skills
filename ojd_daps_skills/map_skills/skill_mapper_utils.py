@@ -14,6 +14,7 @@ import yaml
 from pydantic import BaseModel
 from sklearn.metrics.pairwise import cosine_similarity
 from wasabi import msg
+from huggingface_hub import hf_hub_download
 
 from ojd_daps_skills import PROJECT_DIR, PACKAGE_PATH
 from ojd_daps_skills.utils.bert_vectorizer import BertVectorizer
@@ -131,6 +132,12 @@ def _clean_string_list(string_list: str) -> Union[List[str], None]:
         return None
 
 
+def load_taxonomy_embeddings_local(taxonomy_embeddings_path):
+    taxonomy_embeddings = srsly.read_json(taxonomy_embeddings_path)
+    taxonomy_embeddings = {int(k): np.array(v) for k, v in taxonomy_embeddings.items()}
+    return taxonomy_embeddings
+
+
 class MapConfig(BaseModel):
     """
     Configuration manager for MAPPING skills to pre-defined taxonomies.
@@ -230,19 +237,35 @@ class MapConfig(BaseModel):
         else:
             raise msg.fail(f"Taxonomy data not found: {taxonomy_data_path}", exits=1)
 
+        taxonomy_embeddings_file_name = "_".join(
+            [i for i in [taxonomy_name, taxonomy_version, "embeddings.json"] if i]
+        )
         taxonomy_embeddings_path = PACKAGE_PATH.joinpath(
             "data",
-            "_".join(
-                [i for i in [taxonomy_name, taxonomy_version, "embeddings.json"] if i]
-            ),
+            taxonomy_embeddings_file_name,
         )
+
         if taxonomy_embeddings_path.exists():
-            taxonomy_embeddings = srsly.read_json(taxonomy_embeddings_path)
-            taxonomy_embeddings = {
-                int(k): np.array(v) for k, v in taxonomy_embeddings.items()
-            }
+            taxonomy_embeddings = load_taxonomy_embeddings_local(
+                taxonomy_embeddings_path
+            )
         else:
-            taxonomy_embeddings = None
+            try:
+                msg.info("Downloading taxonomy embeddings from HuggingFace")
+                hf_hub_download(
+                    repo_id="nestauk/skills_taxonomy_embeddings",
+                    filename=taxonomy_embeddings_file_name,
+                    repo_type="dataset",
+                    local_dir=PACKAGE_PATH.joinpath("data"),
+                )
+                taxonomy_embeddings = load_taxonomy_embeddings_local(
+                    taxonomy_embeddings_path
+                )
+            except:
+                msg.info(
+                    "Taxonomy embeddings could not be downloaded from HuggingFace, will be calculated when needed."
+                )
+                taxonomy_embeddings = None
 
         hier_mapper_path = PACKAGE_PATH.joinpath(
             "data",
