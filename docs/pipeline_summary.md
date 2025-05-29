@@ -32,7 +32,8 @@ There is no exact way to evaluate how well our pipeline works; however we have s
 We manually tagged a random sample of skills extracted from job adverts, with whether we thought they were inappropriate, OK or excellent skill entities, and whether we thought they had inappropriate, OK or excellent matches to ESCO skills (or other parts of the taxonomy).
 
 - We felt that out of 202 skill entities 73% were excellent entities, 17% were OK and 10% were inappropriate.
-- We felt 48% were excellently matched to ESCO skills or parts of the taxonomy, 27% were OK and 26% were inappropriate.
+- 192 of the 202 skill entities were matched to ESCO skills or parts of the taxonomy.
+- Of the 192 matched skills, we felt 45% were excellently matched, 27% were OK and 27% were inappropriate.
 - Of the 96 skills matched to ESCO skills, we felt 71% were excellently matched, 24% were OK and 5% were inappropriate.
 
 | Skill entity quality | ESCO match quality | count |
