@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ojd-daps-skills"
-version = "2.0.0"
+version = "3.0.0"
 description = "An NLP package to extract skills from job adverts."
 authors = ["Nesta <dataanalytics@nesta.org.uk>"]
 
