@@ -23,9 +23,43 @@ For further information or feedback please contact Liz Gallagher, India Kerle or
 - Out of scope is extracting and matching skills from job adverts in non-English languages; extracting and matching skills from texts other than job adverts; drawing conclusions on new, unidentified skills.
 - Skills extracted should not be used to determine skill demand without expert steer and input nor should be used for any discriminatory hiring practices.
 
-## Metrics
+## Metrics - The model trained on data from 8th August 2023 (correct as of 29th May 2025)
 
-There is no exact way to evaluate how well our pipeline works; however we have several proxies to better understand how our approach compares. The analysis in this section was performed using the results of the `20220825` model. We believe the newer `20230808` model will improve these results, but the analysis hasn't been repeated.
+There is no exact way to evaluate how well our pipeline works; however we have several proxies to better understand how our approach compares.
+
+### Evaluation 2 - Manual judgement of skills extraction and mapping quality
+
+We manually tagged a random sample of skills extracted from job adverts, with whether we thought they were inappropriate, OK or excellent skill entities, and whether we thought they had inappropriate, OK or excellent matches to ESCO skills (or other parts of the taxonomy).
+
+- We felt that out of 202 skill entities 73% were excellent entities, 17% were OK and 10% were inappropriate.
+- 192 of the 202 skill entities were matched to ESCO skills or parts of the taxonomy.
+- Of the 192 matched skills, we felt 45% were excellently matched, 27% were OK and 27% were inappropriate.
+- Of the 96 skills matched to ESCO skills, we felt 71% were excellently matched, 24% were OK and 5% were inappropriate.
+
+| Skill entity quality | ESCO match quality | count |
+| -------------------- | ------------------ | ----- |
+| Inappropriate        | Inappropriate      | 18    |
+| Inappropriate        | OK                 | 3     |
+| OK                   | Inappropriate      | 15    |
+| OK                   | OK                 | 15    |
+| OK                   | Excellent          | 4     |
+| Excellent            | Inappropriate      | 19    |
+| Excellent            | OK                 | 36    |
+| Excellent            | Excellent          | 92    |
+
+- 89% of the matches were to either an individual skill or the lowest level of the skills taxonomy (level 3).
+- The match quality is at its best when the skill entity is matched to an individual ESCO skill.
+
+| Taxonomy level mapped to | Number in sample | Average match quality score (0-inappropriate, 1-OK, 2-excellent) |
+| ------------------------ | ---------------- | ---------------------------------------------------------------- |
+| Skill                    | 96               | 1.66                                                             |
+| Skill hierarchy level 3  | 84               | 0.70                                                             |
+| Skill hierarchy level 2  | 7                | 1                                                                |
+| Skill hierarchy level 1  | 5                | 0.40                                                             |
+
+## Metrics - The model trained on data from 25th August 2022
+
+> ⚠️ **NOTE:** The analysis in this section was performed using the results of the `20220825` model. We believe the newer `20230808` model will improve these results, but the analysis hasn't been repeated apart from 'Evaluation 2' discussed above.
 
 ### Comparison 1 - Top skill groups per occupation comparison to ESCO essential skill groups per occupation
 
@@ -93,5 +127,5 @@ We manually tagged a random sample of skills extracted from job adverts, with wh
 | Skill hierarchy level 3  | 51               | 0.90                                                             |
 | Attitudes hierarchy      | 8                | 1.63                                                             |
 | Skill hierarchy level 2  | 6                | 0.33                                                             |
-| Knoweldge hierarchy      | 6                | 0.17                                                             |
+| Knowledge hierarchy      | 6                | 0.17                                                             |
 | Transversal hierarchy    | 1                | 1.00                                                             |

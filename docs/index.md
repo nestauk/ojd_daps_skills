@@ -26,34 +26,20 @@ You can use pip to install the library:
 
 `pip install ojd-daps-skills`
 
-Note: If you are using a conda environment you may need to do `conda install scipy` before pip installing this library.
+> 🐍 **NOTE:** If you are using a conda environment you may need to do `conda install scipy` before pip installing this library.
 
-Note that this package was developed on MacOS and tested on Ubuntu. Changes have been made to be compatible on a Windows system but are not tested and cannot be guaranteed.
-
-When the package is first used it will automatically download a folder of neccessary data and models (~1GB).
+> 💻 **NOTE:** This package was developed on MacOS and tested on Ubuntu. Changes have been made to be compatible on a Windows system but are not tested and cannot be guaranteed.
 
 ## TL;DR: Using Nesta’s Skills Extractor library
+
+> ⏳ **NOTE:** The first time you import `SkillsExtractor` in python it will take some time (around a minute) to load.
 
 To extract skills from a job advert:
 
 ```
 from ojd_daps_skills.extract_skills.extract_skills import SkillsExtractor
 
-sm = SkillsExtractor(taxonomy_name="toy")
-
-✘ nestauk/en_skillner NER model not loaded. Downloading model...
-Collecting en-skillner==any
-  Downloading https://huggingface.co/nestauk/en_skillner/resolve/main/en_skillner-any-py3-none-any.whl (587.7 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 587.7/587.7 MB 5.1 MB/s eta 0:00:0000:0100:01
-Installing collected packages: en-skillner
-Successfully installed en-skillner-3.7.1
-✘ Multi-skill classifier not loaded. Downloading model...
-Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 26843.55it/s]
-✘ Neccessary data files are not downloaded. Downloading ~0.5GB of
-neccessary data files to
-/Users/india.kerlenesta/Projects/nesta/ojd_daps/ojd_daps_extension/ojd_daps_skills/ojd_daps_skills_data.
-ℹ Data folder downloaded from
-/Users/india.kerlenesta/Projects/nesta/ojd_daps/ojd_daps_extension/ojd_daps_skills/ojd_daps_skills_data
+sm = SkillsExtractor(taxonomy_name="toy") # Can also use "esco" or "lightcast" here
 
 job_ads = [
     "The job involves communication skills and maths skills",
@@ -61,9 +47,6 @@ job_ads = [
     "You will need experience in the IT sector.",
 ]
 job_ad_with_skills = sm(job_ads)
-
-ℹ Getting embeddings for 3 texts ...
-ℹ Took 0.018199920654296875 seconds
 ```
 
 To access the extracted and mapped skills for each inputted job advert:
@@ -84,15 +67,15 @@ Which returns:
 
 ```
 Job advert: The job involves communication skills and maths skills
-Entities found: [('communication skills', 'SKILL'), ('maths', 'SKILL')]
-Skill spans: [communication skills, maths]
-Skills mapped: [{'ojo_skill': 'communication skills', 'ojo_skill_id': 3144285826919113, 'match_skill': 'communication, collaboration and creativity', 'match_score': 0.75, 'match_type': 'most_common_level_1', 'match_id': 'S1'}, {'ojo_skill': 'maths', 'ojo_skill_id': 2887431344496880, 'match_skill': 'working with computers', 'match_score': 0.75, 'match_type': 'most_common_level_1', 'match_id': 'S5'}]
+Entities found: [('communication skills', 'SKILL'), ('maths skills', 'SKILL')]
+Skill spans: [communication skills, maths skills]
+Skills mapped: [{'ojo_skill': 'communication skills', 'ojo_skill_id': 3144285826919113, 'match_skill': 'communication, collaboration and creativity', 'match_score': 0.75, 'match_type': 'most_common_level_1', 'match_id': 'S1'}, {'ojo_skill': 'maths skills', 'ojo_skill_id': 1654958883999821, 'match_skill': 'working with computers', 'match_score': 0.6666666666666666, 'match_type': 'most_common_level_1', 'match_id': 'S5'}]
 
 
 Job advert: The job involves Excel skills. You will also need good presentation skills
 Entities found: [('Excel', 'SKILL'), ('presentation skills', 'SKILL')]
 Skill spans: [Excel, presentation skills]
-Skills mapped: [{'ojo_skill': 'Excel', 'ojo_skill_id': 2576630861021310, 'match_skill': 'use spreadsheets software', 'match_score': 0.7379249448453751, 'match_type': 'skill', 'match_id': 'abcd'}, {'ojo_skill': 'presentation skills', 'ojo_skill_id': 1846141317334203, 'match_skill': 'communication, collaboration and creativity', 'match_score': 0.5, 'match_type': 'most_common_level_1', 'match_id': 'S1'}]
+Skills mapped: [{'ojo_skill': 'Excel', 'ojo_skill_id': 2576630861021310, 'match_skill': 'use spreadsheets software', 'match_score': 0.7379249334335327, 'match_type': 'skill', 'match_id': 'abcd'}, {'ojo_skill': 'presentation skills', 'ojo_skill_id': 1846141317334203, 'match_skill': 'communication, collaboration and creativity', 'match_score': 0.5, 'match_type': 'most_common_level_1', 'match_id': 'S1'}]
 
 
 Job advert: You will need experience in the IT sector.

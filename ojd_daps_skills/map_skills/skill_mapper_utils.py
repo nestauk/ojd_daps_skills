@@ -14,10 +14,10 @@ import yaml
 from pydantic import BaseModel
 from sklearn.metrics.pairwise import cosine_similarity
 from wasabi import msg
+from huggingface_hub import hf_hub_download
 
-from ojd_daps_skills import PROJECT_DIR, PUBLIC_DATA_FOLDER_PATH
+from ojd_daps_skills import PROJECT_DIR, PACKAGE_PATH
 from ojd_daps_skills.utils.bert_vectorizer import BertVectorizer
-from ojd_daps_skills.utils.download_public_data import download_data
 
 
 def get_top_comparisons(ojo_embs: np.array, taxonomy_embs: np.array) -> Tuple[list]:
@@ -132,6 +132,12 @@ def _clean_string_list(string_list: str) -> Union[List[str], None]:
         return None
 
 
+def load_taxonomy_embeddings_local(taxonomy_embeddings_path):
+    taxonomy_embeddings = srsly.read_json(taxonomy_embeddings_path)
+    taxonomy_embeddings = {int(k): np.array(v) for k, v in taxonomy_embeddings.items()}
+    return taxonomy_embeddings
+
+
 class MapConfig(BaseModel):
     """
     Configuration manager for MAPPING skills to pre-defined taxonomies.
@@ -199,26 +205,26 @@ class MapConfig(BaseModel):
         with open(config_file, "r") as file:
             config_data = yaml.safe_load(file)
 
-        # Load data
-        if not PUBLIC_DATA_FOLDER_PATH.exists():
-            msg.fail(
-                f"Neccessary data files are not downloaded. Downloading ~0.5GB of neccessary data files to {PUBLIC_DATA_FOLDER_PATH}."
-            )
-            download_data()
-        else:
-            msg.good(f"Data files are already downloaded to {PUBLIC_DATA_FOLDER_PATH}.")
-
         multi_process = False
         bert_model = BertVectorizer(multi_process=multi_process).fit()
 
         # taxonomy information
-        taxonomy_data_path = (
-            PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_data_formatted.csv"
+
+        taxonomy_version = config_data.get("taxonomy_version")
+
+        taxonomy_data_path = PACKAGE_PATH.joinpath(
+            "data",
+            "_".join(
+                [
+                    i
+                    for i in [taxonomy_name, taxonomy_version, "data_formatted.csv"]
+                    if i
+                ]
+            ),
         )
+
         if taxonomy_data_path.exists():
-            taxonomy_data = pd.read_csv(
-                PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_data_formatted.csv"
-            )
+            taxonomy_data = pd.read_csv(taxonomy_data_path)
             taxonomy_data = taxonomy_data[
                 taxonomy_data[config_data["skill_name_col"]].notna()
             ].reset_index(drop=True)
@@ -231,33 +237,55 @@ class MapConfig(BaseModel):
         else:
             raise msg.fail(f"Taxonomy data not found: {taxonomy_data_path}", exits=1)
 
-        taxonomy_embeddings_path = (
-            PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_embeddings.json"
+        taxonomy_embeddings_file_name = "_".join(
+            [i for i in [taxonomy_name, taxonomy_version, "embeddings.json"] if i]
         )
-        if taxonomy_embeddings_path.exists():
-            taxonomy_embeddings = srsly.read_json(
-                PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_embeddings.json"
-            )
-            taxonomy_embeddings = {
-                int(k): np.array(v) for k, v in taxonomy_embeddings.items()
-            }
-        else:
-            taxonomy_embeddings = None
+        taxonomy_embeddings_path = PACKAGE_PATH.joinpath(
+            "data",
+            taxonomy_embeddings_file_name,
+        )
 
-        hier_mapper_path = PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_hier_mapper.json"
-        if hier_mapper_path.exists():
-            hier_mapper = srsly.read_json(
-                PUBLIC_DATA_FOLDER_PATH / f"{taxonomy_name}_hier_mapper.json"
+        if taxonomy_embeddings_path.exists():
+            taxonomy_embeddings = load_taxonomy_embeddings_local(
+                taxonomy_embeddings_path
             )
+        else:
+            try:
+                msg.info("Downloading taxonomy embeddings from HuggingFace")
+                hf_hub_download(
+                    repo_id="nestauk/skills_taxonomy_embeddings",
+                    filename=taxonomy_embeddings_file_name,
+                    repo_type="dataset",
+                    local_dir=PACKAGE_PATH.joinpath("data"),
+                )
+                taxonomy_embeddings = load_taxonomy_embeddings_local(
+                    taxonomy_embeddings_path
+                )
+            except:
+                msg.info(
+                    "Taxonomy embeddings could not be downloaded from HuggingFace, will be calculated when needed."
+                )
+                taxonomy_embeddings = None
+
+        hier_mapper_path = PACKAGE_PATH.joinpath(
+            "data",
+            "_".join(
+                [i for i in [taxonomy_name, taxonomy_version, "hier_mapper.json"] if i]
+            ),
+        )
+        if hier_mapper_path.exists():
+            hier_mapper = srsly.read_json(hier_mapper_path)
         else:
             msg.fail(f"Hierarchical mapper not found: {hier_mapper_path}", exits=1)
         # here, let's download the hard-coded taxonomy if it's for escoe
         if taxonomy_name == "esco":
             hard_coded_taxonomy = srsly.read_json(
-                PUBLIC_DATA_FOLDER_PATH / f"hardcoded_ojo_{taxonomy_name}_lookup.json"
+                PACKAGE_PATH.joinpath(
+                    "data", f"hardcoded_ojo_{taxonomy_name}_lookup.json"
+                )
             )
             previous_skill_matches = srsly.read_json(
-                PUBLIC_DATA_FOLDER_PATH / f"ojo_{taxonomy_name}_lookup_sample.json"
+                PACKAGE_PATH.joinpath("data", f"ojo_{taxonomy_name}_lookup_sample.json")
             )
 
         else:
