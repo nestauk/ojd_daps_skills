@@ -13,6 +13,8 @@ We currently support three different taxonomies to map onto: the [European Commi
 
 If you'd like to learn more about the models used in the library, please refer to the [model card page](https://nestauk.github.io/ojd_daps_skills/model_card).
 
+For how extracted skills are mapped to exact ESCO skills or broader hierarchy levels, see the [SkillMapper decision guide](ojd_daps_skills/map_skills/README.md#how-skillmapper-chooses-a-match).
+
 You may also want to read more about the wider project by reading:
 
 1. Our [Introduction blog](https://www.escoe.ac.uk/the-skills-extractor-library)
