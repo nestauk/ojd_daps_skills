@@ -15,6 +15,8 @@ We currently support three different taxonomies to map onto: the European Commis
 
 If you’d like to learn more about the models used in the library, please refer to [the model card page](model_card.md). For more information on how we labelled the training data for the models see [the labelling page](labelling.md). A more in depth discussion of the pipeline and evaluation of it can be found in [the pipeline summary and metrics page](pipeline_summary.md).
 
+The [SkillMapper decision guide](https://github.com/nestauk/ojd_daps_skills/blob/dev/ojd_daps_skills/map_skills/README.md#how-skillmapper-chooses-a-match) explains exact matches, hierarchy fallbacks and ESCO thresholds.
+
 You may also want to read more about the wider project by reading:
 
 1. [Our Introduction blog](https://www.escoe.ac.uk/the-skills-extractor-library)
